@@ -1,0 +1,20 @@
+-- create tables for magic link auth and oracle runs
+CREATE TABLE IF NOT EXISTS users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT UNIQUE,
+  is_paid INTEGER DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS magic_links (
+  token TEXT PRIMARY KEY,
+  email TEXT,
+  expires_at DATETIME
+);
+
+CREATE TABLE IF NOT EXISTS oracle_runs (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  date TEXT,
+  result TEXT,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
