@@ -14,7 +14,18 @@ async function fetchLastRun(): Promise<OracleRun | null> {
     `,
   });
   const rows = res.rows ?? [];
-  return rows.length > 0 ? (rows[0] as OracleRun) : null;
+  if (rows.length === 0) return null;
+
+  // Normalize DB row -> OracleRun to satisfy TypeScript and handle different column shapes
+  const r: any = rows[0];
+  const mapped: OracleRun = {
+    id: typeof r.id === "number" ? r.id : r.id ? Number(r.id) : undefined,
+    run_date: String(r.run_date ?? r.runDate ?? r.date ?? ""),
+    market_phase: r.market_phase ?? r.marketPhase ?? null,
+    result: typeof r.result === "string" ? r.result : r.result ? JSON.stringify(r.result) : "",
+    created_at: r.created_at ?? r.createdAt ?? undefined,
+  };
+  return mapped;
 }
 
 /**
