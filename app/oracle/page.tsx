@@ -19,7 +19,13 @@ export default async function OraclePage() {
     `
   });
 
-  const runs = res.rows as OracleRun[];
+  const runs: OracleRun[] = res.rows.map((row: any) => ({
+  id: Number(row.id),
+  date: String(row.date),
+  result: String(row.result),
+  created_at: String(row.created_at),
+}));
+
 
   return (
     <main className="max-w-3xl mx-auto px-4 py-10">
