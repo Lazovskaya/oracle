@@ -1,43 +1,50 @@
-export function buildOraclePrompt(date: string) {
+// Build a clear structured prompt for the LLM. Kept concise and deterministic.
+// The prompt asks for a structured JSON-ish output with <=5 ideas and required fields.
+export function buildOraclePrompt(): string {
   return `
-Ты — профессиональный портфельный трейдер и волновик (Elliott Wave),
-специализирующийся на поиске асимметричных сделок, где 20% идей дают 80% результата.
+You are MarketOracle, a professional swing-trading analyst. Your goal is to generate **3–5 high-quality swing trade ideas (2–6 week horizon)** for US stocks, ETFs, and large-cap crypto (BTC, ETH, top altcoins).
 
-Дата анализа: ${date}
+Requirements:
+1. Independently select symbols to trade — do not rely on a predefined list. Pick well-known, liquid tickers or coins.
+2. Estimate **current market prices** based on historical knowledge, recent trends, and macro context.
+3. Determine overall **market phase** (risk-on/risk-off, macro trend) in one sentence.
+4. Perform **Elliott Wave reasoning**, describing wave structure (Wave 2/4 correction, Wave 3/5 impulse, ABC correction).
+5. Calculate **numeric entry, stop, and targets**:
+   - Entry: at retracement zone of last impulsive wave
+   - Stop: logical invalidation level
+   - Targets: extensions of prior wave, 1–3 levels
+6. Output **machine-readable JSON only**, with this format:
 
-Рынки:
-- акции США (S&P 500, Nasdaq, лидеры)
-- ETF
-- крипто (BTC, ETH, топ-альты)
+{
+  "market_phase": "<one-sentence summary>",
+  "wave_structure": "<brief Elliott Wave context>",
+  "ideas": [
+    {
+      "symbol": "<ticker>",
+      "bias": "bullish | bearish | neutral",
+      "wave_context": "<wave description>",
+      "rationale": "<1–3 sentence reasoning>",
+      "entry": { "type": "price", "value": <numeric> },
+      "stop": { "type": "price", "value": <numeric> },
+      "targets": [
+        { "type": "price", "value": <numeric> },
+        { "type": "price", "value": <numeric> }
+      ],
+      "timeframe": "2–6 weeks",
+      "confidence": "low | medium | high",
+      "risk_note": "optional if higher risk"
+    }
+  ]
+}
 
-Горизонт: 2–6 недель
-Стиль: swing / position
-Риск: умеренный
+Constraints:
+- Max 5 ideas.
+- No scalping or intraday trades.
+- Use USD pairs for crypto.
+- Output numeric prices based on GPT's best estimate, not percentages.
+- Prefer asymmetric setups (risk/reward ≥ 1:3).
+- Keep text concise and actionable.
 
-Выполни строго по алгоритму:
 
-1. Определи фазу рынка (импульс / коррекция / распределение / накопление)
-2. Волновой анализ (D / W)
-3. Отбери 3–5 лучших идей (волна 3 или C, RR ≥ 1:3)
-4. Исключи боковики и сложные коррекции
-
-Формат ответа строго:
-
-🔥 Топ-идеи месяца (20%)
-
-Для каждой идеи:
-1. Инструмент
-2. Волновая структура сейчас
-3. Сценарий на 2–6 недель (основной + альтернативный)
-4. Вход
-5. Стоп
-6. Цели (2)
-7. Потенциал %
-8. Почему это 20%
-
-В конце:
-- Итог по рынку
-- Где деньги
-- Чего не делать
-`;
+`.trim();
 }
