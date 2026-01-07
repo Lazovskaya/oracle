@@ -1,29 +1,51 @@
-import Image from "next/image";
-
 export default function HomePage() {
   return (
-    <main className="max-w-3xl mx-auto px-6 py-20">
-      <h1 className="text-4xl font-bold mb-4">Market Oracle</h1>
-      <p className="text-gray-600 mb-6">
-        Minimal production-ready MVP that generates swing trading ideas (2–6 weeks) for stocks & crypto using an LLM.
-      </p>
+    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
+      <div className="max-w-4xl w-full">
+        <div className="text-center mb-12">
+          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            📡 Market Oracle
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            AI-powered swing trading insights for stocks & crypto. Get high-quality market analysis and trade recommendations powered by advanced language models.
+          </p>
+        </div>
 
-      <div className="space-y-4">
-        <a
-          href="/oracle"
-          className="inline-block bg-black text-white px-4 py-2 rounded"
-        >
-          View latest oracle run
-        </a>
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+            <div className="text-4xl mb-4">📊</div>
+            <h3 className="text-xl font-semibold mb-2">Market Analysis</h3>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              Real-time market phase detection and wave structure analysis for informed trading decisions.
+            </p>
+          </div>
 
-        <p className="text-sm text-gray-500">
-          To trigger a new run (server-only), POST to <code>/api/run-oracle</code>. In dev you can use the button on /oracle.
-        </p>
+          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+            <div className="text-4xl mb-4">🎯</div>
+            <h3 className="text-xl font-semibold mb-2">Trade Ideas</h3>
+            <p className="text-gray-600 dark:text-gray-300 text-sm">
+              Swing trading setups (2-6 weeks) with entry points, stop losses, and profit targets.
+            </p>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <a
+            href="/oracle"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all hover:scale-105"
+          >
+            View Latest Oracle Run →
+          </a>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
+            Automated runs at 08:00 & 20:00 UTC daily
+          </p>
+        </div>
+
+        <footer className="mt-16 text-center text-xs text-gray-400 dark:text-gray-500">
+          <p>Built with Next.js • OpenAI • Turso Database</p>
+          <p className="mt-1">Deployed on Vercel</p>
+        </footer>
       </div>
-
-      <footer className="mt-12 text-xs text-gray-400">
-        Built for fast deploy to Vercel • Server-only OpenAI calls • SQLite-compatible (Turso/libSQL recommended)
-      </footer>
     </main>
   );
 }
