@@ -102,40 +102,73 @@ export default async function OraclePage() {
   const ideas = Array.isArray(parsed?.ideas) ? parsed!.ideas : [];
 
   return (
-    <main className="max-w-4xl mx-auto px-6 py-12">
-      <header className="flex items-start justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold">📡 Market Oracle</h1>
-          <p className="text-sm text-gray-500 mt-1">High-quality swing trade ideas (2–6 weeks) — latest run</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <RunButton />
-        </div>
-      </header>
+    <main className="min-h-screen px-6 py-12">
+      <div className="max-w-6xl mx-auto">
+        <header className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-12">
+          <div>
+            <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              📡 Market Oracle
+            </h1>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
+              High-quality swing trade ideas (2–6 weeks) — latest run
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <RunButton />
+          </div>
+        </header>
 
-      {!last ? (
-        <section className="rounded border p-6 bg-white text-gray-600">
-          <p>No oracle runs yet. Trigger one via the button or wait for scheduled runs at 08:00 & 20:00 UTC.</p>
-        </section>
-      ) : (
-        <article className="space-y-6">
-          <section className="rounded border p-6 bg-white">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl font-semibold">Market summary</h2>
-                <p className="text-gray-700 mt-2">{parsed?.market_phase ?? last.market_phase ?? "—"}</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  Run date: <strong>{last.run_date}</strong> • Stored: {new Date(last.created_at!).toLocaleString()}
+        {!last ? (
+          <section className="rounded-2xl border border-gray-200 dark:border-gray-700 p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
+            <div className="text-center">
+              <div className="text-6xl mb-4">🔮</div>
+              <h2 className="text-2xl font-semibold mb-2">No Oracle Runs Yet</h2>
+              <p className="text-gray-600 dark:text-gray-300">
+                Trigger your first run via the button above or wait for scheduled runs at 08:00 & 20:00 UTC.
+              </p>
+            </div>
+          </section>
+        ) : (
+          <article className="space-y-8">
+            <section className="rounded-2xl border border-gray-200 dark:border-gray-700 p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl">
+              <div className="flex flex-col md:flex-row md:items-start justify-between gap-6">
+              <div className="flex-1">
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <span>📊</span> Market Summary
+                </h2>
+                <p className="text-lg text-gray-700 dark:text-gray-200 leading-relaxed">
+                  {parsed?.market_phase ?? last.market_phase ?? "—"}
                 </p>
+                <div className="flex flex-wrap gap-4 mt-6 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500 dark:text-gray-400">📅</span>
+                    <span className="text-gray-600 dark:text-gray-300">
+                      Run: <strong className="text-gray-900 dark:text-white">{last.run_date}</strong>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500 dark:text-gray-400">🕐</span>
+                    <span className="text-gray-600 dark:text-gray-300">
+                      {new Date(last.created_at!).toLocaleString()}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="text-right">
-                <span className="inline-block px-3 py-1 text-xs bg-gray-100 rounded">{parsed ? "Parsed" : "Raw"}</span>
-                <div className="mt-2 text-sm text-gray-500">Wave: {parsed?.wave_structure ?? "—"}</div>
+              <div className="flex flex-col gap-3">
+                <span className="inline-block px-4 py-2 text-sm font-semibold bg-gradient-to-r from-blue-100 to-purple-100 dark:from-blue-900 dark:to-purple-900 text-blue-900 dark:text-blue-100 rounded-lg">
+                  {parsed ? "✓ Parsed" : "Raw Data"}
+                </span>
+                {parsed?.wave_structure && (
+                  <div className="text-center p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Wave Structure</div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">{parsed.wave_structure}</div>
+                  </div>
+                )}
               </div>
             </div>
           </section>
 
-          <section className="grid gap-4">
+          <section className="grid gap-6">
             {ideas.length > 0 ? (
               ideas.map((idea: any, idx: number) => {
                 const symbol = idea.symbol ?? `idea-${idx + 1}`;
@@ -149,62 +182,82 @@ export default async function OraclePage() {
                 const confidence = (idea.confidence ?? "unknown").toString();
 
                 return (
-                  <div key={idx} className="p-4 rounded-lg border bg-white shadow-sm">
-                    <div className="flex items-start justify-between gap-4">
+                  <div key={idx} className="p-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-xl hover:shadow-2xl transition-all">
+                    <div className="flex items-start justify-between gap-4 mb-4">
                       <div>
-                        <div className="flex items-baseline gap-3">
-                          <h3 className="text-lg font-semibold">{symbol}</h3>
-                          <span className="text-sm text-gray-500">{idea.bias ?? ""}</span>
+                        <div className="flex items-baseline gap-3 mb-2">
+                          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{symbol}</h3>
+                          <span className={`px-3 py-1 text-sm font-semibold rounded-full ${
+                            idea.bias?.toLowerCase() === 'bullish' 
+                              ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-100'
+                              : idea.bias?.toLowerCase() === 'bearish'
+                              ? 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-100'
+                              : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
+                          }`}>
+                            {idea.bias ?? "Neutral"}
+                          </span>
                         </div>
-                        <p className="text-xs text-gray-400 mt-1">{idea.wave_context ?? ""}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">{idea.wave_context ?? ""}</p>
                       </div>
-                      <div className="text-right">
+                      <div>
                         <span
-                          className={`inline-flex items-center px-2 py-0.5 text-xs rounded ${
+                          className={`inline-flex items-center px-4 py-2 text-sm font-bold rounded-full shadow-sm ${
                             confidence === "high"
-                              ? "bg-green-100 text-green-800"
+                              ? "bg-gradient-to-r from-green-400 to-emerald-500 text-white"
                               : confidence === "medium"
-                              ? "bg-yellow-100 text-yellow-800"
-                              : "bg-gray-100 text-gray-800"
+                              ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-white"
+                              : "bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800"
                           }`}
                         >
-                          {confidence}
+                          {confidence.toUpperCase()}
                         </span>
                       </div>
                     </div>
 
-                    <p className="mt-3 text-sm text-gray-700">{rationale}</p>
+                    <p className="text-gray-700 dark:text-gray-200 leading-relaxed mb-6">{rationale}</p>
 
-                    <div className="mt-3 grid grid-cols-2 gap-3 text-sm text-gray-700">
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
                       <div>
-                        <div className="text-xs text-gray-500">Entry</div>
-                        <div className="font-medium">{entry}</div>
+                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Entry</div>
+                        <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{entry}</div>
                       </div>
                       <div>
-                        <div className="text-xs text-gray-500">Stop</div>
-                        <div className="font-medium">{stop}</div>
+                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Stop</div>
+                        <div className="text-lg font-bold text-red-600 dark:text-red-400">{stop}</div>
                       </div>
-                      <div className="col-span-2 mt-1">
-                        <div className="text-xs text-gray-500">Targets</div>
-                        <div className="font-medium">{targets.join(" • ")}</div>
+                      <div className="col-span-2">
+                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Targets</div>
+                        <div className="text-lg font-bold text-green-600 dark:text-green-400">{targets.join(" • ")}</div>
                       </div>
-                      <div>
-                        <div className="text-xs text-gray-500">Timeframe</div>
-                        <div className="font-medium">{timeframe}</div>
+                      <div className="col-span-2">
+                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">Timeframe</div>
+                        <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{timeframe}</div>
                       </div>
                       {idea.risk_note ? (
-                        <div className="col-span-2 text-xs text-yellow-800 mt-2">Risk note: {idea.risk_note}</div>
+                        <div className="col-span-2 md:col-span-4 mt-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                          <div className="flex items-start gap-2">
+                            <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
+                            <div>
+                              <div className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">Risk Note</div>
+                              <div className="text-sm text-yellow-700 dark:text-yellow-200">{idea.risk_note}</div>
+                            </div>
+                          </div>
+                        </div>
                       ) : null}
                     </div>
                   </div>
                 );
               })
             ) : (
-              <pre className="rounded border p-4 bg-gray-50 text-sm text-gray-700">{last.result}</pre>
+              <div className="p-6 rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
+                <h3 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Raw Oracle Output</h3>
+                <pre className="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap font-mono leading-relaxed">{last.result}</pre>
+              </div>
             )}
           </section>
-        </article>
-      )}
+          </article>
+        )}
+      </div>
     </main>
   );
 }
