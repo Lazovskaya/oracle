@@ -1,7 +1,6 @@
 import { db } from "@/lib/db";
 import { OracleRun } from "@/types/oracle";
 import RunButton from "./RunButton";
-import path from "path";
 
 export const revalidate = 60;
 
