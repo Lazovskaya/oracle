@@ -1,22 +1,28 @@
 /**
- * Adds missing columns to oracle_runs if they don't exist.
+ * Run migrations against Turso (libsql). Expects DATABASE_URL and (optionally) DATABASE_AUTH_TOKEN.
  * Usage:
- *   # local sqlite (uses lib/db.ts fallback)
- *   node scripts/migrate-schema.js
+ *   DATABASE_URL="https://<ns>.libsql.sh" DATABASE_AUTH_TOKEN="<token>" node scripts/migrate-schema.js
  *
- *   # against Turso/libSQL (set env before running)
- *   DATABASE_URL="https://<...>" DATABASE_AUTH_TOKEN="<token>" node scripts/migrate-schema.js
+ * Note: this is plain JS (no TypeScript annotations) so it runs with node directly.
  */
 (async () => {
   try {
-    const dbModule = require("../lib/db");
-    const db = dbModule.db ?? dbModule;
-    // PRAGMA for sqlite; libsql will return empty rows for PRAGMA but we handle both.
-    const info = await db.execute({ sql: "PRAGMA table_info('oracle_runs')" });
-    const rows = info.rows ?? [];
-    const cols = rows.map((r) => (r.name || r.NAME || r.column_name || "").toString());
-    const stmts = [];
+    if (!process.env.DATABASE_URL) {
+      throw new Error("Set DATABASE_URL to your Turso libsql URL before running this script.");
+    }
 
+    const { createClient } = require("@libsql/client");
+    const client = createClient({
+      url: process.env.DATABASE_URL,
+      authToken: process.env.DATABASE_AUTH_TOKEN,
+    });
+
+    // Inspect existing table columns
+    const info = await client.execute({ sql: "PRAGMA table_info('oracle_runs')" });
+    const rows = info.rows || [];
+    const cols = rows.map((r) => String(r.name || r.NAME || "")).filter(Boolean);
+
+    const stmts = [];
     if (!cols.includes("id")) {
       stmts.push(`
         CREATE TABLE IF NOT EXISTS oracle_runs (
@@ -40,13 +46,13 @@
 
     for (const s of stmts) {
       console.log("Applying:", s.trim().split("\n")[0]);
-      await db.execute({ sql: s });
+      await client.execute({ sql: s });
     }
 
     console.log("Migration complete.");
     process.exit(0);
   } catch (err) {
-    console.error("Migration failed:", err);
+    console.error("Migration failed:", err && err.message ? err.message : err);
     process.exit(1);
   }
 })();

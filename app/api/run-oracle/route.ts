@@ -1,81 +1,82 @@
 // Server-only API route that builds a prompt, calls OpenAI, stores the run and returns a simple JSON summary.
 // Runtime is node to allow the regular OpenAI SDK.
 import { NextResponse } from "next/server";
-import { db } from "@/lib/db";
+import { db } from "@/lib/db.server";
 import { buildOraclePrompt } from "@/lib/oraclePrompt";
 import OpenAI from "openai";
 
 export const runtime = "nodejs";
 
-const FALLBACK_MODELS = ["gpt-4.1-mini", "gpt-4o-mini", "gpt-4o"];
-
-/**
- * Call OpenAI with basic retry + fallback on empty response.
- * Logs full completion for debugging (server logs only).
- */
 async function callLLM(prompt: string) {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
-
-  const client = new OpenAI({ apiKey });
-
-  const requested = process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
-  const candidates = [requested, ...FALLBACK_MODELS.filter(m => m !== requested)];
-
-  for (const model of candidates) {
-    try {
-      console.info(`OpenAI: trying model=${model}`);
-      const completion = await client.chat.completions.create({
-        model,
-        messages: [{ role: "user", content: prompt }],
-        max_completion_tokens: 1200,
-      });
-
-      // Log entire completion for debugging (do not expose to clients)
-      try {
-        console.debug("OpenAI completion object:", JSON.stringify(completion, null, 2));
-      } catch (_) {}
-
-      const text = completion?.choices?.[0]?.message?.content ?? "";
-      if (text && text.trim().length > 0) {
-        return { text, modelUsed: model };
-      }
-
-      console.warn(`OpenAI: model=${model} returned empty content, trying next candidate.`);
-    } catch (err: any) {
-      // Log error and try next model (could be permission or model-not-found)
-      console.error(`OpenAI call failed for model=${model}:`, String(err?.message ?? err));
-    }
-  }
-
-  throw new Error("OpenAI returned no content from any candidate models");
+  if (!process.env.OPENAI_API_KEY) throw new Error("OPENAI_API_KEY not set");
+  const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+  const model = process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
+  const completion = await client.chat.completions.create({
+    model,
+    messages: [{ role: "user", content: prompt }],
+    max_completion_tokens: 1200,
+  });
+  return { text: completion?.choices?.[0]?.message?.content ?? "", raw: completion };
 }
 
 export async function POST(req: Request) {
   try {
     const prompt = buildOraclePrompt();
-    const { text: raw, modelUsed } = await callLLM(prompt);
+    const { text: rawTextIn, raw: rawCompletion } = await callLLM(prompt);
 
-    // try to parse market_phase
-    let market_phase: string | null = null;
+    // Ensure we have a string to work with
+    const rawText = rawTextIn == null ? "" : String(rawTextIn).trim();
+
+    // Debug: log truncated completion + raw text (server logs only)
     try {
-      const parsed = JSON.parse(raw);
-      market_phase = parsed.market_phase ?? null;
-    } catch {
-      market_phase = raw.split("\n")[0].slice(0, 200);
-    }
+      console.debug("LLM completion (truncated):", JSON.stringify(rawCompletion).slice(0, 2000));
+    } catch (_) {}
+    console.debug("LLM raw text (truncated):", rawText.slice(0, 500));
 
     const run_date = new Date().toISOString().slice(0, 10);
 
+    // Robust JSON parsing: only attempt parse when rawText *looks* JSON,
+    // otherwise try substring extraction; always catch errors.
+    let parsed: any = null;
+    try {
+      const t = rawText.trim();
+      if (t.startsWith("{") || t.startsWith("[")) {
+        parsed = JSON.parse(t);
+      } else {
+        // try to find an embedded JSON object
+        const first = t.indexOf("{");
+        const last = t.lastIndexOf("}");
+        if (first !== -1 && last !== -1 && last > first) {
+          const candidate = t.slice(first, last + 1);
+          try {
+            parsed = JSON.parse(candidate);
+          } catch {
+            parsed = null;
+          }
+        } else {
+          parsed = null;
+        }
+      }
+    } catch (err) {
+      console.warn("Parsing LLM output failed:", String(err?.message ?? err));
+      parsed = null;
+    }
+
+    // Derive market_phase safely
+    let market_phase: string | null = null;
+    if (parsed && typeof parsed === "object") {
+      market_phase = parsed.market_phase ?? null;
+    } else {
+      market_phase = (rawText.split("\n")[0] ?? "").slice(0, 200) || null;
+    }
+
+    // Always store the raw LLM text (string) for debugging + future parsing
     const res = await db.execute({
-      sql: `
-        INSERT INTO oracle_runs (run_date, market_phase, result)
-        VALUES (?, ?, ?)
-      `,
-      args: [run_date, market_phase, raw],
+      sql: `INSERT INTO oracle_runs (run_date, market_phase, result) VALUES (?, ?, ?)`,
+      args: [run_date, market_phase, rawText],
     });
 
-    return NextResponse.json({ ok: true, model: modelUsed, inserted: res.info ?? null });
+    return NextResponse.json({ ok: true, parsed: !!parsed, inserted: res.info ?? null });
   } catch (err: any) {
     console.error("run-oracle error:", err);
     return NextResponse.json({ ok: false, error: String(err) }, { status: 500 });
