@@ -103,9 +103,6 @@ export default function OraclePageClient({
   userTradingStyle?: 'conservative' | 'balanced' | 'aggressive';
   isAdmin?: boolean;
   userEmail?: string;
-  stylePredictions?: Record<string, { parsed: any; ideas: any[] }>;
-  userTradingStyle?: 'conservative' | 'balanced' | 'aggressive';
-  isAdmin?: boolean;
 }) {
   const [lang, setLang] = useState<Language>('en');
   const [showWaveDetails, setShowWaveDetails] = useState(false);
