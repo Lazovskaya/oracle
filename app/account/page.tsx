@@ -3,7 +3,7 @@ import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/lib/auth';
 import AccountPageClient from './AccountPageClient';
 import { getServerSession } from 'next-auth';
-import { authOptions } from '@/app/api/auth/[...nextauth]/route';
+import { authOptions } from '@/lib/authConfig';
 
 export default async function AccountPage() {
   const cookieStore = await cookies();
