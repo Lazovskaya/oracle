@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const email = session.customer_email || session.metadata?.email;
-        const tier = session.metadata?.tier || 'premium'; // 'basic' or 'pro'
+        const tier = (session.metadata?.tier || 'premium') as 'free' | 'premium';
         
         if (email && session.payment_status === 'paid') {
           // Grant access for 30 days from payment
