@@ -1,10 +1,17 @@
+import OracleIcon from "@/components/OracleIcon";
+
 export default function HomePage() {
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
       <div className="max-w-4xl w-full">
         <div className="text-center mb-12">
+          <div className="inline-flex items-center justify-center mb-6">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-2xl">
+              <OracleIcon className="w-12 h-12 text-white" />
+            </div>
+          </div>
           <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            📡 Market Oracle
+            Market Oracle
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             AI-powered swing trading insights for stocks & crypto. Get high-quality market analysis and trade recommendations powered by advanced language models.
@@ -37,7 +44,7 @@ export default function HomePage() {
             View Latest Oracle Run →
           </a>
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
-            Automated runs at 08:00 & 20:00 UTC daily
+            Automated runs once daily at 09:00 UTC
           </p>
         </div>
 
