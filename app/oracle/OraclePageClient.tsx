@@ -88,7 +88,8 @@ export default function OraclePageClient({
   oracleRunId,
   stylePredictions: initialStylePredictions = {},
   userTradingStyle = 'balanced',
-  isAdmin = false
+  isAdmin = false,
+  userEmail
 }: { 
   last: OracleRun | null;
   parsed: any;
@@ -98,6 +99,10 @@ export default function OraclePageClient({
   isLoggedIn: boolean;
   subscriptionTier: 'free' | 'premium';
   oracleRunId?: number;
+  stylePredictions?: Record<string, { parsed: any; ideas: any[] }>;
+  userTradingStyle?: 'conservative' | 'balanced' | 'aggressive';
+  isAdmin?: boolean;
+  userEmail?: string;
   stylePredictions?: Record<string, { parsed: any; ideas: any[] }>;
   userTradingStyle?: 'conservative' | 'balanced' | 'aggressive';
   isAdmin?: boolean;
@@ -317,6 +322,15 @@ export default function OraclePageClient({
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 {t.latestRun}
               </p>
+              {isLoggedIn && userEmail && (
+                <p className="text-xs text-gray-500 dark:text-gray-500 mt-1 flex items-center gap-1.5">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  <span>{userEmail}</span>
+                  {isAdmin && <span className="ml-1 px-1.5 py-0.5 bg-purple-100 dark:bg-purple-900 text-purple-700 dark:text-purple-300 rounded text-xs font-semibold">ADMIN</span>}
+                </p>
+              )}
             </div>
           </div>
           <div className="flex items-center gap-3 ml-auto">

@@ -6,6 +6,8 @@ import OraclePageClient from "./OraclePageClient";
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getUserByEmail, checkAndRevokeExpiredAccess } from '@/lib/auth';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 
 export const revalidate = 60;
 
@@ -138,7 +140,13 @@ function formatField(raw: any): string {
 
 export default async function OraclePage() {
   const cookieStore = await cookies();
-  const userEmail = cookieStore.get('user_email')?.value;
+  const cookieEmail = cookieStore.get('user_email')?.value;
+  
+  // Also check NextAuth session for Google login
+  const session = await getServerSession(authOptions);
+  const sessionEmail = session?.user?.email;
+  
+  const userEmail = sessionEmail || cookieEmail;
 
   let user = userEmail ? await getUserByEmail(userEmail) : null;
   
@@ -214,6 +222,7 @@ export default async function OraclePage() {
       stylePredictions={stylePredictions}
       userTradingStyle={userStyle}
       isAdmin={user?.is_admin || false}
+      userEmail={user?.email}
     />
   );
 }
