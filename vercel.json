@@ -1,5 +1,11 @@
 {
   "buildCommand": "npm run build",
+  "crons": [
+    {
+      "path": "/api/run-oracle-all-styles",
+      "schedule": "0 9,21 * * *"
+    }
+  ],
   "env": {
     "DATABASE_URL": "@database_url",
     "DATABASE_AUTH_TOKEN": "@database_auth_token",

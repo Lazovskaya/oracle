@@ -1,3 +1,14 @@
+export interface OracleRun {
+  id?: number;
+  run_date: string;
+  market_phase: string | null;
+  result: string;
+  result_ru?: string | null;
+  result_es?: string | null;
+  result_zh?: string | null;
+  created_at?: string;
+}
+
 export type OracleIdea = {
   symbol: string;
   rationale: string;
@@ -9,12 +20,4 @@ export type OracleIdea = {
   bias?: string;
   wave_context?: string;
   risk_note?: string;
-};
-
-export type OracleRun = {
-  id?: number;
-  run_date: string; // ISO date
-  market_phase: string | null;
-  result: string; // raw LLM output (JSON string)
-  created_at?: string;
 };
