@@ -781,7 +781,7 @@ export default function OraclePageClient({
                               </div>
                               <div className="col-span-2 p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.timeframe}</div>
-                                <div className="text-lg font-medium text-gray-900 dark:text-gray-100">{timeframe}</div>
+                                <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{timeframe}</div>
                               </div>
                             </div>
                           ) : (
