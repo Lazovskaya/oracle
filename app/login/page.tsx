@@ -141,10 +141,10 @@ function LoginForm() {
             </p>
             
             {magicLink && (
-              <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border border-yellow-200 dark:border-yellow-800">
-                <p className="text-xs font-bold text-yellow-800 dark:text-yellow-300 mb-2">DEV MODE - Direct link:</p>
-                <a href={magicLink} className="text-xs text-blue-600 dark:text-blue-400 break-all hover:underline">
-                  {magicLink}
+              <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                <p className="text-xs font-bold text-blue-800 dark:text-blue-300 mb-2">Click here if the tab didn't open:</p>
+                <a href={magicLink} className="text-sm text-blue-600 dark:text-blue-400 break-all hover:underline font-medium">
+                  Open Magic Link →
                 </a>
               </div>
             )}
