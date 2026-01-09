@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/api/', '/account', '/auth/', '/symbol-analyzer'],
       },
     ],
-    sitemap: 'https://oracle-blond.vercel.app/sitemap.xml',
+    sitemap: 'https://oracle-trade.vercel.app/sitemap.xml',
   };
 }

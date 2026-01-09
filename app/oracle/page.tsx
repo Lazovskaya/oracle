@@ -17,7 +17,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Market Oracle - Latest Trading Analysis",
     description: "Daily market insights and swing trading ideas using Elliott Wave analysis",
-    url: "https://oracle-blond.vercel.app/oracle",
+    url: "https://oracle-trade.vercel.app/oracle",
     siteName: "Market Oracle",
     type: "website",
   },

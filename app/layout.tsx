@@ -9,7 +9,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://oracle-blond.vercel.app'),
+  metadataBase: new URL('https://oracle-trade.vercel.app'),
   title: {
     default: "Market Oracle - AI-Powered Trading Analysis for Stocks & Crypto",
     template: "%s | Market Oracle",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://oracle-blond.vercel.app',
+    url: 'https://oracle-trade.vercel.app',
     siteName: 'Market Oracle',
     title: 'Market Oracle - AI-Powered Trading Analysis',
     description: 'Professional swing trading ideas using Elliott Wave theory and AI analysis',

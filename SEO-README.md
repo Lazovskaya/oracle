@@ -47,13 +47,13 @@ All pages now have proper metadata:
 ## 🔍 How to Verify
 
 ### Immediate Testing:
-1. **Check robots.txt**: Visit `https://oracle-blond.vercel.app/robots.txt`
-2. **Check sitemap**: Visit `https://oracle-blond.vercel.app/sitemap.xml`
+1. **Check robots.txt**: Visit `https://oracle-trade.vercel.app/robots.txt`
+2. **Check sitemap**: Visit `https://oracle-trade.vercel.app/sitemap.xml`
 3. **View page source**: Right-click → View Source on any page to see metadata
 
 ### Google Search Console:
 1. Go to: https://search.google.com/search-console
-2. Add property: `oracle-blond.vercel.app`
+2. Add property: `oracle-trade.vercel.app`
 3. Verify ownership (DNS or HTML file method)
 4. Submit sitemap: `/sitemap.xml`
 5. Check:
@@ -63,7 +63,7 @@ All pages now have proper metadata:
 
 ### Manual Search Test:
 ```
-site:oracle-blond.vercel.app
+site:oracle-trade.vercel.app
 ```
 Run this in Google to see indexed pages (takes 1-2 weeks for new sites)
 
