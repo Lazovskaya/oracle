@@ -14,21 +14,22 @@ interface HistoricalIdea {
   id: number;
   symbol: string;
   entry_price: number;
-  stop_price: number;
+  stop_loss: number;
   target_prices: string;
-  category: string;
+  idea_type: string;
   status: string;
-  outcome_date: string;
-  actual_return?: number;
+  closed_at: string;
+  profit_loss_percentage?: number;
 }
 
 async function fetchHistoricalIdeas(): Promise<HistoricalIdea[]> {
   const res = await db.execute({
     sql: `
-      SELECT id, symbol, entry_price, stop_price, target_prices, category, status, outcome_date
+      SELECT id, symbol, entry_price, original_stop_loss, original_target, 
+             idea_type, status, closed_at, profit_loss_percentage
       FROM idea_performance
-      WHERE status IN ('hit_target', 'hit_stop')
-      ORDER BY outcome_date DESC
+      WHERE status IN ('winner', 'loser')
+      ORDER BY closed_at DESC
       LIMIT 20
     `,
   });
@@ -37,11 +38,12 @@ async function fetchHistoricalIdeas(): Promise<HistoricalIdea[]> {
     id: Number(r.id),
     symbol: String(r.symbol),
     entry_price: Number(r.entry_price),
-    stop_price: Number(r.stop_price),
-    target_prices: String(r.target_prices || ''),
-    category: String(r.category || 'unknown'),
+    stop_loss: Number(r.original_stop_loss),
+    target_prices: String(r.original_target || ''),
+    idea_type: String(r.idea_type || 'daily_oracle'),
     status: String(r.status),
-    outcome_date: String(r.outcome_date || ''),
+    closed_at: String(r.closed_at || ''),
+    profit_loss_percentage: r.profit_loss_percentage ? Number(r.profit_loss_percentage) : undefined,
   }));
 }
 
@@ -49,8 +51,8 @@ export default async function PromoPage() {
   const historicalIdeas = await fetchHistoricalIdeas();
   
   // Calculate statistics
-  const winners = historicalIdeas.filter(idea => idea.status === 'hit_target');
-  const losers = historicalIdeas.filter(idea => idea.status === 'hit_stop');
+  const winners = historicalIdeas.filter(idea => idea.status === 'winner');
+  const losers = historicalIdeas.filter(idea => idea.status === 'loser');
   const winRate = historicalIdeas.length > 0 
     ? ((winners.length / historicalIdeas.length) * 100).toFixed(1) 
     : '0.0';
@@ -129,13 +131,12 @@ export default async function PromoPage() {
           ) : (
             <div className="space-y-4">
               {historicalIdeas.map((idea) => {
-                const isWinner = idea.status === 'hit_target';
-                const targets = idea.target_prices.split(',').map(t => parseFloat(t.trim())).filter(t => !isNaN(t));
-                const avgTarget = targets.length > 0 ? targets.reduce((a, b) => a + b, 0) / targets.length : idea.entry_price;
+                const isWinner = idea.status === 'winner';
                 
-                const returnPercent = isWinner
-                  ? (((avgTarget - idea.entry_price) / idea.entry_price) * 100).toFixed(1)
-                  : (((idea.stop_price - idea.entry_price) / idea.entry_price) * 100).toFixed(1);
+                // Use the already calculated profit_loss_percentage from database
+                const returnPercent = idea.profit_loss_percentage 
+                  ? idea.profit_loss_percentage.toFixed(1)
+                  : '0.0';
 
                 return (
                   <div
@@ -157,14 +158,14 @@ export default async function PromoPage() {
                               ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300' 
                               : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300'
                           }`}>
-                            {isWinner ? '✅ Target Hit' : '🛑 Stopped Out'}
+                            {isWinner ? '✅ Winner' : '❌ Loser'}
                           </span>
                           <span className="px-2 py-1 rounded text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                            {idea.category}
+                            {idea.idea_type === 'daily_oracle' ? 'Daily Oracle' : 'Symbol Analysis'}
                           </span>
                         </div>
                         
-                        <div className="grid grid-cols-4 gap-4 text-sm">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm">
                           <div>
                             <span className="text-gray-600 dark:text-gray-400">Entry:</span>
                             <span className="ml-2 font-semibold text-gray-900 dark:text-white">
@@ -174,29 +175,29 @@ export default async function PromoPage() {
                           <div>
                             <span className="text-gray-600 dark:text-gray-400">Stop:</span>
                             <span className="ml-2 font-semibold text-gray-900 dark:text-white">
-                              ${idea.stop_price.toFixed(2)}
+                              ${idea.stop_loss.toFixed(2)}
                             </span>
                           </div>
                           <div>
                             <span className="text-gray-600 dark:text-gray-400">Target:</span>
                             <span className="ml-2 font-semibold text-gray-900 dark:text-white">
-                              ${avgTarget.toFixed(2)}
+                              ${idea.target_prices || '—'}
                             </span>
                           </div>
                           <div>
                             <span className="text-gray-600 dark:text-gray-400">Date:</span>
                             <span className="ml-2 font-semibold text-gray-900 dark:text-white">
-                              {new Date(idea.outcome_date).toLocaleDateString()}
+                              {new Date(idea.closed_at).toLocaleDateString()}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="text-right">
-                        <div className={`text-3xl font-bold ${
+                      <div className="text-right ml-4">
+                        <div className={`text-2xl sm:text-3xl font-bold ${
                           isWinner ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                         }`}>
-                          {returnPercent}%
+                          {isWinner ? '+' : ''}{returnPercent}%
                         </div>
                         <div className="text-xs text-gray-600 dark:text-gray-400">
                           Return
