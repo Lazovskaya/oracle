@@ -8,9 +8,9 @@ interface LocaleSelectorProps {
 
 const LANGUAGES = [
   { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'lt', name: 'Lietuvių', flag: '🇱🇹' },
   { code: 'ru', name: 'Русский', flag: '🇷🇺' },
   { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
   { code: 'zh', name: '中文', flag: '🇨🇳' },
 ];
 

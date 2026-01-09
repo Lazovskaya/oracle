@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS oracle_runs (
   market_phase TEXT,
   result TEXT NOT NULL,
   result_ru TEXT,
+  result_fr TEXT,
   result_es TEXT,
   result_zh TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP

@@ -4,6 +4,7 @@ export interface OracleRun {
   market_phase: string | null;
   result: string;
   result_ru?: string | null;
+  result_fr?: string | null;
   result_es?: string | null;
   result_zh?: string | null;
   created_at?: string;

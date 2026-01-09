@@ -28,7 +28,7 @@ export const revalidate = 60;
 async function fetchLastRun(tradingStyle: string = 'balanced'): Promise<OracleRun | null> {
   const res = await db.execute({
     sql: `
-      SELECT id, run_date, market_phase, result, result_ru, result_es, result_zh, trading_style, asset_preference, created_at
+      SELECT id, run_date, market_phase, result, result_ru, result_fr, result_es, result_zh, trading_style, asset_preference, created_at
       FROM oracle_runs
       WHERE trading_style = ?
       ORDER BY created_at DESC
@@ -47,6 +47,7 @@ async function fetchLastRun(tradingStyle: string = 'balanced'): Promise<OracleRu
     market_phase: r.market_phase ?? r.marketPhase ?? null,
     result: typeof r.result === "string" ? r.result : r.result ? JSON.stringify(r.result) : "",
     result_ru: typeof r.result_ru === "string" ? r.result_ru : null,
+    result_fr: typeof r.result_fr === "string" ? r.result_fr : null,
     result_es: typeof r.result_es === "string" ? r.result_es : null,
     result_zh: typeof r.result_zh === "string" ? r.result_zh : null,
     created_at: r.created_at ?? r.createdAt ?? undefined,
@@ -208,6 +209,7 @@ export default async function OraclePage() {
   const translations = {
     en: last?.result || '',
     ru: last?.result_ru || last?.result || '',
+    fr: last?.result_fr || last?.result || '',
     es: last?.result_es || last?.result || '',
     zh: last?.result_zh || last?.result || '',
   };

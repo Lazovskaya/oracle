@@ -113,17 +113,17 @@ export async function POST(req: Request) {
 
     const run_date = new Date().toISOString().slice(0, 10);
 
-    // Translate to all languages
-    console.log("Translating oracle result to RU, ES, ZH...");
+    // Translate to all enabled languages (RU, FR, ES, ZH)
+    console.log("Translating oracle result to RU, FR, ES, ZH...");
     const translations = await translateOracleToAllLanguages(raw);
     console.log("Translations completed");
 
     const res = await db.execute({
       sql: `
-        INSERT INTO oracle_runs (run_date, market_phase, result, result_ru, result_es, result_zh, model_used, trading_style, asset_preference)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO oracle_runs (run_date, market_phase, result, result_ru, result_fr, result_es, result_zh, model_used, trading_style, asset_preference)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
-      args: [run_date, market_phase, raw, translations.ru, translations.es, translations.zh, modelUsed, tradingStyle || 'balanced', assetPreference || 'both'],
+      args: [run_date, market_phase, raw, translations.ru, translations.fr, translations.es, translations.zh, modelUsed, tradingStyle || 'balanced', assetPreference || 'both'],
     });
 
     return NextResponse.json({ ok: true, model: modelUsed, inserted: res.info ?? null });
