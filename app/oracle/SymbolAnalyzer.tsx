@@ -43,6 +43,14 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
+  // Format price strings to add .00 decimal places
+  const formatPriceString = (priceStr: string): string => {
+    if (!priceStr) return priceStr;
+    
+    // Match numbers in the string and format them
+    return priceStr.replace(/\b(\d+)(?!\.\d)/g, '$1.00');
+  };
+
   const handleAnalyze = async () => {
     if (!symbol.trim()) {
       setError('Please enter a symbol');
@@ -325,33 +333,41 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
 
           {/* Scenarios */}
           {analysis.scenarios && analysis.tradeable && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-4">
               {/* Bull Case */}
               {analysis.scenarios.bull_case && (
-                <div className="p-6 rounded-lg border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
-                  <h5 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                <div className="p-6 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
+                  <h5 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <span>📈</span>
-                    Bull Case
+                    Bull Case Scenario
                   </h5>
-                  <div className="space-y-3 text-sm">
+                  
+                  <div className="space-y-4">
                     <div>
-                      <div className="text-gray-600 dark:text-gray-400 mb-1">Condition:</div>
-                      <div className="font-medium text-gray-900 dark:text-white">{analysis.scenarios.bull_case.condition}</div>
+                      <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Condition:</div>
+                      <div className="text-gray-900 dark:text-white leading-relaxed">{analysis.scenarios.bull_case.condition}</div>
                     </div>
-                    <div>
-                      <div className="text-gray-600 dark:text-gray-400 mb-1">Entry Zone:</div>
-                      <div className="font-medium text-gray-900 dark:text-white">{analysis.scenarios.bull_case.entry_zone}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-600 dark:text-gray-400 mb-1">Risk:</div>
-                      <div className={`font-semibold ${getRiskColor(analysis.scenarios.bull_case.risk)}`}>
-                        {analysis.scenarios.bull_case.risk?.toUpperCase()}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-gray-600 dark:text-gray-400 mb-1">Targets:</div>
-                      <div className="font-medium text-gray-900 dark:text-white">
-                        {analysis.scenarios.bull_case.targets?.join(' • ')}
+
+                    {/* Bull Price Levels */}
+                    <div className="pt-4 border-t border-emerald-200 dark:border-emerald-800">
+                      <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Price Levels</div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry Zone</div>
+                          <div className="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">{formatPriceString(analysis.scenarios.bull_case.entry_zone)}</div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Risk Level</div>
+                          <div className={`text-base font-semibold ${getRiskColor(analysis.scenarios.bull_case.risk)}`}>
+                            {analysis.scenarios.bull_case.risk?.toUpperCase()}
+                          </div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
+                          <div className="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">
+                            {analysis.scenarios.bull_case.targets?.map(t => formatPriceString(t)).join(' • ')}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -361,29 +377,37 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
               {/* Bear Case */}
               {analysis.scenarios.bear_case && (
                 <div className="p-6 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-                  <h5 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                  <h5 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <span>📉</span>
-                    Bear Case
+                    Bear Case Scenario
                   </h5>
-                  <div className="space-y-3 text-sm">
+                  
+                  <div className="space-y-4">
                     <div>
-                      <div className="text-gray-600 dark:text-gray-400 mb-1">Condition:</div>
-                      <div className="font-medium text-gray-900 dark:text-white">{analysis.scenarios.bear_case.condition}</div>
+                      <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Condition:</div>
+                      <div className="text-gray-900 dark:text-white leading-relaxed">{analysis.scenarios.bear_case.condition}</div>
                     </div>
-                    <div>
-                      <div className="text-gray-600 dark:text-gray-400 mb-1">Entry Zone:</div>
-                      <div className="font-medium text-gray-900 dark:text-white">{analysis.scenarios.bear_case.entry_zone}</div>
-                    </div>
-                    <div>
-                      <div className="text-gray-600 dark:text-gray-400 mb-1">Risk:</div>
-                      <div className={`font-semibold ${getRiskColor(analysis.scenarios.bear_case.risk)}`}>
-                        {analysis.scenarios.bear_case.risk?.toUpperCase()}
-                      </div>
-                    </div>
-                    <div>
-                      <div className="text-gray-600 dark:text-gray-400 mb-1">Targets:</div>
-                      <div className="font-medium text-gray-900 dark:text-white">
-                        {analysis.scenarios.bear_case.targets?.join(' • ')}
+
+                    {/* Bear Price Levels */}
+                    <div className="pt-4 border-t border-red-200 dark:border-red-800">
+                      <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Price Levels</div>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry Zone</div>
+                          <div className="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">{formatPriceString(analysis.scenarios.bear_case.entry_zone)}</div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Risk Level</div>
+                          <div className={`text-base font-semibold ${getRiskColor(analysis.scenarios.bear_case.risk)}`}>
+                            {analysis.scenarios.bear_case.risk?.toUpperCase()}
+                          </div>
+                        </div>
+                        <div className="p-3 rounded-lg bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30">
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
+                          <div className="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">
+                            {analysis.scenarios.bear_case.targets?.map(t => formatPriceString(t)).join(' • ')}
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
