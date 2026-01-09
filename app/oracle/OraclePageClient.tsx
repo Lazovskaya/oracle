@@ -108,7 +108,7 @@ export default function OraclePageClient({
   parsed: any;
   ideas: any[];
   prices: any;
-  translations: { en: string; ru: string; es: string; zh: string };
+  translations: { en: string; ru: string; fr: string; es: string; zh: string };
   isLoggedIn: boolean;
   subscriptionTier: 'free' | 'premium';
   oracleRunId?: number;
@@ -133,6 +133,51 @@ export default function OraclePageClient({
   const isPremium = subscriptionTier === 'premium';
   const isUSMarketOnly = process.env.NEXT_PUBLIC_US_MARKET_ONLY === 'true';
   const t = getTranslation(isUSMarketOnly ? 'en' : lang);
+
+  // Re-parse when language changes
+  const handleLanguageChange = (newLang: Language) => {
+    setLang(newLang);
+    
+    // Parse the translated result
+    const translatedResult = translations[newLang];
+    if (translatedResult) {
+      try {
+        let cleanResult = translatedResult.trim();
+        if (cleanResult.startsWith('```json')) {
+          cleanResult = cleanResult.replace(/^```json\s*\n/, '').replace(/\n```\s*$/, '');
+        } else if (cleanResult.startsWith('```')) {
+          cleanResult = cleanResult.replace(/^```\s*\n/, '').replace(/\n```\s*$/, '');
+        }
+        
+        const newParsed = JSON.parse(cleanResult);
+        setCurrentParsed(newParsed);
+        setCurrentIdeas(Array.isArray(newParsed?.ideas) ? newParsed.ideas : []);
+      } catch (e) {
+        console.error('Failed to parse translated result:', e);
+        // Fallback to original
+        setCurrentParsed(parsed);
+        setCurrentIdeas(ideas);
+      }
+    }
+  };
+
+  // Listen for language changes from LocaleSelector
+  useEffect(() => {
+    const savedLang = localStorage.getItem('user_language') as Language;
+    if (savedLang && savedLang !== lang) {
+      handleLanguageChange(savedLang);
+    }
+
+    // Listen for custom language change events
+    const handleLanguageChangeEvent = (e: CustomEvent) => {
+      if (e.detail?.language) {
+        handleLanguageChange(e.detail.language as Language);
+      }
+    };
+
+    window.addEventListener('languageChange', handleLanguageChangeEvent as EventListener);
+    return () => window.removeEventListener('languageChange', handleLanguageChangeEvent as EventListener);
+  }, []);
 
   const handleSaveIdea = async (idea: any, symbol: string) => {
     if (!isLoggedIn) {
@@ -289,33 +334,6 @@ export default function OraclePageClient({
     
     return true;
   });
-
-  // Re-parse when language changes
-  const handleLanguageChange = (newLang: Language) => {
-    setLang(newLang);
-    
-    // Parse the translated result
-    const translatedResult = translations[newLang];
-    if (translatedResult) {
-      try {
-        let cleanResult = translatedResult.trim();
-        if (cleanResult.startsWith('```json')) {
-          cleanResult = cleanResult.replace(/^```json\s*\n/, '').replace(/\n```\s*$/, '');
-        } else if (cleanResult.startsWith('```')) {
-          cleanResult = cleanResult.replace(/^```\s*\n/, '').replace(/\n```\s*$/, '');
-        }
-        
-        const newParsed = JSON.parse(cleanResult);
-        setCurrentParsed(newParsed);
-        setCurrentIdeas(Array.isArray(newParsed?.ideas) ? newParsed.ideas : []);
-      } catch (e) {
-        console.error('Failed to parse translated result:', e);
-        // Fallback to original
-        setCurrentParsed(parsed);
-        setCurrentIdeas(ideas);
-      }
-    }
-  };
 
   return (
     <main className="min-h-screen px-6 py-12 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-950 dark:to-gray-900">

@@ -41,6 +41,9 @@ export default function LocaleSelector({ initialLanguage = 'en', initialCountry 
     setLanguage(langCode);
     localStorage.setItem('user_language', langCode);
     document.cookie = `user_language=${langCode}; path=/; max-age=31536000`; // 1 year
+    
+    // Dispatch custom event to notify other components
+    window.dispatchEvent(new CustomEvent('languageChange', { detail: { language: langCode } }));
   };
 
   const handleCountryChange = (countryCode: string) => {
