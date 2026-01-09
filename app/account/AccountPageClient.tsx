@@ -623,7 +623,7 @@ export default function AccountPageClient({ user }: { user: User }) {
               Privacy Policy
             </a>
             <span>•</span>
-            <a href="mailto:wlazovskaya@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+            <a href="mailto:trade.crypto.oracle@proton.me" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
               Contact Support
             </a>
           </div>

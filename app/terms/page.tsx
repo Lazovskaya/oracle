@@ -130,7 +130,7 @@ export default function TermsPage() {
                 10. Contact
               </h2>
               <p className="leading-relaxed">
-                For questions, contact: <a href="mailto:wlazovskaya@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">wlazovskaya@gmail.com</a>
+                For questions, contact: <a href="mailto:trade.crypto.oracle@proton.me" className="text-blue-600 dark:text-blue-400 hover:underline">trade.crypto.oracle@proton.me</a>
               </p>
             </section>
           </div>

@@ -90,7 +90,7 @@ export default function PrivacyPage() {
                 <li>Withdraw consent</li>
               </ul>
               <p className="leading-relaxed mt-2">
-                Requests can be sent to: <a href="mailto:wlazovskaya@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">wlazovskaya@gmail.com</a>
+                Requests can be sent to: <a href="mailto:trade.crypto.oracle@proton.me" className="text-blue-600 dark:text-blue-400 hover:underline">trade.crypto.oracle@proton.me</a>
               </p>
             </section>
 
@@ -108,7 +108,7 @@ export default function PrivacyPage() {
                 7. Contact
               </h2>
               <p className="leading-relaxed">
-                Email: <a href="mailto:wlazovskaya@gmail.com" className="text-blue-600 dark:text-blue-400 hover:underline">wlazovskaya@gmail.com</a>
+                Email: <a href="mailto:trade.crypto.oracle@proton.me" className="text-blue-600 dark:text-blue-400 hover:underline">trade.crypto.oracle@proton.me</a>
               </p>
             </section>
           </div>
