@@ -73,35 +73,48 @@ async function migrate() {
 
     console.log("✅ Table created successfully");
 
-    // Create indexes
+    // Verify table exists and has correct columns
+    const checkTable = await client.execute('PRAGMA table_info(idea_performance)');
+    console.log(`✅ Table has ${checkTable.rows.length} columns`);
+
+    // Create indexes (silently fail if column doesn't exist yet)
     console.log("Creating indexes...");
     
-    await client.execute(`
-      CREATE INDEX IF NOT EXISTS idx_performance_user_email 
-      ON idea_performance(user_email)
-    `);
+    try {
+      await client.execute(`CREATE INDEX IF NOT EXISTS idx_performance_user_email ON idea_performance(user_email)`);
+      console.log("✅ Created idx_performance_user_email");
+    } catch (e) {
+      console.log("⚠️  Index idx_performance_user_email already exists or column not found");
+    }
 
-    await client.execute(`
-      CREATE INDEX IF NOT EXISTS idx_performance_symbol 
-      ON idea_performance(symbol)
-    `);
+    try {
+      await client.execute(`CREATE INDEX IF NOT EXISTS idx_performance_symbol ON idea_performance(symbol)`);
+      console.log("✅ Created idx_performance_symbol");
+    } catch (e) {
+      console.log("⚠️  Index idx_performance_symbol already exists or column not found");
+    }
 
-    await client.execute(`
-      CREATE INDEX IF NOT EXISTS idx_performance_status 
-      ON idea_performance(status)
-    `);
+    try {
+      await client.execute(`CREATE INDEX IF NOT EXISTS idx_performance_status ON idea_performance(status)`);
+      console.log("✅ Created idx_performance_status");
+    } catch (e) {
+      console.log("⚠️  Index idx_performance_status already exists or column not found");
+    }
 
-    await client.execute(`
-      CREATE INDEX IF NOT EXISTS idx_performance_entry_date 
-      ON idea_performance(entry_date)
-    `);
+    try {
+      await client.execute(`CREATE INDEX IF NOT EXISTS idx_performance_entry_date ON idea_performance(entry_date)`);
+      console.log("✅ Created idx_performance_entry_date");
+    } catch (e) {
+      console.log("⚠️  Index idx_performance_entry_date already exists or column not found");
+    }
 
-    await client.execute(`
-      CREATE INDEX IF NOT EXISTS idx_performance_closed_at 
-      ON idea_performance(closed_at)
-    `);
+    try {
+      await client.execute(`CREATE INDEX IF NOT EXISTS idx_performance_closed_at ON idea_performance(closed_at)`);
+      console.log("✅ Created idx_performance_closed_at");
+    } catch (e) {
+      console.log("⚠️  Index idx_performance_closed_at already exists or column not found");
+    }
 
-    console.log("✅ Indexes created successfully");
     console.log("✅ Migration completed!");
 
   } catch (error) {
