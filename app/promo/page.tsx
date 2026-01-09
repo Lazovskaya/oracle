@@ -1,5 +1,12 @@
 import { db } from "@/lib/db";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Performance Track Record - Market Oracle Trading Results",
+  description: "Verified historical performance of Market Oracle swing trading ideas. See real outcomes, win rates, and risk-reward ratios for stock and crypto trade setups using Elliott Wave analysis.",
+  keywords: "trading performance, track record, verified results, trading history, Elliott Wave results",
+};
 
 export const revalidate = 3600; // Revalidate every hour
 

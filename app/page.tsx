@@ -1,4 +1,18 @@
 import OracleIcon from "@/components/OracleIcon";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Market Oracle - AI-Powered Swing Trading Ideas for Stocks & Crypto",
+  description: "Professional swing trading analysis (2-6 weeks) using Elliott Wave theory and AI. Get high-quality trade ideas for stocks and cryptocurrencies with clear entry points, stop losses, and profit targets.",
+  keywords: "swing trading, Elliott Wave, trading ideas, stock analysis, crypto trading, market analysis, technical analysis",
+  openGraph: {
+    title: "Market Oracle - AI-Powered Trading Analysis",
+    description: "Professional swing trading ideas using Elliott Wave theory and AI analysis",
+    url: "https://oracle-blond.vercel.app",
+    siteName: "Market Oracle",
+    type: "website",
+  },
+};
 
 export default function HomePage() {
   return (
@@ -54,11 +68,27 @@ export default function HomePage() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
             Automated runs once daily at 09:00 UTC
           </p>
+          <div className="mt-6 flex items-center justify-center gap-6 text-sm">
+            <a href="/promo" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+              View Track Record
+            </a>
+            <span className="text-gray-400">•</span>
+            <a href="/pricing" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+              See Pricing
+            </a>
+          </div>
         </div>
 
         <footer className="mt-16 text-center text-xs text-gray-400 dark:text-gray-500">
-          <p>Built with Next.js • OpenAI • Turso Database</p>
-          <p className="mt-1">Deployed on Vercel</p>
+          <p>Elliott Wave analysis combined with AI-powered market insights</p>
+          <p className="mt-1">Educational content • Not financial advice</p>
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <a href="/terms" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Terms</a>
+            <span>•</span>
+            <a href="/privacy" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Privacy</a>
+            <span>•</span>
+            <a href="mailto:trade.crypto.oracle@proton.me" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Contact</a>
+          </div>
         </footer>
       </div>
     </main>

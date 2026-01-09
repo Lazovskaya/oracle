@@ -1,3 +1,14 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service - Market Oracle",
+  description: "Terms and conditions for using Market Oracle trading analysis service. Educational market information and trading ideas.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function TermsPage() {
   return (
     <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">

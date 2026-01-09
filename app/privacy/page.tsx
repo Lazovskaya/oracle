@@ -1,3 +1,14 @@
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Privacy Policy - Market Oracle",
+  description: "Privacy policy for Market Oracle. How we collect, use, and protect your personal data.",
+  robots: {
+    index: true,
+    follow: true,
+  },
+};
+
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">

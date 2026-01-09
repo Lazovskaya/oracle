@@ -9,8 +9,33 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Market Oracle - AI Stock & Crypto Trading Insights",
-  description: "AI-powered swing trading recommendations for stocks and cryptocurrencies. Get high-quality market analysis and trade ideas.",
+  metadataBase: new URL('https://oracle-blond.vercel.app'),
+  title: {
+    default: "Market Oracle - AI-Powered Trading Analysis for Stocks & Crypto",
+    template: "%s | Market Oracle",
+  },
+  description: "Professional swing trading analysis using Elliott Wave theory and AI. Get high-quality trade ideas for stocks and cryptocurrencies with clear entry points, stop losses, and profit targets.",
+  keywords: ["swing trading", "Elliott Wave", "trading ideas", "stock analysis", "crypto trading", "market analysis", "technical analysis", "AI trading"],
+  authors: [{ name: "Market Oracle" }],
+  creator: "Market Oracle",
+  publisher: "Market Oracle",
+  robots: {
+    index: true,
+    follow: true,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://oracle-blond.vercel.app',
+    siteName: 'Market Oracle',
+    title: 'Market Oracle - AI-Powered Trading Analysis',
+    description: 'Professional swing trading ideas using Elliott Wave theory and AI analysis',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Market Oracle - AI Trading Analysis',
+    description: 'Professional swing trading ideas for stocks & crypto',
+  },
 };
 
 export default function RootLayout({

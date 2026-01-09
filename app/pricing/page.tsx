@@ -1,5 +1,12 @@
 import SubscribeButton from './SubscribeButton';
 import LocaleSelector from '@/components/LocaleSelector';
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Pricing & Plans - Market Oracle Trading Intelligence",
+  description: "Choose your trading intelligence plan. Get access to professional Elliott Wave analysis, swing trading ideas with precise entry/stop/target levels. Monthly and yearly subscriptions available.",
+  keywords: "trading subscription, trading plans, market analysis pricing, trading intelligence",
+};
 
 export default function PricingPage() {
   const basicPriceId = process.env.STRIPE_BASIC_PRICE_ID || '';
