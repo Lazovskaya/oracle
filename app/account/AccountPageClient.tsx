@@ -559,11 +559,36 @@ export default function AccountPageClient({ user }: { user: User }) {
               <div className="space-y-4">
                 {savedAnalyses.map((analysis) => {
                   const targets = analysis.targets ? JSON.parse(analysis.targets) : [];
+                  const fullAnalysis = analysis.full_analysis ? JSON.parse(analysis.full_analysis) : null;
+                  
+                  // For symbol analyzer results, entry/stop are in the scenarios, not as simple fields
+                  // So we don't show them in the basic price grid since they vary by scenario
+                  const hasBasicEntry = analysis.entry && analysis.entry !== '' && !isNaN(Number(analysis.entry));
+                  const hasBasicStop = analysis.stop_loss && analysis.stop_loss !== '' && !isNaN(Number(analysis.stop_loss));
+                  
+                  // Helper function to format price strings - adds $ and formats decimals properly
+                  const formatPriceString = (priceStr: string): string => {
+                    if (!priceStr) return priceStr;
+                    
+                    // Handle ranges like "0.60-0.62"
+                    if (priceStr.includes('-')) {
+                      const parts = priceStr.split('-').map(p => p.trim());
+                      return parts.map(p => {
+                        const num = parseFloat(p);
+                        return isNaN(num) ? p : `$${num.toFixed(2)}`;
+                      }).join('-');
+                    }
+                    
+                    // Handle single values
+                    const num = parseFloat(priceStr);
+                    if (isNaN(num)) return priceStr;
+                    return `$${num.toFixed(2)}`;
+                  };
                   
                   return (
                     <div
                       key={analysis.id}
-                      className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+                      className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 space-y-6"
                     >
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex-1">
@@ -596,21 +621,25 @@ export default function AccountPageClient({ user }: { user: User }) {
 
                       <p className="text-gray-700 dark:text-gray-200 leading-relaxed mb-4">{analysis.market_context}</p>
 
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
+                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
                         {analysis.current_price && (
                           <div className="p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
                             <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Current</div>
                             <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.current_price).toFixed(2)}</div>
                           </div>
                         )}
-                        <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
-                          <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.entry ? Number(analysis.entry).toFixed(2) : '—'}</div>
-                        </div>
-                        <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop Loss</div>
-                          <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.stop_loss ? Number(analysis.stop_loss).toFixed(2) : '—'}</div>
-                        </div>
+                        {hasBasicEntry && (
+                          <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
+                            <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.entry).toFixed(2)}</div>
+                          </div>
+                        )}
+                        {hasBasicStop && (
+                          <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop Loss</div>
+                            <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.stop_loss).toFixed(2)}</div>
+                          </div>
+                        )}
                         <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
                           <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
                           <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
@@ -618,12 +647,89 @@ export default function AccountPageClient({ user }: { user: User }) {
                           </div>
                         </div>
                         {analysis.timeframe && (
-                          <div className="col-span-2 p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
+                          <div className="p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
                             <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Timeframe</div>
                             <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{analysis.timeframe}</div>
                           </div>
                         )}
                       </div>
+
+                      {/* Bull and Bear Scenarios */}
+                      {fullAnalysis?.scenarios && (
+                        <div className="space-y-4 mt-6">
+                          {/* Bull Case */}
+                          {fullAnalysis.scenarios.bull_case && (
+                            <div className="p-4 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
+                              <h5 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                <span>📈</span>
+                                Bull Case Scenario
+                              </h5>
+                              
+                              <div className="space-y-3">
+                                <div>
+                                  <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Condition:</div>
+                                  <div className="text-sm text-gray-900 dark:text-white">{fullAnalysis.scenarios.bull_case.condition}</div>
+                                </div>
+
+                                <div className="pt-3 border-t border-emerald-200 dark:border-emerald-800">
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                    <div className="p-2 rounded bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Entry Zone</div>
+                                      <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">{formatPriceString(fullAnalysis.scenarios.bull_case.entry_zone)}</div>
+                                    </div>
+                                    <div className="p-2 rounded bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Risk</div>
+                                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{fullAnalysis.scenarios.bull_case.risk?.toUpperCase()}</div>
+                                    </div>
+                                    <div className="p-2 rounded bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
+                                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Targets</div>
+                                      <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        {fullAnalysis.scenarios.bull_case.targets?.map((t: string) => formatPriceString(t)).join(' • ')}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Bear Case */}
+                          {fullAnalysis.scenarios.bear_case && (
+                            <div className="p-4 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
+                              <h5 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                                <span>📉</span>
+                                Bear Case Scenario
+                              </h5>
+                              
+                              <div className="space-y-3">
+                                <div>
+                                  <div className="text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Condition:</div>
+                                  <div className="text-sm text-gray-900 dark:text-white">{fullAnalysis.scenarios.bear_case.condition}</div>
+                                </div>
+
+                                <div className="pt-3 border-t border-red-200 dark:border-red-800">
+                                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
+                                    <div className="p-2 rounded bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Entry Zone</div>
+                                      <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">{formatPriceString(fullAnalysis.scenarios.bear_case.entry_zone)}</div>
+                                    </div>
+                                    <div className="p-2 rounded bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Risk</div>
+                                      <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">{fullAnalysis.scenarios.bear_case.risk?.toUpperCase()}</div>
+                                    </div>
+                                    <div className="p-2 rounded bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30">
+                                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Targets</div>
+                                      <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        {fullAnalysis.scenarios.bear_case.targets?.map((t: string) => formatPriceString(t)).join(' • ')}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                   );
                 })}

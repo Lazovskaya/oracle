@@ -43,12 +43,23 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  // Format price strings to add .00 decimal places
+  // Format price strings to add $ and format decimals properly
   const formatPriceString = (priceStr: string): string => {
     if (!priceStr) return priceStr;
     
-    // Match numbers in the string and format them
-    return priceStr.replace(/\b(\d+)(?!\.\d)/g, '$1.00');
+    // Handle ranges like "0.60-0.62" or "2635-2665"
+    if (priceStr.includes('-')) {
+      const parts = priceStr.split('-').map(p => p.trim());
+      return parts.map(p => {
+        const num = parseFloat(p);
+        return isNaN(num) ? p : `$${num.toFixed(2)}`;
+      }).join('-');
+    }
+    
+    // Handle single values
+    const num = parseFloat(priceStr);
+    if (isNaN(num)) return priceStr;
+    return `$${num.toFixed(2)}`;
   };
 
   const handleAnalyze = async () => {
