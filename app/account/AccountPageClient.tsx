@@ -489,22 +489,22 @@ export default function AccountPageClient({ user }: { user: User }) {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
                       <div>
                         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
-                        <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{idea.entry || '—'}</div>
+                        <div className="text-lg font-bold text-cyan-700 dark:text-cyan-400">{idea.entry || '—'}</div>
                       </div>
                       <div>
                         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop</div>
-                        <div className="text-lg font-bold text-red-600 dark:text-red-400">{idea.stop || '—'}</div>
+                        <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{idea.stop || '—'}</div>
                       </div>
                       <div className="col-span-2">
                         <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
-                        <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                        <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
                           {targets.length > 0 ? targets.join(' • ') : '—'}
                         </div>
                       </div>
                       {idea.timeframe && (
                         <div className="col-span-2">
                           <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Timeframe</div>
-                          <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{idea.timeframe}</div>
+                          <div className="text-lg font-bold text-slate-700 dark:text-slate-400">{idea.timeframe}</div>
                         </div>
                       )}
                     </div>
