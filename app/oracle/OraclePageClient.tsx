@@ -6,6 +6,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { Language, getTranslation } from "@/lib/i18n";
 import { formatPrice, formatChange } from "@/lib/priceService";
 import OracleIcon from "@/components/OracleIcon";
+import LocaleSelector from "@/components/LocaleSelector";
 import Link from "next/link";
 
 // Helper function to identify if a symbol is crypto or stock
@@ -332,6 +333,7 @@ export default function OraclePageClient({
             </div>
           </div>
           <div className="flex items-center gap-3 ml-auto">
+            <LocaleSelector />
             <a
               href="/promo"
               className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300"

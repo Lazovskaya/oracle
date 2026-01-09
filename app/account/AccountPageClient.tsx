@@ -611,6 +611,23 @@ export default function AccountPageClient({ user }: { user: User }) {
             )}
           </div>
         )}
+
+        {/* Footer Links */}
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 text-center">
+          <div className="flex items-center justify-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+            <a href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Terms of Service
+            </a>
+            <span>•</span>
+            <a href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Privacy Policy
+            </a>
+            <span>•</span>
+            <a href="mailto:wlazovskaya@gmail.com" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Contact Support
+            </a>
+          </div>
+        </div>
       </div>
     </main>
   );
