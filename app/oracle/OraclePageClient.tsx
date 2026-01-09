@@ -70,9 +70,20 @@ function formatField(raw: any): string {
   if (typeof raw === "number") return formatPriceVal(raw);
   
   if (typeof raw === "string") {
+    // Check if it's a range like "100-200"
     if (/^\d+(\.\d+)?\s*-\s*\d+(\.\d+)?$/.test(raw)) {
       return raw.split("-").map((s) => formatPriceVal(s.trim())).join(" — ");
     }
+    
+    // Check if it's a price-like string (digits with optional commas/decimals)
+    const cleaned = raw.replace(/[$,\s]/g, "");
+    if (/^\d+(\.\d+)?$/.test(cleaned)) {
+      const n = Number(cleaned);
+      if (Number.isFinite(n)) {
+        return formatPriceVal(n);
+      }
+    }
+    
     return raw;
   }
   
