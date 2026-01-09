@@ -769,19 +769,19 @@ export default function OraclePageClient({
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
                               <div>
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.entry}</div>
-                                <div className="text-lg font-bold text-cyan-700 dark:text-cyan-400">{entry}</div>
+                                <div className="text-lg font-mono font-medium text-gray-700 dark:text-gray-200">{entry}</div>
                               </div>
                               <div>
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.stop}</div>
-                                <div className="text-lg font-bold text-orange-600 dark:text-orange-400">{stop}</div>
+                                <div className="text-lg font-mono font-medium text-gray-600 dark:text-gray-300">{stop}</div>
                               </div>
                               <div className="col-span-2">
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.targets}</div>
-                                <div className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{targets.join(" • ")}</div>
+                                <div className="text-lg font-mono font-medium text-gray-800 dark:text-gray-100">{targets.join(" • ")}</div>
                               </div>
                               <div className="col-span-2">
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.timeframe}</div>
-                                <div className="text-lg font-bold text-slate-700 dark:text-slate-400">{timeframe}</div>
+                                <div className="text-lg font-medium text-gray-600 dark:text-gray-400">{timeframe}</div>
                               </div>
                             </div>
                           ) : (
