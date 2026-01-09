@@ -43,7 +43,10 @@ export async function POST(req: Request) {
       });
     }
 
-    const magicLink = `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/api/auth/verify?token=${token}`;
+    // Get the origin from the request
+    const { origin } = new URL(req.url);
+    const baseUrl = process.env.NEXT_PUBLIC_URL || origin;
+    const magicLink = `${baseUrl}/api/auth/verify?token=${token}`;
 
     // Send magic link via Resend
     try {
