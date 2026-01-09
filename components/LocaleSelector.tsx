@@ -71,7 +71,7 @@ export default function LocaleSelector({ initialLanguage = 'en', initialCountry 
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 p-4">
+          <div className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 p-4">
             {/* Language Selection */}
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
