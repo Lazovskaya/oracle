@@ -85,30 +85,30 @@ export default async function PromoPage() {
         </header>
 
         {/* Statistics Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 text-center">
-            <div className="text-4xl font-bold text-green-600 dark:text-green-400 mb-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-12">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 text-center">
+            <div className="text-3xl sm:text-4xl font-bold text-green-600 dark:text-green-400 mb-1 sm:mb-2">
               {winners.length}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wide">
               Winning Trades
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 text-center">
-            <div className="text-4xl font-bold text-blue-600 dark:text-blue-400 mb-2">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 text-center">
+            <div className="text-3xl sm:text-4xl font-bold text-blue-600 dark:text-blue-400 mb-1 sm:mb-2">
               {winRate}%
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wide">
               Win Rate
             </div>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-6 text-center">
-            <div className="text-4xl font-bold text-purple-600 dark:text-purple-400 mb-2">
+          <div className="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-800 p-4 sm:p-6 text-center">
+            <div className="text-3xl sm:text-4xl font-bold text-purple-600 dark:text-purple-400 mb-1 sm:mb-2">
               {historicalIdeas.length}
             </div>
-            <div className="text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wide">
+            <div className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 uppercase tracking-wide">
               Total Ideas Tracked
             </div>
           </div>
