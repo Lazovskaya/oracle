@@ -6,6 +6,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { Language, getTranslation } from "@/lib/i18n";
 import { formatPrice, formatChange } from "@/lib/priceService";
 import OracleIcon from "@/components/OracleIcon";
+import SymbolAnalyzer from "./SymbolAnalyzer";
 
 // Helper function to identify if a symbol is crypto or stock
 function isCryptoSymbol(symbol: string): boolean {
@@ -563,6 +564,11 @@ export default function OraclePageClient({
               </div>
             </div>
           </div>
+        </section>
+
+        {/* Custom Symbol Analyzer - PRO Feature */}
+        <section className="mb-6">
+          <SymbolAnalyzer isPro={isPremium} />
         </section>
 
         {!last ? (
