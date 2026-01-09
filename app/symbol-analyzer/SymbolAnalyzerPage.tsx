@@ -13,9 +13,17 @@ export default function SymbolAnalyzerPage({
     <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <Link href="/oracle" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-2 mb-4 text-sm">
-            ← Back to Oracle
-          </Link>
+          <div className="flex items-center justify-between mb-4">
+            <Link href="/oracle" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-2 text-sm">
+              ← Back to Oracle
+            </Link>
+            <Link href="/account" className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              <span>Account</span>
+            </Link>
+          </div>
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
