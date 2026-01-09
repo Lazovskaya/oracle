@@ -162,11 +162,14 @@ Now analyze: ${cleanSymbol}`;
         ],
         temperature: 0.7,
         max_tokens: 1500,
+        response_format: { type: "json_object" }
       }),
     });
 
     if (!response.ok) {
-      throw new Error(`OpenAI API error: ${response.statusText}`);
+      const errorData = await response.json().catch(() => ({}));
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${response.statusText} - ${JSON.stringify(errorData)}`);
     }
 
     const data = await response.json();
