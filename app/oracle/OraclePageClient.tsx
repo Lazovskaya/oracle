@@ -311,9 +311,9 @@ export default function OraclePageClient({
       <div className="max-w-6xl mx-auto">
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
+            <a href="/" className="w-12 h-12 rounded-lg bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-105 transition-all cursor-pointer">
               <OracleIcon className="w-7 h-7 text-white" />
-            </div>
+            </a>
             <div>
               <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
                 {t.title}

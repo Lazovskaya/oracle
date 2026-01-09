@@ -3,6 +3,7 @@ import { createClient } from '@libsql/client';
 import { cookies } from 'next/headers';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 const db = createClient({
   url: process.env.DATABASE_URL!,
