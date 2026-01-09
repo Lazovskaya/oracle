@@ -598,29 +598,29 @@ export default function AccountPageClient({ user }: { user: User }) {
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
                         {analysis.current_price && (
-                          <div>
+                          <div className="p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
                             <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Current</div>
-                            <div className="text-lg font-bold text-gray-600 dark:text-gray-400">${analysis.current_price}</div>
+                            <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.current_price).toFixed(2)}</div>
                           </div>
                         )}
-                        <div>
+                        <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
                           <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
-                          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">${analysis.entry || '—'}</div>
+                          <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.entry ? Number(analysis.entry).toFixed(2) : '—'}</div>
                         </div>
-                        <div>
+                        <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
                           <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop Loss</div>
-                          <div className="text-lg font-bold text-red-600 dark:text-red-400">${analysis.stop_loss || '—'}</div>
+                          <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.stop_loss ? Number(analysis.stop_loss).toFixed(2) : '—'}</div>
                         </div>
-                        <div>
+                        <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
                           <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
-                          <div className="text-lg font-bold text-green-600 dark:text-green-400">
-                            {targets.length > 0 ? targets.map((t: string) => `$${t}`).join(' / ') : '—'}
+                          <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
+                            {targets.length > 0 ? targets.map((t: string) => `$${Number(t).toFixed(2)}`).join(' • ') : '—'}
                           </div>
                         </div>
                         {analysis.timeframe && (
-                          <div className="col-span-2">
+                          <div className="col-span-2 p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
                             <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Timeframe</div>
-                            <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{analysis.timeframe}</div>
+                            <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{analysis.timeframe}</div>
                           </div>
                         )}
                       </div>
