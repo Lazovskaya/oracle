@@ -288,31 +288,31 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
                 <h5 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">📊 Key Price Levels</h5>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {analysis.current_price && (
-                    <div className="p-3 rounded-lg bg-gray-50 dark:bg-gray-800">
-                      <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Current</div>
-                      <div className="text-lg font-bold text-gray-900 dark:text-white">${analysis.current_price}</div>
+                    <div className="p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
+                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Current</div>
+                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.current_price.toFixed(2)}</div>
                     </div>
                   )}
                   {analysis.entry && (
-                    <div className="p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20">
-                      <div className="text-xs text-blue-600 dark:text-blue-400 mb-1">Entry</div>
-                      <div className="text-lg font-bold text-blue-900 dark:text-blue-300">${analysis.entry}</div>
+                    <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
+                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.entry}</div>
                     </div>
                   )}
                   {analysis.stop_loss && (
-                    <div className="p-3 rounded-lg bg-red-50 dark:bg-red-900/20">
-                      <div className="text-xs text-red-600 dark:text-red-400 mb-1">Stop Loss</div>
-                      <div className="text-lg font-bold text-red-900 dark:text-red-300">${analysis.stop_loss}</div>
+                    <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop Loss</div>
+                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.stop_loss}</div>
                     </div>
                   )}
                   {analysis.targets && analysis.targets.length > 0 && (
-                    <div className="p-3 rounded-lg bg-green-50 dark:bg-green-900/20">
-                      <div className="text-xs text-green-600 dark:text-green-400 mb-1">Targets</div>
-                      <div className="text-lg font-bold text-green-900 dark:text-green-300">
+                    <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
+                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
+                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
                         {analysis.targets.map((t, i) => (
                           <span key={i}>
                             ${t}
-                            {i < analysis.targets!.length - 1 && <span className="text-sm mx-1">/</span>}
+                            {i < analysis.targets!.length - 1 && <span className="text-sm mx-1">•</span>}
                           </span>
                         ))}
                       </div>
