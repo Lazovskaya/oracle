@@ -6,7 +6,7 @@ import LanguageSwitcher from "./LanguageSwitcher";
 import { Language, getTranslation } from "@/lib/i18n";
 import { formatPrice, formatChange } from "@/lib/priceService";
 import OracleIcon from "@/components/OracleIcon";
-import SymbolAnalyzer from "./SymbolAnalyzer";
+import Link from "next/link";
 
 // Helper function to identify if a symbol is crypto or stock
 function isCryptoSymbol(symbol: string): boolean {
@@ -566,10 +566,38 @@ export default function OraclePageClient({
           </div>
         </section>
 
-        {/* Custom Symbol Analyzer - PRO Feature */}
-        <section className="mb-6">
-          <SymbolAnalyzer isPro={isPremium} />
-        </section>
+        {/* Custom Symbol Analyzer Link - PRO Feature */}
+        {isPremium && (
+          <section className="mb-6">
+            <Link href="/symbol-analyzer" className="block p-6 rounded-lg border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 hover:shadow-lg transition-all group">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 text-white">
+                    <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      Custom Symbol Analyzer
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-400">
+                      Analyze any stock, ETF, or crypto with AI-powered insights
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="px-3 py-1 bg-purple-600 text-white text-xs font-bold rounded-full">
+                    PRO
+                  </span>
+                  <svg className="w-6 h-6 text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          </section>
+        )}
 
         {!last ? (
           <section className="rounded-lg border border-gray-200 dark:border-gray-800 p-12 bg-white dark:bg-gray-900">
