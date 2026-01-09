@@ -177,7 +177,7 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
           Enter any stock, ETF, or crypto symbol to get a personalized swing trading analysis
         </p>
         
-        <div className="flex gap-3">
+        <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             value={symbol}
@@ -190,7 +190,7 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
           <button
             onClick={handleAnalyze}
             disabled={loading || !symbol.trim()}
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+            className="w-full sm:w-auto px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
           >
             {loading ? (
               <>
