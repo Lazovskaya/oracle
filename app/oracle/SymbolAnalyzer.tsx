@@ -40,6 +40,8 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<SymbolAnalysis | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
 
   const handleAnalyze = async () => {
     if (!symbol.trim()) {
@@ -50,6 +52,7 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
     setLoading(true);
     setError(null);
     setAnalysis(null);
+    setSaveSuccess(false);
 
     try {
       const response = await fetch('/api/analyze-symbol', {
@@ -69,6 +72,32 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSave = async () => {
+    if (!analysis) return;
+
+    setSaving(true);
+    setSaveSuccess(false);
+
+    try {
+      const response = await fetch('/api/saved-symbol-analyses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ analysis }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save analysis');
+      }
+
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -183,19 +212,55 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
           {/* Header */}
           <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="flex items-start justify-between mb-4">
-              <div>
+              <div className="flex-1">
                 <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
                   {analysis.symbol}
                 </h4>
                 <p className="text-gray-600 dark:text-gray-400">{analysis.market_context}</p>
               </div>
-              <div className="text-right">
-                <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getConfidenceColor(analysis.confidence)}`}>
-                  {analysis.confidence?.toUpperCase()} confidence
-                </span>
-                <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-                  {analysis.timeframe}
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getConfidenceColor(analysis.confidence)}`}>
+                    {analysis.confidence?.toUpperCase()} confidence
+                  </span>
+                  <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                    {analysis.timeframe}
+                  </div>
                 </div>
+                <button
+                  onClick={handleSave}
+                  disabled={saving || saveSuccess}
+                  className={`px-4 py-2 rounded-lg font-semibold transition-all flex items-center gap-2 ${
+                    saveSuccess
+                      ? 'bg-green-600 text-white'
+                      : 'bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50'
+                  }`}
+                  title="Save this analysis"
+                >
+                  {saving ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      <span className="text-sm">Saving...</span>
+                    </>
+                  ) : saveSuccess ? (
+                    <>
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                      <span className="text-sm">Saved!</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+                      </svg>
+                      <span className="text-sm">Save</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 
