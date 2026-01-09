@@ -50,21 +50,21 @@ export default async function HomePage() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 mb-12">
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+          <a href="/methodology" className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer">
             <div className="text-4xl mb-4">📊</div>
             <h3 className="text-xl font-semibold mb-2">Market Analysis</h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
               Real-time market phase detection and wave structure analysis for informed trading decisions.
             </p>
-          </div>
+          </a>
 
-          <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700">
+          <a href="/promo" className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-gray-200 dark:border-gray-700 hover:shadow-2xl hover:scale-[1.02] transition-all cursor-pointer">
             <div className="text-4xl mb-4">🎯</div>
             <h3 className="text-xl font-semibold mb-2">Trade Ideas</h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm">
               Swing trading setups (2-6 weeks) with entry points, stop losses, and profit targets.
             </p>
-          </div>
+          </a>
         </div>
 
         <div className="text-center">
