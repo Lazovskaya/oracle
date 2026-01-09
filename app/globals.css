@@ -1,13 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --background-secondary: #F8F9FB;
-  --foreground: #0F172A;
-  --foreground-secondary: #475569;
-  --foreground-muted: #94A3B8;
-  --border: #E2E8F0;
-  --accent: #2563EB;
+  /* Modern neutral palette with warmer tones */
+  --background: #FAFAFA;
+  --background-secondary: #F5F5F7;
+  --foreground: #1C1C1E;
+  --foreground-secondary: #48484A;
+  --foreground-muted: #8E8E93;
+  --border: #E5E5EA;
+  
+  /* Modern accent colors - sophisticated teal/blue */
+  --accent-primary: #0A7EA4;
+  --accent-secondary: #06B6D4;
+  --accent-success: #059669;
+  --accent-warning: #D97706;
+  --accent-danger: #DC2626;
 }
 
 @theme inline {
@@ -18,13 +25,20 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0d1117;
-    --background-secondary: #161b22;
-    --foreground: #c9d1d9;
-    --foreground-secondary: #8b949e;
-    --foreground-muted: #6e7681;
-    --border: #30363d;
-    --accent: #2563EB;
+    /* Refined dark mode with better contrast */
+    --background: #111111;
+    --background-secondary: #1A1A1A;
+    --foreground: #EDEDED;
+    --foreground-secondary: #A1A1A6;
+    --foreground-muted: #6E6E73;
+    --border: #2C2C2E;
+    
+    /* Brighter accents for dark mode */
+    --accent-primary: #22D3EE;
+    --accent-secondary: #06B6D4;
+    --accent-success: #10B981;
+    --accent-warning: #F59E0B;
+    --accent-danger: #EF4444;
   }
 }
 
@@ -35,8 +49,27 @@ body {
   font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
   font-size: 15px;
   line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 * {
   border-color: var(--border);
+}
+
+/* Smoother animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { 
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

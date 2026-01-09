@@ -31,7 +31,7 @@ function formatPriceVal(v: any) {
     return new Intl.NumberFormat("en-US", { 
       style: "currency", 
       currency: "USD", 
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 2,
       maximumFractionDigits: 2 
     }).format(value);
   }
@@ -42,7 +42,7 @@ function formatPriceVal(v: any) {
     return new Intl.NumberFormat("en-US", { 
       style: "currency", 
       currency: "USD", 
-      minimumFractionDigits: 0,
+      minimumFractionDigits: 2,
       maximumFractionDigits: 2 
     }).format(n);
   }
@@ -70,9 +70,20 @@ function formatField(raw: any): string {
   if (typeof raw === "number") return formatPriceVal(raw);
   
   if (typeof raw === "string") {
+    // Check if it's a range like "100-200"
     if (/^\d+(\.\d+)?\s*-\s*\d+(\.\d+)?$/.test(raw)) {
       return raw.split("-").map((s) => formatPriceVal(s.trim())).join(" — ");
     }
+    
+    // Check if it's a price-like string (digits with optional commas/decimals)
+    const cleaned = raw.replace(/[$,\s]/g, "");
+    if (/^\d+(\.\d+)?$/.test(cleaned)) {
+      const n = Number(cleaned);
+      if (Number.isFinite(n)) {
+        return formatPriceVal(n);
+      }
+    }
+    
     return raw;
   }
   
@@ -767,21 +778,21 @@ export default function OraclePageClient({
                         <>
                           {isPremium || !isLoggedIn ? (
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
-                              <div>
+                              <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.entry}</div>
-                                <div className="text-lg font-bold text-blue-600 dark:text-blue-400">{entry}</div>
+                                <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{entry}</div>
                               </div>
-                              <div>
+                              <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.stop}</div>
-                                <div className="text-lg font-bold text-red-600 dark:text-red-400">{stop}</div>
+                                <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{stop}</div>
                               </div>
-                              <div className="col-span-2">
+                              <div className="col-span-2 p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.targets}</div>
-                                <div className="text-lg font-bold text-green-600 dark:text-green-400">{targets.join(" • ")}</div>
+                                <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{targets.join(" • ")}</div>
                               </div>
-                              <div className="col-span-2">
+                              <div className="col-span-2 p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
                                 <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase tracking-wide">{t.timeframe}</div>
-                                <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{timeframe}</div>
+                                <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{timeframe}</div>
                               </div>
                             </div>
                           ) : (
