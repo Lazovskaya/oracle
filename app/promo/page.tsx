@@ -1,5 +1,12 @@
 import { db } from "@/lib/db";
 import Link from "next/link";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Performance Track Record - Market Oracle Trading Results",
+  description: "Verified historical performance of Market Oracle swing trading ideas. See real outcomes, win rates, and risk-reward ratios for stock and crypto trade setups using Elliott Wave analysis.",
+  keywords: "trading performance, track record, verified results, trading history, Elliott Wave results",
+};
 
 export const revalidate = 3600; // Revalidate every hour
 
@@ -51,6 +58,19 @@ export default async function PromoPage() {
   return (
     <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">
       <div className="max-w-6xl mx-auto">
+        {/* Navigation */}
+        <div className="flex justify-between items-center mb-8">
+          <Link href="/oracle" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-2 text-sm">
+            ← Back to Oracle
+          </Link>
+          <a href="/account" className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>My Account</span>
+          </a>
+        </div>
+
         {/* Header */}
         <header className="text-center mb-12">
           <div className="inline-block mb-4 px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-sm font-medium">

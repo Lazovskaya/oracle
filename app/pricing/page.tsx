@@ -1,4 +1,12 @@
 import SubscribeButton from './SubscribeButton';
+import LocaleSelector from '@/components/LocaleSelector';
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Pricing & Plans - Market Oracle Trading Intelligence",
+  description: "Choose your trading intelligence plan. Get access to professional Elliott Wave analysis, swing trading ideas with precise entry/stop/target levels. Monthly and yearly subscriptions available.",
+  keywords: "trading subscription, trading plans, market analysis pricing, trading intelligence",
+};
 
 export default function PricingPage() {
   const basicPriceId = process.env.STRIPE_BASIC_PRICE_ID || '';
@@ -10,6 +18,15 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">
       <div className="max-w-6xl mx-auto">
+        <div className="flex justify-end items-center gap-3 mb-6">
+          <LocaleSelector />
+          <a href="/account" className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>My Account</span>
+          </a>
+        </div>
         <div className="text-center mb-12 space-y-3">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
             Choose Your Plan
@@ -267,6 +284,22 @@ export default function PricingPage() {
             <p className="text-sm text-gray-500 dark:text-gray-500 italic text-center mt-8">
               Think of it like reading a portfolio manager's letter: headlines are public, detailed positions are for subscribers.
             </p>
+          </div>
+        </div>
+
+        {/* Footer Links */}
+        <div className="mt-12 pt-6 border-t border-gray-200 dark:border-gray-800 text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+            By purchasing, you agree to our terms and privacy policy
+          </p>
+          <div className="flex items-center justify-center gap-4 text-sm">
+            <a href="/terms" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+              Terms of Service
+            </a>
+            <span className="text-gray-400">•</span>
+            <a href="/privacy" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+              Privacy Policy
+            </a>
           </div>
         </div>
       </div>

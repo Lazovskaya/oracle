@@ -8,6 +8,20 @@ import { redirect } from 'next/navigation';
 import { getUserByEmail, checkAndRevokeExpiredAccess } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authConfig';
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Latest Market Analysis & Trading Ideas | Market Oracle",
+  description: "Daily AI-powered market analysis with swing trading ideas for stocks and cryptocurrencies. Elliott Wave structure, entry points, stop losses, and profit targets for 2-6 week trades.",
+  keywords: "market analysis, trading ideas, swing trading, Elliott Wave, stock trading, crypto trading, technical analysis",
+  openGraph: {
+    title: "Market Oracle - Latest Trading Analysis",
+    description: "Daily market insights and swing trading ideas using Elliott Wave analysis",
+    url: "https://oracle-trade.vercel.app/oracle",
+    siteName: "Market Oracle",
+    type: "website",
+  },
+};
 
 export const revalidate = 60;
 

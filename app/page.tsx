@@ -1,9 +1,40 @@
 import OracleIcon from "@/components/OracleIcon";
+import { Metadata } from "next";
+import { cookies } from 'next/headers';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authConfig';
+import Link from 'next/link';
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: "Market Oracle - AI-Powered Swing Trading Ideas for Stocks & Crypto",
+  description: "Professional swing trading analysis (2-6 weeks) using Elliott Wave theory and AI. Get high-quality trade ideas for stocks and cryptocurrencies with clear entry points, stop losses, and profit targets.",
+  keywords: "swing trading, Elliott Wave, trading ideas, stock analysis, crypto trading, market analysis, technical analysis",
+  openGraph: {
+    title: "Market Oracle - AI-Powered Trading Analysis",
+    description: "Professional swing trading ideas using Elliott Wave theory and AI analysis",
+    url: "https://oracle-trade.vercel.app",
+    siteName: "Market Oracle",
+    type: "website",
+  },
+};
+
+export default async function HomePage() {
+  const cookieStore = await cookies();
+  const cookieEmail = cookieStore.get('user_email')?.value;
+  const session = await getServerSession(authOptions);
+  const isLoggedIn = !!(cookieEmail || session?.user?.email);
+
   return (
     <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
       <div className="max-w-4xl w-full">
+        <div className="flex justify-end mb-6">
+          <Link href={isLoggedIn ? "/account" : "/login"} className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span>{isLoggedIn ? 'My Account' : 'Login'}</span>
+          </Link>
+        </div>
         <div className="text-center mb-12">
           <div className="inline-flex items-center justify-center mb-6">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-2xl">
@@ -46,11 +77,27 @@ export default function HomePage() {
           <p className="text-sm text-gray-500 dark:text-gray-400 mt-6">
             Automated runs once daily at 09:00 UTC
           </p>
+          <div className="mt-6 flex items-center justify-center gap-6 text-sm">
+            <a href="/promo" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+              View Track Record
+            </a>
+            <span className="text-gray-400">•</span>
+            <a href="/pricing" className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
+              See Pricing
+            </a>
+          </div>
         </div>
 
         <footer className="mt-16 text-center text-xs text-gray-400 dark:text-gray-500">
-          <p>Built with Next.js • OpenAI • Turso Database</p>
-          <p className="mt-1">Deployed on Vercel</p>
+          <p>Elliott Wave analysis combined with AI-powered market insights</p>
+          <p className="mt-1">Educational content • Not financial advice</p>
+          <div className="mt-4 flex items-center justify-center gap-4">
+            <a href="/terms" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Terms</a>
+            <span>•</span>
+            <a href="/privacy" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Privacy</a>
+            <span>•</span>
+            <a href="mailto:trade.crypto.oracle@proton.me" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Contact</a>
+          </div>
         </footer>
       </div>
     </main>

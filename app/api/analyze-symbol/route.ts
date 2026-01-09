@@ -98,7 +98,11 @@ Requirements:
 3. Provide **conditional trade scenarios**, not direct buy/sell instructions.
 4. Include:
    - tradeable: true/false (whether the asset is suitable for swing trading now)
+   - current_price: estimated current price (number)
    - market_context: one sentence summary
+   - entry: suggested entry price or range (string)
+   - stop_loss: suggested stop loss price (string)
+   - targets: array of target prices (array of strings)
    - scenarios: 
        - bull_case: {condition, entry_zone, risk, targets}
        - bear_case: {condition, entry_zone, risk, targets}
@@ -107,7 +111,7 @@ Requirements:
    - timeframe: 2–6 weeks
 5. Format output **strictly as JSON**.
 6. Never use HTML, markdown, or emojis.
-7. Include numeric prices or percent ranges where appropriate.
+7. Include numeric prices for entry, stop_loss, targets, and current_price.
 8. **Do not give financial advice**; make clear this is informational and educational.
 9. If the symbol is invalid, illiquid, or has insufficient data, set "tradeable": false and explain in market_context.
 
@@ -116,6 +120,10 @@ Example output:
 {
   "symbol": "TSLA",
   "tradeable": true,
+  "current_price": 260,
+  "entry": "255-260",
+  "stop_loss": "240",
+  "targets": ["285", "300", "320"],
   "market_context": "High volatility, Wave 4 correction ending, trending higher",
   "scenarios": {
     "bull_case": {

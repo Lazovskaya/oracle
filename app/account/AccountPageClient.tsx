@@ -19,8 +19,23 @@ interface SavedIdea {
   saved_at: string;
 }
 
+interface SavedAnalysis {
+  id: number;
+  symbol: string;
+  current_price: number;
+  entry: string;
+  stop_loss: string;
+  targets: string;
+  market_context: string;
+  confidence: string;
+  timeframe: string;
+  full_analysis: string;
+  saved_at: string;
+}
+
 export default function AccountPageClient({ user }: { user: User }) {
   const [savedIdeas, setSavedIdeas] = useState<SavedIdea[]>([]);
+  const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
   const [loading, setLoading] = useState(true);
   const [tradingStyle, setTradingStyle] = useState(user.trading_style);
   const [updatingStyle, setUpdatingStyle] = useState(false);
@@ -29,7 +44,20 @@ export default function AccountPageClient({ user }: { user: User }) {
 
   useEffect(() => {
     fetchSavedIdeas();
+    if (user.subscription_tier === 'premium') {
+      fetchSavedAnalyses();
+    }
   }, []);
+
+  const fetchSavedAnalyses = async () => {
+    try {
+      const response = await fetch('/api/saved-symbol-analyses');
+      const data = await response.json();
+      setSavedAnalyses(data.analyses || []);
+    } catch (error) {
+      console.error('Error fetching saved analyses:', error);
+    }
+  };
 
   const fetchSavedIdeas = async () => {
     try {
@@ -52,6 +80,18 @@ export default function AccountPageClient({ user }: { user: User }) {
     } catch (error) {
       console.error('Error deleting idea:', error);
       alert('Failed to remove idea');
+    }
+  };
+
+  const handleDeleteAnalysis = async (id: number) => {
+    if (!confirm('Remove this analysis from your saved list?')) return;
+
+    try {
+      await fetch(`/api/saved-symbol-analyses?id=${id}`, { method: 'DELETE' });
+      setSavedAnalyses(savedAnalyses.filter(analysis => analysis.id !== id));
+    } catch (error) {
+      console.error('Error deleting analysis:', error);
+      alert('Failed to remove analysis');
     }
   };
 
@@ -198,6 +238,30 @@ export default function AccountPageClient({ user }: { user: User }) {
                   className="inline-block px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-bold hover:scale-105 transition-transform shadow-lg"
                 >
                   View Plans
+                </Link>
+              </div>
+            )}
+
+            {user.subscription_tier === 'premium' && (
+              <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                <Link
+                  href="/symbol-analyzer"
+                  className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-2 border-purple-200 dark:border-purple-800 hover:shadow-lg transition-all group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 text-white">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="font-semibold text-gray-900 dark:text-white text-sm">Custom Symbol Analyzer</div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">Analyze any symbol with AI insights</div>
+                    </div>
+                  </div>
+                  <svg className="w-5 h-5 text-purple-600 dark:text-purple-400 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
                 </Link>
               </div>
             )}
@@ -441,6 +505,128 @@ export default function AccountPageClient({ user }: { user: User }) {
               })}
             </div>
           )}
+        </div>
+
+        {/* Saved Symbol Analyses (PRO) */}
+        {user.subscription_tier === 'premium' && (
+          <div className="mb-6 p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Saved Symbol Analyses</h2>
+                <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">
+                  PRO
+                </span>
+              </div>
+              <Link
+                href="/symbol-analyzer"
+                className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 flex items-center gap-1"
+              >
+                <span>Analyze New Symbol</span>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+            </div>
+
+            {savedAnalyses.length === 0 ? (
+              <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <p>No saved analyses yet. Analyze a symbol to get started!</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {savedAnalyses.map((analysis) => {
+                  const targets = analysis.targets ? JSON.parse(analysis.targets) : [];
+                  
+                  return (
+                    <div
+                      key={analysis.id}
+                      className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900"
+                    >
+                      <div className="flex items-start justify-between gap-4 mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-2">
+                            <h3 className="text-xl font-semibold text-gray-900 dark:text-white">{analysis.symbol}</h3>
+                            <span className={`px-2.5 py-0.5 text-xs font-medium rounded-md border ${
+                              analysis.confidence === 'high'
+                                ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-800'
+                                : analysis.confidence === 'medium'
+                                ? 'bg-yellow-50 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-200 dark:border-yellow-800'
+                                : 'bg-gray-50 text-gray-700 dark:bg-gray-800 dark:text-gray-400 border-gray-200 dark:border-gray-700'
+                            }`}>
+                              {analysis.confidence?.toUpperCase()}
+                            </span>
+                          </div>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">
+                            Saved {formatDate(analysis.saved_at)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => handleDeleteAnalysis(analysis.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          title="Remove from saved"
+                        >
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      <p className="text-gray-700 dark:text-gray-200 leading-relaxed mb-4">{analysis.market_context}</p>
+
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
+                        {analysis.current_price && (
+                          <div>
+                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Current</div>
+                            <div className="text-lg font-bold text-gray-600 dark:text-gray-400">${analysis.current_price}</div>
+                          </div>
+                        )}
+                        <div>
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
+                          <div className="text-lg font-bold text-blue-600 dark:text-blue-400">${analysis.entry || '—'}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop Loss</div>
+                          <div className="text-lg font-bold text-red-600 dark:text-red-400">${analysis.stop_loss || '—'}</div>
+                        </div>
+                        <div>
+                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
+                          <div className="text-lg font-bold text-green-600 dark:text-green-400">
+                            {targets.length > 0 ? targets.map((t: string) => `$${t}`).join(' / ') : '—'}
+                          </div>
+                        </div>
+                        {analysis.timeframe && (
+                          <div className="col-span-2">
+                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Timeframe</div>
+                            <div className="text-lg font-bold text-purple-600 dark:text-purple-400">{analysis.timeframe}</div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Footer Links */}
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-800 text-center">
+          <div className="flex items-center justify-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+            <a href="/terms" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Terms of Service
+            </a>
+            <span>•</span>
+            <a href="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Privacy Policy
+            </a>
+            <span>•</span>
+            <a href="mailto:trade.crypto.oracle@proton.me" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Contact Support
+            </a>
+          </div>
         </div>
       </div>
     </main>
