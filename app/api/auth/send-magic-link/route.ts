@@ -114,8 +114,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ 
       success: true, 
       message: 'Magic link sent to your email',
-      // Show link in development for testing
-      magicLink: process.env.NODE_ENV === 'development' ? magicLink : undefined
+      // Return link for client-side handling (only used in dev)
+      magicLink: magicLink,
+      isDevelopment: process.env.NODE_ENV === 'development'
     });
   } catch (error: any) {
     console.error('Magic link error:', error);

@@ -2,6 +2,7 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import OracleIcon from '@/components/OracleIcon';
 
 function LoginForm() {
   const [email, setEmail] = useState('');
@@ -28,6 +29,10 @@ function LoginForm() {
         setSent(true);
         if (data.magicLink) {
           setMagicLink(data.magicLink);
+          // Auto-open in development mode
+          if (data.isDevelopment) {
+            window.open(data.magicLink, '_blank');
+          }
         }
       } else {
         alert(data.error || 'Failed to send magic link');
@@ -43,9 +48,12 @@ function LoginForm() {
     <main className="min-h-screen flex items-center justify-center px-6">
       <div className="max-w-md w-full space-y-8 animate-in fade-in zoom-in duration-700">
         <div className="text-center">
+          <div className="inline-flex items-center justify-center mb-6">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-2xl animate-float">
+              <OracleIcon className="w-12 h-12 text-white" />
+            </div>
+          </div>
           <h1 className="text-5xl font-black bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-            <span className="inline-block animate-float text-6xl">📡</span>
-            <br />
             Market Oracle
           </h1>
           <p className="text-gray-600 dark:text-gray-400 text-lg">
