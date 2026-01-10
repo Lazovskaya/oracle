@@ -233,7 +233,7 @@ export default async function OraclePage() {
       prices={prices}
       translations={translations}
       isLoggedIn={!!user}
-      subscriptionTier={(user?.subscription_tier || 'free') as 'free' | 'premium'}
+      subscriptionTier={(user?.subscription_tier || 'free') as 'free' | 'premium' | 'pro'}
       oracleRunId={last?.id}
       stylePredictions={stylePredictions}
       userTradingStyle={userStyle}

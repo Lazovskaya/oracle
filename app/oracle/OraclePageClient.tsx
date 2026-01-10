@@ -110,7 +110,7 @@ export default function OraclePageClient({
   prices: any;
   translations: { en: string; ru: string; fr: string; es: string; zh: string };
   isLoggedIn: boolean;
-  subscriptionTier: 'free' | 'premium';
+  subscriptionTier: 'free' | 'premium' | 'pro';
   oracleRunId?: number;
   stylePredictions?: Record<string, { parsed: any; ideas: any[] }>;
   userTradingStyle?: 'conservative' | 'balanced' | 'aggressive';
@@ -130,7 +130,8 @@ export default function OraclePageClient({
   const [confidenceFilter, setConfidenceFilter] = useState<'all' | 'low' | 'medium' | 'high'>('all');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [stylePredictions, setStylePredictions] = useState<Record<string, { parsed: any; ideas: any[] }>>(initialStylePredictions);
-  const isPremium = subscriptionTier === 'premium';
+  const isPremium = subscriptionTier === 'premium' || subscriptionTier === 'pro' || isAdmin;
+  const isPro = subscriptionTier === 'pro' || isAdmin;
   const isUSMarketOnly = process.env.NEXT_PUBLIC_US_MARKET_ONLY === 'true';
   const t = getTranslation(isUSMarketOnly ? 'en' : lang);
 
@@ -598,7 +599,7 @@ export default function OraclePageClient({
         </section>
 
         {/* Custom Symbol Analyzer Link - PRO Feature */}
-        {isPremium && (
+        {isPro && (
           <section className="mb-6">
             <Link href="/symbol-analyzer" className="block p-6 rounded-lg border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 hover:shadow-lg transition-all group">
               <div className="flex items-center justify-between">

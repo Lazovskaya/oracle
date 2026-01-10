@@ -8,7 +8,7 @@ const authDb = createClient({
 export interface User {
   id: number;
   email: string;
-  subscription_tier: 'free' | 'premium';
+  subscription_tier: 'free' | 'premium' | 'pro';
   subscription_status: 'active' | 'canceled' | 'expired' | null;
   stripe_customer_id: string | null;
   created_at: string;
@@ -42,7 +42,7 @@ export async function getUserByEmail(email: string): Promise<User | null> {
 }
 
 export async function createUser(email: string): Promise<User> {
-  const isAdmin = email === 'wlazovskaya@gmail.com';
+  const isAdmin = email === 'admin@go.go';
   const result = await authDb.execute({
     sql: 'INSERT INTO users (email, subscription_tier, is_admin) VALUES (?, ?, ?) RETURNING *',
     args: [email, 'free', isAdmin ? 1 : 0],

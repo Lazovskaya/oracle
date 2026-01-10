@@ -2,10 +2,11 @@
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   email TEXT UNIQUE NOT NULL,
-  subscription_tier TEXT DEFAULT 'free', -- 'free' or 'premium'
+  subscription_tier TEXT DEFAULT 'free', -- 'free', 'premium', or 'pro'
   subscription_status TEXT, -- 'active', 'canceled', 'expired'
   stripe_customer_id TEXT,
   subscription_end_date DATETIME,
+  is_admin INTEGER DEFAULT 0, -- 0 = regular user, 1 = admin
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
