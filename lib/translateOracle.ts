@@ -6,13 +6,14 @@ const openai = new OpenAI({
 
 const TRANSLATION_PROMPTS = {
   ru: `Translate the following trading oracle analysis from English to Russian. Maintain all technical terms, symbol names, and numerical values exactly as they are. Keep the JSON structure intact. Only translate the text fields like market_phase, wave_structure, rationale, risk_note, and bias labels.`,
+  fr: `Translate the following trading oracle analysis from English to French. Maintain all technical terms, symbol names, and numerical values exactly as they are. Keep the JSON structure intact. Only translate the text fields like market_phase, wave_structure, rationale, risk_note, and bias labels.`,
   es: `Translate the following trading oracle analysis from English to Spanish. Maintain all technical terms, symbol names, and numerical values exactly as they are. Keep the JSON structure intact. Only translate the text fields like market_phase, wave_structure, rationale, risk_note, and bias labels.`,
   zh: `Translate the following trading oracle analysis from English to Simplified Chinese. Maintain all technical terms, symbol names, and numerical values exactly as they are. Keep the JSON structure intact. Only translate the text fields like market_phase, wave_structure, rationale, risk_note, and bias labels.`,
 };
 
 export async function translateOracleResult(
   englishResult: string,
-  targetLang: 'ru' | 'es' | 'zh'
+  targetLang: 'ru' | 'fr' | 'es' | 'zh'
 ): Promise<string> {
   try {
     const prompt = TRANSLATION_PROMPTS[targetLang];
@@ -51,18 +52,20 @@ export async function translateOracleResult(
 
 export async function translateOracleToAllLanguages(englishResult: string): Promise<{
   ru: string;
+  fr: string;
   es: string;
   zh: string;
 }> {
-  console.log('Starting translation to all languages...');
+  console.log('Starting translation to all languages (RU, FR, ES, ZH)...');
   
-  const [ru, es, zh] = await Promise.all([
+  const [ru, fr, es, zh] = await Promise.all([
     translateOracleResult(englishResult, 'ru'),
+    translateOracleResult(englishResult, 'fr'),
     translateOracleResult(englishResult, 'es'),
     translateOracleResult(englishResult, 'zh'),
   ]);
 
   console.log('All translations completed');
   
-  return { ru, es, zh };
+  return { ru, fr, es, zh };
 }

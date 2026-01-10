@@ -68,16 +68,16 @@ async function generateForStyle(
       market_phase = raw.split("\n")[0].slice(0, 200);
     }
 
-    console.log(`Translating ${style} result to RU, ES, ZH...`);
+    console.log(`Translating ${style} result to RU, FR, ES, ZH...`);
     const translations = await translateOracleToAllLanguages(raw);
     console.log(`Translation completed for ${style}`);
 
     await db.execute({
       sql: `
-        INSERT INTO oracle_runs (run_date, market_phase, result, result_ru, result_es, result_zh, trading_style, asset_preference, model_used)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO oracle_runs (run_date, market_phase, result, result_ru, result_fr, result_es, result_zh, trading_style, asset_preference, model_used)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
-      args: [run_date, market_phase, raw, translations.ru, translations.es, translations.zh, style, assetPref, modelUsed],
+      args: [run_date, market_phase, raw, translations.ru, translations.fr, translations.es, translations.zh, style, assetPref, modelUsed],
     });
 
     console.log(`✅ Stored ${style} + ${assetPref} predictions`);
