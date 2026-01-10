@@ -393,10 +393,13 @@ export default function OraclePageClient({
           </div>
         </header>
 
-        {/* Prediction Preferences - Quick Switch */}
-        <section className="mb-6 p-4 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-            <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Preferences</h3>
+        {/* Trading Lens - Strategy Selection */}
+        <section className="mb-6 p-6 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Trading Lens</h3>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Choose your trading approach and filter setups</p>
+            </div>
             {isAdmin && (
               <button
                 onClick={handleRefreshWithPreferences}
@@ -423,178 +426,209 @@ export default function OraclePageClient({
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Trading Style */}
-            <div>
-              <label className="text-xs text-gray-600 dark:text-gray-400 mb-2 block">Style</label>
-              <div className="flex gap-1.5">
-                <button
-                  onClick={() => handleStyleSwitch('conservative')}
-                  disabled={isRefreshing}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    tradingStyle === 'conservative'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isRefreshing && tradingStyle !== 'conservative' ? '🛡️ Conservative' : '🛡️ Conservative'}
-                </button>
+          {/* Primary Filters - Trading Strategy */}
+          <div className="mb-5">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-3 block">Trading Strategy</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button
+                onClick={() => handleStyleSwitch('conservative')}
+                disabled={isRefreshing}
+                className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                  tradingStyle === 'conservative'
+                    ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-md'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-2xl">🛡️</span>
+                  <span className="font-semibold">Capital Protection</span>
+                  <span className="text-xs opacity-80">Lower risk, steady gains</span>
+                </div>
+              </button>
 
-                <button
-                  onClick={() => handleStyleSwitch('balanced')}
-                  disabled={isRefreshing}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    tradingStyle === 'balanced'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isRefreshing && tradingStyle !== 'balanced' ? '⚖️ Balanced' : '⚖️ Balanced'}
-                </button>
+              <button
+                onClick={() => handleStyleSwitch('balanced')}
+                disabled={isRefreshing}
+                className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                  tradingStyle === 'balanced'
+                    ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-md'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-2xl">⚖️</span>
+                  <span className="font-semibold">Trend Following</span>
+                  <span className="text-xs opacity-80">Balanced risk/reward</span>
+                </div>
+              </button>
 
-                <button
-                  onClick={() => handleStyleSwitch('aggressive')}
-                  disabled={isRefreshing}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    tradingStyle === 'aggressive'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                >
-                  {isRefreshing && tradingStyle !== 'aggressive' ? '🚀 Aggressive' : '🚀 Aggressive'}
-                </button>
-              </div>
+              <button
+                onClick={() => handleStyleSwitch('aggressive')}
+                disabled={isRefreshing}
+                className={`px-4 py-3 rounded-lg text-sm font-medium transition-all ${
+                  tradingStyle === 'aggressive'
+                    ? 'bg-gradient-to-br from-blue-600 to-blue-700 text-white shadow-md'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700'
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+              >
+                <div className="flex flex-col items-center gap-1">
+                  <span className="text-2xl">🚀</span>
+                  <span className="font-semibold">Momentum Hunt</span>
+                  <span className="text-xs opacity-80">High risk, high reward</span>
+                </div>
+              </button>
             </div>
+          </div>
 
-            {/* Bias Filter */}
-            <div>
-              <label className="text-xs text-gray-600 dark:text-gray-400 mb-2 block">Direction</label>
-              <div className="flex gap-1.5">
-                <button
-                  onClick={() => setBiasFilter('all')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    biasFilter === 'all'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  🎯 All
-                </button>
+          {/* Secondary Filters - Refine Results */}
+          <div className="pt-4 border-t border-gray-100 dark:border-gray-800">
+            <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-3 block uppercase tracking-wider">Refine Results</label>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* Market Stance */}
+              <div>
+                <label className="text-xs text-gray-500 dark:text-gray-500 mb-2 block">Market Stance</label>
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setBiasFilter('all')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      biasFilter === 'all'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    🎯 All
+                  </button>
 
-                <button
-                  onClick={() => setBiasFilter('bullish')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    biasFilter === 'bullish'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  📈 Bullish
-                </button>
+                  <button
+                    onClick={() => setBiasFilter('bullish')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      biasFilter === 'bullish'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    📈 Long
+                  </button>
 
-                <button
-                  onClick={() => setBiasFilter('bearish')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    biasFilter === 'bearish'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  📉 Bearish
-                </button>
+                  <button
+                    onClick={() => setBiasFilter('bearish')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      biasFilter === 'bearish'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    📉 Short
+                  </button>
+                </div>
+              </div>
+
+              {/* Asset Type */}
+              <div>
+                <label className="text-xs text-gray-500 dark:text-gray-500 mb-2 block">Asset Type</label>
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setAssetPreference('both')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      assetPreference === 'both'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    🔄 Both
+                  </button>
+
+                  <button
+                    onClick={() => setAssetPreference('crypto')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      assetPreference === 'crypto'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    ₿ Crypto
+                  </button>
+
+                  <button
+                    onClick={() => setAssetPreference('stocks')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      assetPreference === 'stocks'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    📊 Stocks
+                  </button>
+                </div>
+              </div>
+
+              {/* Signal Strength */}
+              <div>
+                <label className="text-xs text-gray-500 dark:text-gray-500 mb-2 block">Signal Strength</label>
+                <div className="flex gap-1.5">
+                  <button
+                    onClick={() => setConfidenceFilter('all')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      confidenceFilter === 'all'
+                        ? 'bg-blue-600 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    All
+                  </button>
+
+                  <button
+                    onClick={() => setConfidenceFilter('low')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      confidenceFilter === 'low'
+                        ? 'bg-yellow-500 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    🟡 Early
+                  </button>
+
+                  <button
+                    onClick={() => setConfidenceFilter('medium')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      confidenceFilter === 'medium'
+                        ? 'bg-orange-500 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    🟠 Confirmed
+                  </button>
+
+                  <button
+                    onClick={() => setConfidenceFilter('high')}
+                    className={`flex-1 px-2 py-2 rounded text-xs font-medium transition-all ${
+                      confidenceFilter === 'high'
+                        ? 'bg-red-500 text-white shadow-sm'
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    }`}
+                  >
+                    🔴 High
+                  </button>
+                </div>
               </div>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-            {/* Asset Preference */}
-            <div>
-              <label className="text-xs text-gray-600 dark:text-gray-400 mb-2 block">Assets</label>
-              <div className="flex gap-1.5">
-                <button
-                  onClick={() => setAssetPreference('crypto')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    assetPreference === 'crypto'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  ₿ Crypto
-                </button>
-
-                <button
-                  onClick={() => setAssetPreference('stocks')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    assetPreference === 'stocks'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  📈 Stocks
-                </button>
-
-                <button
-                  onClick={() => setAssetPreference('both')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    assetPreference === 'both'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  🔄 Both
-                </button>
-              </div>
-            </div>
-
-            {/* Confidence Filter */}
-            <div>
-              <label className="text-xs text-gray-600 dark:text-gray-400 mb-2 block">Confidence</label>
-              <div className="flex gap-1.5">
-                <button
-                  onClick={() => setConfidenceFilter('all')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    confidenceFilter === 'all'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  🎯 All
-                </button>
-
-                <button
-                  onClick={() => setConfidenceFilter('low')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    confidenceFilter === 'low'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  🔵 Low
-                </button>
-
-                <button
-                  onClick={() => setConfidenceFilter('medium')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    confidenceFilter === 'medium'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  🟡 Medium
-                </button>
-
-                <button
-                  onClick={() => setConfidenceFilter('high')}
-                  className={`flex-1 px-2 py-1.5 rounded text-xs font-medium transition-all ${
-                    confidenceFilter === 'high'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  🟢 High
-                </button>
-              </div>
-            </div>
+          {/* Results Summary */}
+          <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              Showing <span className="font-semibold text-gray-900 dark:text-white">{filteredIdeas.length}</span> {
+                confidenceFilter === 'high' ? 'high-conviction' :
+                confidenceFilter === 'medium' ? 'confirmed' :
+                confidenceFilter === 'low' ? 'early-stage' : ''
+              } {
+                tradingStyle === 'conservative' ? 'capital protection' :
+                tradingStyle === 'balanced' ? 'trend following' :
+                tradingStyle === 'aggressive' ? 'momentum' : ''
+              } setup{filteredIdeas.length !== 1 ? 's' : ''}
+              {biasFilter !== 'all' && ` (${biasFilter === 'bullish' ? 'Long only' : 'Short only'})`}
+              {assetPreference !== 'both' && ` in ${assetPreference === 'crypto' ? 'Crypto' : 'Stocks'}`}
+            </p>
           </div>
         </section>
 
