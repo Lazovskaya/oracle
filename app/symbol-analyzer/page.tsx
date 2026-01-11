@@ -3,7 +3,12 @@ import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authConfig';
-import SymbolAnalyzerPage from './SymbolAnalyzerPage';
+import dynamic from 'next/dynamic';
+import { SymbolAnalyzerSkeleton } from '@/components/skeletons/LoadingSkeletons';
+
+const SymbolAnalyzerPage = dynamic(() => import('./SymbolAnalyzerPage'), {
+  loading: () => <SymbolAnalyzerSkeleton />,
+});
 
 export default async function SymbolAnalyzer() {
   const cookieStore = await cookies();

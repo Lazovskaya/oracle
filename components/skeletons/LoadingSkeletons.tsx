@@ -109,3 +109,43 @@ export function AccountPageSkeleton() {
     </div>
   );
 }
+
+// Skeleton for symbol analyzer page
+export function SymbolAnalyzerSkeleton() {
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 px-6 py-12">
+      <div className="max-w-6xl mx-auto">
+        <div className="animate-pulse">
+          <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded w-1/3 mb-8"></div>
+          
+          {/* Analyzer form skeleton */}
+          <div className="bg-white dark:bg-slate-900 rounded-lg p-6 mb-6">
+            <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded w-1/4 mb-4"></div>
+            <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded w-full mb-4"></div>
+            <div className="h-10 bg-blue-200 dark:bg-blue-800 rounded w-32"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Skeleton for login page
+export function LoginPageSkeleton() {
+  return (
+    <main className="min-h-screen flex items-center justify-center px-6">
+      <div className="max-w-md w-full">
+        <div className="animate-pulse text-center">
+          <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl mx-auto mb-6"></div>
+          <div className="h-12 bg-gray-200 dark:bg-gray-800 rounded w-3/4 mx-auto mb-4"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded w-1/2 mx-auto mb-8"></div>
+          
+          <div className="bg-white/50 dark:bg-gray-900/50 rounded-3xl p-8">
+            <div className="h-10 bg-gray-200 dark:bg-gray-800 rounded w-full mb-4"></div>
+            <div className="h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl w-full"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

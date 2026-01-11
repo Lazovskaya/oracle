@@ -85,7 +85,7 @@ export function CardHeader({ symbol, badge, children }: CardHeaderProps) {
       case 'medium':
         return 'bg-orange-500/10 text-orange-400 border-orange-500/20';
       case 'low':
-        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20';
+        return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
       case 'bullish':
         return 'bg-green-50 text-green-700 border-green-200';
       case 'bearish':

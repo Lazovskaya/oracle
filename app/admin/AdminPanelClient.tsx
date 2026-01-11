@@ -339,11 +339,11 @@ export default function AdminPanelClient({ user }: AdminPanelClientProps) {
 
           {/* Refresh Error Display */}
           {refreshError && (
-            <div className="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
-              <h3 className="font-semibold text-yellow-900 dark:text-yellow-100 mb-2">
+            <div className="mt-6 p-4 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-lg">
+              <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-2">
                 ⚠️ Rate Limited or Error
               </h3>
-              <div className="text-sm text-yellow-800 dark:text-yellow-200">
+              <div className="text-sm text-amber-800 dark:text-amber-200">
                 {refreshError}
               </div>
             </div>
