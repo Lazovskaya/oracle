@@ -212,6 +212,9 @@ export default async function OraclePage() {
     }
   }
 
+  // Get user language preference from cookie (no localStorage flash)
+  const userLang = cookieStore.get('user_language')?.value as 'en' | 'ru' | 'es' | 'zh' | 'fr' || 'en';
+
   // Prepare translations object
   const translations = {
     en: last?.result || '',
@@ -259,6 +262,7 @@ export default async function OraclePage() {
       ideas={ideas}
       prices={prices}
       translations={translations}
+      initialLanguage={userLang}
       isLoggedIn={!!user}
       subscriptionTier={(user?.subscription_tier || 'free') as 'free' | 'premium' | 'pro'}
       oracleRunId={last?.id}

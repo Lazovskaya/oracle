@@ -4,6 +4,7 @@ import { OracleRun } from "@/types/oracle";
 import RunButton from "./RunButton";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { Language, getTranslation } from "@/lib/i18n";
+import { setLanguagePreference } from "@/lib/translationLoader";
 import { formatPrice, formatChange } from "@/lib/priceService";
 import OracleIcon from "@/components/OracleIcon";
 import LocaleSelector from "@/components/LocaleSelector";
@@ -97,6 +98,7 @@ export default function OraclePageClient({
   ideas, 
   prices,
   translations,
+  initialLanguage = 'en',
   isLoggedIn,
   subscriptionTier,
   oracleRunId,
@@ -110,6 +112,7 @@ export default function OraclePageClient({
   ideas: any[];
   prices: any;
   translations: { en: string; ru: string; fr: string; es: string; zh: string };
+  initialLanguage?: Language;
   isLoggedIn: boolean;
   subscriptionTier: 'free' | 'premium' | 'pro';
   oracleRunId?: number;
@@ -118,7 +121,7 @@ export default function OraclePageClient({
   isAdmin?: boolean;
   userEmail?: string;
 }) {
-  const [lang, setLang] = useState<Language>('en');
+  const [lang, setLang] = useState<Language>(initialLanguage);
   const [showWaveDetails, setShowWaveDetails] = useState(false);
   const [currentParsed, setCurrentParsed] = useState(parsed);
   const [currentIdeas, setCurrentIdeas] = useState(ideas);
@@ -142,6 +145,7 @@ export default function OraclePageClient({
   // Re-parse when language changes
   const handleLanguageChange = (newLang: Language) => {
     setLang(newLang);
+    setLanguagePreference(newLang); // Save to cookie (no localStorage flash!)
     
     // Parse the translated result
     const translatedResult = translations[newLang];
@@ -166,13 +170,8 @@ export default function OraclePageClient({
     }
   };
 
-  // Listen for language changes from LocaleSelector
+  // Listen for language changes from LocaleSelector (no localStorage, use cookie)
   useEffect(() => {
-    const savedLang = localStorage.getItem('user_language') as Language;
-    if (savedLang && savedLang !== lang) {
-      handleLanguageChange(savedLang);
-    }
-
     // Listen for custom language change events
     const handleLanguageChangeEvent = (e: CustomEvent) => {
       if (e.detail?.language) {
