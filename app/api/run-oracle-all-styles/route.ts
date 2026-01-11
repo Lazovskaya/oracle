@@ -53,73 +53,68 @@ async function generateForStyle(
   console.log(`\n=== Generating ${style.toUpperCase()} predictions ===`);
   
   // Generate for both asset preferences
-  const assetPreferences: ('crypto' | 'stocks' | 'both')[] = ['both'];
+  const assetPref = 'both';
   
-  for (const assetPref of assetPreferences) {
-    console.log(`Style: ${style}, Assets: ${assetPref}`);
-    
-    // Determine asset types
-    const assetTypes: ('crypto' | 'stock' | 'etf')[] = 
-      assetPref === 'crypto' ? ['crypto'] :
-      assetPref === 'stocks' ? ['stock', 'etf'] :
-      ['crypto', 'stock', 'etf'];
-    
-    // Get filter strategy based on trading style
-    const filterStrategy = getFilterStrategy(style, assetPref);
-    
-    // Fetch curated market snapshot
-    const marketAssets = await getMarketSnapshot({
-      strategy: filterStrategy,
-      assetTypes,
-      limit: 25,
-      tradingStyle: style
-    });
-    
-    console.log(`[${style}] Fetched ${marketAssets.length} market assets for analysis`);
-    
-    // Format market snapshot for prompt
-    const marketSnapshotText = formatMarketSnapshotForPrompt(marketAssets);
-    
-    // Get model for prompt optimization
-    const requested = process.env.OPENAI_MODEL ?? "gpt-5-mini";
-    const candidates = [requested, ...FALLBACK_MODELS.filter(m => m !== requested)];
-    const model = candidates[0]; // Use first model in fallback chain
-    
-    const prompt = buildOraclePrompt(marketSnapshotText, style, assetPref, model);
-    const { text: raw, modelUsed } = await callLLM(prompt, preferredModel);
+  console.log(`Style: ${style}, Assets: ${assetPref}`);
+  
+  // Determine asset types (both crypto and stocks)
+  const assetTypes: ('crypto' | 'stock' | 'etf')[] = ['crypto', 'stock', 'etf'];
+  
+  // Get filter strategy based on trading style
+  const filterStrategy = getFilterStrategy(style, assetPref);
+  
+  // Fetch curated market snapshot
+  const marketAssets = await getMarketSnapshot({
+    strategy: filterStrategy,
+    assetTypes,
+    limit: 25,
+    tradingStyle: style
+  });
+  
+  console.log(`[${style}] Fetched ${marketAssets.length} market assets for analysis`);
+  
+  // Format market snapshot for prompt
+  const marketSnapshotText = formatMarketSnapshotForPrompt(marketAssets);
+  
+  // Get model for prompt optimization
+  const requested = process.env.OPENAI_MODEL ?? "gpt-5-mini";
+  const candidates = [requested, ...FALLBACK_MODELS.filter(m => m !== requested)];
+  const model = candidates[0]; // Use first model in fallback chain
+  
+  const prompt = buildOraclePrompt(marketSnapshotText, style, assetPref, model);
+  const { text: raw, modelUsed } = await callLLM(prompt, preferredModel);
 
-    let market_phase: string | null = null;
-    let ideasCount = 0;
-    try {
-      const parsed = JSON.parse(raw);
-      market_phase = parsed.market_phase ?? null;
-      ideasCount = Array.isArray(parsed.ideas) ? parsed.ideas.length : 0;
-    } catch {
-      market_phase = raw.split("\n")[0].slice(0, 200);
-    }
-
-    let translations = { ru: '', fr: '', es: '', zh: '' };
-    
-    if (!englishOnly) {
-      console.log(`Translating ${style} result to RU, FR, ES, ZH...`);
-      translations = await translateOracleToAllLanguages(raw);
-      console.log(`Translation completed for ${style}`);
-    } else {
-      console.log(`Skipping translations for ${style} (English only mode)`);
-    }
-
-    await db.execute({
-      sql: `
-        INSERT INTO oracle_runs (run_date, market_phase, result, result_ru, result_fr, result_es, result_zh, trading_style, asset_preference, model_used)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `,
-      args: [run_date, market_phase, raw, translations.ru, translations.fr, translations.es, translations.zh, style, assetPref, modelUsed],
-    });
-
-    console.log(`✅ Stored ${style} + ${assetPref} predictions (${ideasCount} ideas)`);
-    
-    return { style, ideasCount };
+  let market_phase: string | null = null;
+  let ideasCount = 0;
+  try {
+    const parsed = JSON.parse(raw);
+    market_phase = parsed.market_phase ?? null;
+    ideasCount = Array.isArray(parsed.ideas) ? parsed.ideas.length : 0;
+  } catch {
+    market_phase = raw.split("\n")[0].slice(0, 200);
   }
+
+  let translations = { ru: '', fr: '', es: '', zh: '' };
+  
+  if (!englishOnly) {
+    console.log(`Translating ${style} result to RU, FR, ES, ZH...`);
+    translations = await translateOracleToAllLanguages(raw);
+    console.log(`Translation completed for ${style}`);
+  } else {
+    console.log(`Skipping translations for ${style} (English only mode)`);
+  }
+
+  await db.execute({
+    sql: `
+      INSERT INTO oracle_runs (run_date, market_phase, result, result_ru, result_fr, result_es, result_zh, trading_style, asset_preference, model_used)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    args: [run_date, market_phase, raw, translations.ru, translations.fr, translations.es, translations.zh, style, assetPref, modelUsed],
+  });
+
+  console.log(`✅ Stored ${style} + ${assetPref} predictions (${ideasCount} ideas)`);
+  
+  return { style, ideasCount };
 }
 
 export async function POST(req: Request) {
