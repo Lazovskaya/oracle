@@ -3,7 +3,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { buildOraclePrompt } from "@/lib/oraclePrompt";
-import { fetchMultiplePrices } from "@/lib/priceService";
+import { getMarketSnapshot, formatMarketSnapshotForPrompt, getFilterStrategy } from "@/lib/marketFilterService";
 import { translateOracleToAllLanguages } from "@/lib/translateOracle";
 import { cookies } from "next/headers";
 import { getUserByEmail } from "@/lib/auth";
@@ -11,19 +11,19 @@ import OpenAI from "openai";
 
 export const runtime = "nodejs";
 
-const FALLBACK_MODELS = ["gpt-4.1-mini", "gpt-4o-mini", "gpt-4o"];
+const FALLBACK_MODELS = ["gpt-5-mini", "gpt-4o-mini", "gpt-4o", "gpt-4"];
 
 /**
  * Call OpenAI with basic retry + fallback on empty response.
  * Logs full completion for debugging (server logs only).
  */
-async function callLLM(prompt: string) {
+async function callLLM(prompt: string, preferredModel?: string) {
   const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
 
   const client = new OpenAI({ apiKey });
 
-  const requested = process.env.OPENAI_MODEL ?? "gpt-4.1-mini";
+  const requested = preferredModel || process.env.OPENAI_MODEL || "gpt-5-mini";
   const candidates = [requested, ...FALLBACK_MODELS.filter(m => m !== requested)];
 
   for (const model of candidates) {
@@ -57,9 +57,14 @@ async function callLLM(prompt: string) {
 
 export async function POST(req: Request) {
   try {
+    // Parse request body
+    const body = await req.json().catch(() => ({}));
+    const englishOnly = body.englishOnly ?? false;
+    const preferredModel = body.model || undefined;
+    
     // Get user preferences if logged in
-    let tradingStyle: 'conservative' | 'balanced' | 'aggressive' | undefined;
-    let assetPreference: 'crypto' | 'stocks' | 'both' | undefined;
+    let tradingStyle: 'conservative' | 'balanced' | 'aggressive' = body.tradingStyle || 'balanced';
+    let assetPreference: 'crypto' | 'stocks' | 'both' = 'both';
     
     try {
       const cookieStore = await cookies();
@@ -68,8 +73,8 @@ export async function POST(req: Request) {
       if (userEmail) {
         const user = await getUserByEmail(userEmail);
         if (user) {
-          tradingStyle = user.trading_style;
-          assetPreference = user.asset_preference;
+          tradingStyle = body.tradingStyle || user.trading_style || 'balanced';
+          assetPreference = user.asset_preference || 'both';
           console.info(`Running oracle with user preferences: style=${tradingStyle}, assets=${assetPreference}`);
         }
       }
@@ -78,29 +83,35 @@ export async function POST(req: Request) {
       console.warn('Could not fetch user preferences:', err);
     }
     
-    // Define popular symbols to fetch current prices for
-    const popularSymbols = ['BTC', 'ETH', 'SOL', 'AAPL', 'MSFT', 'TSLA', 'NVDA', 'SPY', 'QQQ'];
+    // Determine asset types based on preference
+    const assetTypes: ('crypto' | 'stock' | 'etf')[] = 
+      assetPreference === 'crypto' ? ['crypto'] :
+      assetPreference === 'stocks' ? ['stock', 'etf'] :
+      ['crypto', 'stock', 'etf'];
     
-    // Fetch current prices
-    console.info('Fetching current market prices for popular symbols...');
-    const priceData = await fetchMultiplePrices(popularSymbols);
+    // Get filter strategy based on trading style
+    const filterStrategy = getFilterStrategy(tradingStyle, assetPreference);
     
-    // Format prices for the prompt
-    const currentPrices: Record<string, { price: number; change24h: number }> = {};
-    for (const [symbol, data] of Object.entries(priceData)) {
-      if (data?.currentPrice) {
-        currentPrices[symbol] = {
-          price: data.currentPrice,
-          change24h: data.change24h || 0
-        };
-      }
-    }
+    // Fetch curated market snapshot from database (20-30 assets)
+    console.info(`Fetching market snapshot with strategy: ${filterStrategy}, assets: ${assetTypes.join(', ')}`);
+    const marketAssets = await getMarketSnapshot({
+      strategy: filterStrategy,
+      assetTypes,
+      limit: 25,
+      tradingStyle
+    });
     
-    console.info(`Fetched ${Object.keys(currentPrices).length} current prices`);
+    console.info(`Fetched ${marketAssets.length} assets for analysis`);
     
-    // Build prompt with current prices and user preferences
-    const prompt = buildOraclePrompt(currentPrices, tradingStyle, assetPreference);
-    const { text: raw, modelUsed } = await callLLM(prompt);
+    // Format market snapshot for prompt
+    const marketSnapshotText = formatMarketSnapshotForPrompt(marketAssets);
+    
+    // Get model for prompt optimization (use first model from FALLBACK_MODELS)
+    const model = process.env.OPENAI_MODEL ?? FALLBACK_MODELS[0];
+    
+    // Build prompt with market snapshot, user preferences, and model-specific optimization
+    const prompt = buildOraclePrompt(marketSnapshotText, tradingStyle, assetPreference, model);
+    const { text: raw, modelUsed } = await callLLM(prompt, preferredModel);
 
     // try to parse market_phase
     let market_phase: string | null = null;
@@ -113,10 +124,15 @@ export async function POST(req: Request) {
 
     const run_date = new Date().toISOString().slice(0, 10);
 
-    // Translate to all enabled languages (RU, FR, ES, ZH)
-    console.log("Translating oracle result to RU, FR, ES, ZH...");
-    const translations = await translateOracleToAllLanguages(raw);
-    console.log("Translations completed");
+    let translations = { ru: '', fr: '', es: '', zh: '' };
+    
+    if (!englishOnly) {
+      console.log("Translating oracle result to RU, FR, ES, ZH...");
+      translations = await translateOracleToAllLanguages(raw);
+      console.log("Translations completed");
+    } else {
+      console.log("Skipping translations (English only mode)");
+    }
 
     const res = await db.execute({
       sql: `

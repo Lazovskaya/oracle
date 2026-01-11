@@ -2,6 +2,8 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getUserByEmail } from "@/lib/auth";
 import AdminPanelClient from "./AdminPanelClient";
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/authConfig';
 
 export const metadata = {
   title: "Admin Panel | Oracle",
@@ -10,15 +12,22 @@ export const metadata = {
 
 export default async function AdminPage() {
   const cookieStore = await cookies();
-  const userEmail = cookieStore.get("auth_token")?.value;
+  const cookieEmail = cookieStore.get('user_email')?.value;
+  
+  // Also check NextAuth session for Google login
+  const session = await getServerSession(authOptions);
+  const sessionEmail = session?.user?.email;
+  
+  const userEmail = sessionEmail || cookieEmail;
 
+  // Require authentication
   if (!userEmail) {
-    redirect("/login?redirect=/admin");
+    redirect("/oracle");
   }
 
   const user = await getUserByEmail(userEmail);
 
-  // Check if user is admin
+  // Require user exists and is admin
   if (!user || !user.is_admin) {
     redirect("/oracle");
   }

@@ -88,21 +88,42 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid symbol format' }, { status: 400 });
     }
 
+    // Fetch current price from database
+    let currentPriceFromDB: number | null = null;
+    try {
+      const priceResult = await db.execute({
+        sql: 'SELECT price FROM market_assets WHERE symbol = ? LIMIT 1',
+        args: [cleanSymbol]
+      });
+      if (priceResult.rows.length > 0) {
+        currentPriceFromDB = priceResult.rows[0].price as number;
+        console.log(`✅ Found price in DB for ${cleanSymbol}: $${currentPriceFromDB}`);
+      } else {
+        console.log(`⚠️  No price found in DB for ${cleanSymbol}`);
+      }
+    } catch (e) {
+      console.error('Error fetching price from DB for', cleanSymbol, e);
+    }
+
     // Construct prompt for LLM
+    const priceContext = currentPriceFromDB 
+      ? `\n\n**IMPORTANT - CURRENT MARKET DATA:**\nThe current price of ${cleanSymbol} is $${currentPriceFromDB.toFixed(2)} (from live market data).\nYou MUST use this exact price as your reference point. Calculate all entry, stop loss, and target levels relative to this current price.\nDo NOT use outdated prices from your training data.\n\n`
+      : '';
+
     const prompt = `You are MarketOracle, a professional trading assistant.
 Your task is to provide scenario-based, educational swing trading analysis (2–6 weeks) for **any financial instrument**: stocks, ETFs, or crypto (use USD pairs for crypto).
-
+${priceContext}
 Requirements:
 1. Analyze current market context for the symbol: ${cleanSymbol}
 2. Identify the technical structure using Elliott Wave or other common patterns, if relevant.
 3. Provide **conditional trade scenarios**, not direct buy/sell instructions.
 4. Include:
    - tradeable: true/false (whether the asset is suitable for swing trading now)
-   - current_price: estimated current price (number)
+   - current_price: ${currentPriceFromDB ? `MUST be ${currentPriceFromDB.toFixed(2)} (from live data provided above)` : 'estimated current price (number)'}
    - market_context: one sentence summary
-   - entry: suggested entry price or range (string)
-   - stop_loss: suggested stop loss price (string)
-   - targets: array of target prices (array of strings)
+   - entry: suggested entry price or range (string) - must be realistic relative to current_price
+   - stop_loss: suggested stop loss price (string) - must be realistic relative to current_price
+   - targets: array of target prices (array of strings) - must be realistic relative to current_price
    - scenarios: 
        - bull_case: {condition, entry_zone, risk, targets}
        - bear_case: {condition, entry_zone, risk, targets}
@@ -112,10 +133,11 @@ Requirements:
 5. Format output **strictly as JSON**.
 6. Never use HTML, markdown, or emojis.
 7. Include numeric prices for entry, stop_loss, targets, and current_price.
-8. **Do not give financial advice**; make clear this is informational and educational.
-9. If the symbol is invalid, illiquid, or has insufficient data, set "tradeable": false and explain in market_context.
+8. **CRITICAL: All price levels must be calculated from the current_price provided above, not from memory**
+9. **Do not give financial advice**; make clear this is informational and educational.
+10. If the symbol is invalid, illiquid, or has insufficient data, set "tradeable": false and explain in market_context.
 
-Example output:
+Example output (prices are illustrative only - use actual current_price from above):
 
 {
   "symbol": "TSLA",
@@ -168,8 +190,7 @@ Now analyze: ${cleanSymbol}`;
             content: prompt
           }
         ],
-        temperature: 0.7,
-        max_completion_tokens: 1500,
+        max_completion_tokens: 2500,
         response_format: { type: "json_object" }
       }),
     });
@@ -183,6 +204,9 @@ Now analyze: ${cleanSymbol}`;
     const data = await response.json();
     const analysisText = data.choices[0]?.message?.content || '';
 
+    console.log('LLM response length:', analysisText.length);
+    console.log('Response preview:', analysisText.substring(0, 200));
+
     // Parse JSON response
     let analysis;
     try {
@@ -194,13 +218,24 @@ Now analyze: ${cleanSymbol}`;
         cleanText = cleanText.replace(/^```\s*\n/, '').replace(/\n```\s*$/, '');
       }
       
+      // Check if JSON is complete
+      if (!cleanText.endsWith('}')) {
+        console.error('Incomplete JSON detected. Response may have been cut off.');
+        console.error('Last 200 chars:', cleanText.substring(cleanText.length - 200));
+        return NextResponse.json({ 
+          error: 'Analysis response was incomplete. This may be due to complexity - try again or use a simpler symbol.',
+          raw: analysisText.substring(0, 500) + '...'
+        }, { status: 500 });
+      }
+      
       analysis = JSON.parse(cleanText);
       analysis.symbol = cleanSymbol; // Ensure symbol is uppercase
     } catch (e) {
       console.error('Failed to parse LLM response:', e);
+      console.error('Response text:', analysisText);
       return NextResponse.json({ 
-        error: 'Failed to parse analysis',
-        raw: analysisText 
+        error: 'Failed to parse analysis. The AI response was not in the expected format.',
+        raw: analysisText.substring(0, 500) + '...'
       }, { status: 500 });
     }
 

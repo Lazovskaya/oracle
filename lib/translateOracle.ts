@@ -30,7 +30,6 @@ export async function translateOracleResult(
           content: `${prompt}\n\n${englishResult}`,
         },
       ],
-      temperature: 0.3,
       max_completion_tokens: 3000,
     });
 
