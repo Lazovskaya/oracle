@@ -27,7 +27,7 @@ async function callLLM(prompt: string, preferredModel?: string) {
       const completion = await client.chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
-        max_completion_tokens: 1800,
+        max_completion_tokens: 3500,
       });
 
       const text = completion?.choices?.[0]?.message?.content ?? "";
