@@ -1,9 +1,15 @@
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getUserByEmail } from '@/lib/auth';
-import AccountPageClient from './AccountPageClient';
+import dynamic from 'next/dynamic';
+import { AccountPageSkeleton } from '@/components/skeletons/LoadingSkeletons';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authConfig';
+
+// Dynamic import for account page client component
+const AccountPageClient = dynamic(() => import('./AccountPageClient'), {
+  loading: () => <AccountPageSkeleton />,
+});
 
 export default async function AccountPage() {
   const cookieStore = await cookies();

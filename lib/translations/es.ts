@@ -1,0 +1,31 @@
+// Spanish translations - lazy loaded
+export const translations = {
+  title: 'Oráculo del Mercado',
+  subtitle: 'Recomendaciones de swing trading con IA para acciones y criptomonedas',
+  latestRun: 'Ideas de trading de calidad (2–6 semanas) — última ejecución',
+  noRuns: 'Aún No Hay Ejecuciones',
+  noRunsDesc: 'Active su primera ejecución con el botón de arriba o espere las ejecuciones programadas a las 08:00 y 20:00 UTC.',
+  noIdeas: 'No hay ideas disponibles. Genere nuevas predicciones.',
+  runOracle: '🔮 Ejecutar Oráculo',
+  running: 'Ejecutando...',
+  marketSummary: 'Resumen del Mercado',
+  waveStructure: 'Estructura de Ondas',
+  runDate: 'Ejecución',
+  parsed: '✓ Procesado',
+  rawData: 'Datos Sin Procesar',
+  entry: 'Entrada',
+  stop: 'Stop',
+  targets: 'Objetivos',
+  timeframe: 'Plazo',
+  riskNote: 'Nota de Riesgo',
+  confidence: {
+    high: 'ALTA',
+    medium: 'MEDIA',
+    low: 'BAJA',
+  },
+  bias: {
+    bullish: 'Alcista',
+    bearish: 'Bajista',
+    neutral: 'Neutral',
+  },
+};

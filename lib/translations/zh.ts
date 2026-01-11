@@ -1,0 +1,31 @@
+// Chinese translations - lazy loaded
+export const translations = {
+  title: '市场预言家',
+  subtitle: 'AI驱动的股票和加密货币波段交易建议',
+  latestRun: '高质量交易想法（2-6周）— 最新运行',
+  noRuns: '暂无预测',
+  noIdeas: '暂无交易想法。生成新预测。',
+  noRunsDesc: '点击上方按钮触发首次运行，或等待UTC 08:00和20:00的定时运行。',
+  runOracle: '🔮 运行预言',
+  running: '运行中...',
+  marketSummary: '市场概况',
+  waveStructure: '波浪结构',
+  runDate: '运行',
+  parsed: '✓ 已解析',
+  rawData: '原始数据',
+  entry: '入场',
+  stop: '止损',
+  targets: '目标',
+  timeframe: '时间框架',
+  riskNote: '风险提示',
+  confidence: {
+    high: '高',
+    medium: '中',
+    low: '低',
+  },
+  bias: {
+    bullish: '看涨',
+    bearish: '看跌',
+    neutral: '中性',
+  },
+};
