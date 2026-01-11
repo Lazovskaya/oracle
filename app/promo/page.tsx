@@ -172,7 +172,7 @@ export default async function PromoPage() {
                               ${idea.entry_price.toFixed(2)}
                             </span>
                           </div>
-                          <div className="text-right sm:text-left">
+                          <div>
                             <span className="text-gray-600 dark:text-gray-400">Stop:</span>
                             <span className="ml-2 font-semibold text-gray-900 dark:text-white">
                               ${idea.stop_loss.toFixed(2)}
@@ -184,7 +184,7 @@ export default async function PromoPage() {
                               ${idea.target_prices || '—'}
                             </span>
                           </div>
-                          <div className="text-right sm:text-left">
+                          <div>
                             <span className="text-gray-600 dark:text-gray-400">Date:</span>
                             <span className="ml-2 font-semibold text-gray-900 dark:text-white">
                               {new Date(idea.closed_at).toLocaleDateString()}

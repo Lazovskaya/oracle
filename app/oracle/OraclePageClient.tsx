@@ -763,7 +763,7 @@ export default function OraclePageClient({
                           </div>
                           {priceData?.currentPrice && (
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm font-mono font-medium text-gray-700 tabular-nums">
+                              <span className="text-xl font-mono font-bold text-gray-900 dark:text-white tabular-nums">
                                 {formatPrice(priceData.currentPrice, priceData.currency)}
                               </span>
                               {priceData.change24h !== null && (
