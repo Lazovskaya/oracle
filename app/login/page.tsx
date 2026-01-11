@@ -2,9 +2,15 @@
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
+import dynamic from 'next/dynamic';
 import OracleIcon from '@/components/OracleIcon';
+import { LoginPageSkeleton } from '@/components/skeletons/LoadingSkeletons';
 
-function LoginForm() {
+const LoginForm = dynamic(() => Promise.resolve(LoginFormComponent), {
+  loading: () => <LoginPageSkeleton />,
+});
+
+function LoginFormComponent() {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
