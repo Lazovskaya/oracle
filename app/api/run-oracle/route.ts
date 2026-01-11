@@ -32,7 +32,7 @@ async function callLLM(prompt: string, preferredModel?: string) {
       const completion = await client.chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
-        max_completion_tokens: 1200,
+        max_completion_tokens: 1800,
       });
 
       // Log entire completion for debugging (do not expose to clients)
@@ -41,11 +41,14 @@ async function callLLM(prompt: string, preferredModel?: string) {
       } catch (_) {}
 
       const text = completion?.choices?.[0]?.message?.content ?? "";
+      const finishReason = completion?.choices?.[0]?.finish_reason;
+      
       if (text && text.trim().length > 0) {
+        console.info(`✅ OpenAI: model=${model} succeeded, length=${text.length}, finish_reason=${finishReason}`);
         return { text, modelUsed: model };
       }
 
-      console.warn(`OpenAI: model=${model} returned empty content, trying next candidate.`);
+      console.warn(`⚠️  OpenAI: model=${model} returned empty content (finish_reason=${finishReason}), trying next candidate.`);
     } catch (err: any) {
       // Log error and try next model (could be permission or model-not-found)
       console.error(`OpenAI call failed for model=${model}:`, String(err?.message ?? err));
