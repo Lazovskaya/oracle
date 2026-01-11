@@ -11,7 +11,7 @@ import OpenAI from "openai";
 
 export const runtime = "nodejs";
 
-const FALLBACK_MODELS = ["gpt-5-mini", "gpt-4o-mini", "gpt-4o", "gpt-4"];
+const FALLBACK_MODELS = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-4"];
 
 /**
  * Call OpenAI with basic retry + fallback on empty response.

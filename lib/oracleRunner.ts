@@ -9,7 +9,7 @@ import { translateOracleToAllLanguages } from './translateOracle';
 import db from './db';
 import OpenAI from 'openai';
 
-const FALLBACK_MODELS = ["gpt-5-mini", "gpt-4o-mini", "gpt-4o", "gpt-4"];
+const FALLBACK_MODELS = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-4"];
 
 /**
  * Call OpenAI with retry and fallback logic
@@ -19,7 +19,7 @@ async function callLLM(prompt: string) {
   if (!apiKey) throw new Error("OPENAI_API_KEY is not set");
 
   const client = new OpenAI({ apiKey });
-  const requested = process.env.OPENAI_MODEL ?? "gpt-5-mini";
+  const requested = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
   const candidates = [requested, ...FALLBACK_MODELS.filter(m => m !== requested)];
 
   for (const model of candidates) {
@@ -78,7 +78,7 @@ export async function generateOracleForStyle(
   const marketSnapshotText = formatMarketSnapshotForPrompt(marketAssets);
 
   // Get model
-  const model = process.env.OPENAI_MODEL ?? "gpt-5-mini";
+  const model = process.env.OPENAI_MODEL ?? "gpt-4o-mini";
 
   // Build prompt with model-specific optimization
   const prompt = buildOraclePrompt(marketSnapshotText, tradingStyle, assetPreference, model);

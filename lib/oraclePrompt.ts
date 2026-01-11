@@ -7,7 +7,7 @@ export function buildOraclePrompt(
   model?: string // Optional: pass the model name to optimize prompt
 ): string {
   
-  // Detect model type
+  // Detect model type (Note: GPT-5 doesn't exist yet, all current models are GPT-4 family)
   const isGPT5 = model?.startsWith('gpt-5') || model?.includes('o1') || model?.includes('o3');
   const isGPT4 = model?.startsWith('gpt-4');
   
