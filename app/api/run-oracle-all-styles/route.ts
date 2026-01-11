@@ -10,7 +10,7 @@ import OpenAI from "openai";
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes max for generating all styles
 
-const FALLBACK_MODELS = ["gpt-4o-mini", "gpt-4o", "gpt-4-turbo", "gpt-4"];
+const FALLBACK_MODELS = ["gpt-5-mini", "gpt-5.1", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"];
 
 async function callLLM(prompt: string, preferredModel?: string) {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -18,7 +18,7 @@ async function callLLM(prompt: string, preferredModel?: string) {
 
   const client = new OpenAI({ apiKey });
 
-  const requested = preferredModel || process.env.OPENAI_MODEL || "gpt-4o-mini";
+  const requested = preferredModel || process.env.OPENAI_MODEL || "gpt-5-mini";
   const candidates = [requested, ...FALLBACK_MODELS.filter(m => m !== requested)];
 
   for (const model of candidates) {
