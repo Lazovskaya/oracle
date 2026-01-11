@@ -1,6 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
+import { PriceLevel, PriceLevelGrid, CardContainer, CardHeader } from '@/components/TradingCard';
 
 interface SymbolAnalysis {
   symbol: string;
@@ -168,12 +169,11 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
   return (
     <div className="space-y-6">
       {/* Input Section */}
-      <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-        <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-          <span className="text-2xl">🎯</span>
+      <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+        <h3 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-4">
           Custom Symbol Analysis
         </h3>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
           Enter any stock, ETF, or crypto symbol to get a personalized swing trading analysis
         </p>
         
@@ -184,7 +184,7 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
             onChange={(e) => setSymbol(e.target.value.toUpperCase())}
             onKeyPress={(e) => e.key === 'Enter' && handleAnalyze()}
             placeholder="e.g., AAPL, BTC, TSLA"
-            className="flex-1 px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-4 py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={loading}
           />
           <button
@@ -212,7 +212,7 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
         </div>
 
         {analysis?.rateLimit && (
-          <div className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+          <div className="mt-3 text-xs text-slate-500 dark:text-slate-400">
             {analysis.rateLimit.remaining} analyses remaining today ({analysis.rateLimit.used}/{analysis.rateLimit.limit} used)
           </div>
         )}
@@ -229,20 +229,20 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
       {analysis && (
         <div className="space-y-4">
           {/* Header */}
-          <div className="p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+          <div className="p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
             <div className="flex items-start justify-between mb-4">
               <div className="flex-1">
-                <h4 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">
+                <h4 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-1 font-mono tracking-tight">
                   {analysis.symbol}
                 </h4>
-                <p className="text-gray-600 dark:text-gray-400">{analysis.market_context}</p>
+                <p className="text-slate-600 dark:text-slate-400">{analysis.market_context}</p>
               </div>
               <div className="flex items-center gap-3">
                 <div className="text-right">
                   <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${getConfidenceColor(analysis.confidence)}`}>
                     {analysis.confidence?.toUpperCase()} confidence
                   </span>
-                  <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                  <div className="mt-2 text-sm text-slate-500 dark:text-slate-400">
                     {analysis.timeframe}
                   </div>
                 </div>
@@ -303,41 +303,38 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
 
             {/* Price Levels */}
             {analysis.tradeable && (analysis.current_price || analysis.entry || analysis.stop_loss || analysis.targets) && (
-              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-800">
-                <h5 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">📊 Key Price Levels</h5>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800">
+                <h5 className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-4 uppercase tracking-wide">Key Price Levels</h5>
+                <PriceLevelGrid columns={4}>
                   {analysis.current_price && (
-                    <div className="p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
-                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Current</div>
-                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.current_price.toFixed(2)}</div>
-                    </div>
+                    <PriceLevel 
+                      label="Current" 
+                      value={`$${analysis.current_price.toFixed(2)}`}
+                      type="current"
+                    />
                   )}
                   {analysis.entry && (
-                    <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
-                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
-                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.entry}</div>
-                    </div>
+                    <PriceLevel 
+                      label="Entry" 
+                      value={`$${analysis.entry}`}
+                      type="entry"
+                    />
                   )}
                   {analysis.stop_loss && (
-                    <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
-                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop Loss</div>
-                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${analysis.stop_loss}</div>
-                    </div>
+                    <PriceLevel 
+                      label="Stop Loss" 
+                      value={`$${analysis.stop_loss}`}
+                      type="stop"
+                    />
                   )}
                   {analysis.targets && analysis.targets.length > 0 && (
-                    <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
-                      <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
-                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
-                        {analysis.targets.map((t, i) => (
-                          <span key={i}>
-                            ${t}
-                            {i < analysis.targets!.length - 1 && <span className="text-sm mx-1">•</span>}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
+                    <PriceLevel 
+                      label="Targets" 
+                      value={analysis.targets.map(t => `$${t}`).join(' • ')}
+                      type="target"
+                    />
                   )}
-                </div>
+                </PriceLevelGrid>
               </div>
             )}
           </div>
@@ -347,39 +344,38 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
             <div className="space-y-4">
               {/* Bull Case */}
               {analysis.scenarios.bull_case && (
-                <div className="p-6 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-900/20">
-                  <h5 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <span>📈</span>
+                <div className="p-6 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-white dark:bg-slate-900">
+                  <h5 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-4">
                     Bull Case Scenario
                   </h5>
                   
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Condition:</div>
-                      <div className="text-gray-900 dark:text-white leading-relaxed">{analysis.scenarios.bull_case.condition}</div>
+                      <div className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Condition:</div>
+                      <div className="text-slate-900 dark:text-slate-100 leading-relaxed">{analysis.scenarios.bull_case.condition}</div>
                     </div>
 
                     {/* Bull Price Levels */}
-                    <div className="pt-4 border-t border-emerald-200 dark:border-emerald-800">
-                      <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Price Levels</div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry Zone</div>
-                          <div className="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">{formatPriceString(analysis.scenarios.bull_case.entry_zone)}</div>
-                        </div>
-                        <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Risk Level</div>
-                          <div className={`text-base font-semibold ${getRiskColor(analysis.scenarios.bull_case.risk)}`}>
+                    <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+                      <div className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wide">Price Levels</div>
+                      <PriceLevelGrid columns={3}>
+                        <PriceLevel 
+                          label="Entry Zone" 
+                          value={formatPriceString(analysis.scenarios.bull_case.entry_zone)}
+                          type="entry"
+                        />
+                        <div className="p-3 rounded bg-white border border-gray-200">
+                          <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">Risk Level</div>
+                          <div className={`text-lg font-semibold ${getRiskColor(analysis.scenarios.bull_case.risk)}`}>
                             {analysis.scenarios.bull_case.risk?.toUpperCase()}
                           </div>
                         </div>
-                        <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
-                          <div className="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">
-                            {analysis.scenarios.bull_case.targets?.map(t => formatPriceString(t)).join(' • ')}
-                          </div>
-                        </div>
-                      </div>
+                        <PriceLevel 
+                          label="Targets" 
+                          value={analysis.scenarios.bull_case.targets?.map(t => formatPriceString(t)).join(' • ') || ''}
+                          type="target"
+                        />
+                      </PriceLevelGrid>
                     </div>
                   </div>
                 </div>
@@ -387,39 +383,38 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
 
               {/* Bear Case */}
               {analysis.scenarios.bear_case && (
-                <div className="p-6 rounded-lg border border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20">
-                  <h5 className="text-xl font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <span>📉</span>
+                <div className="p-6 rounded-lg border border-red-200 dark:border-red-800 bg-white dark:bg-slate-900">
+                  <h5 className="text-xl font-semibold text-slate-900 dark:text-slate-100 mb-4">
                     Bear Case Scenario
                   </h5>
                   
                   <div className="space-y-4">
                     <div>
-                      <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-2">Condition:</div>
-                      <div className="text-gray-900 dark:text-white leading-relaxed">{analysis.scenarios.bear_case.condition}</div>
+                      <div className="text-sm font-semibold text-slate-600 dark:text-slate-400 mb-2">Condition:</div>
+                      <div className="text-slate-900 dark:text-slate-100 leading-relaxed">{analysis.scenarios.bear_case.condition}</div>
                     </div>
 
                     {/* Bear Price Levels */}
-                    <div className="pt-4 border-t border-red-200 dark:border-red-800">
-                      <div className="text-sm font-semibold text-gray-600 dark:text-gray-400 mb-3">Price Levels</div>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry Zone</div>
-                          <div className="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">{formatPriceString(analysis.scenarios.bear_case.entry_zone)}</div>
-                        </div>
-                        <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Risk Level</div>
-                          <div className={`text-base font-semibold ${getRiskColor(analysis.scenarios.bear_case.risk)}`}>
+                    <div className="pt-4 border-t border-slate-200 dark:border-slate-800">
+                      <div className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-3 uppercase tracking-wide">Price Levels</div>
+                      <PriceLevelGrid columns={3}>
+                        <PriceLevel 
+                          label="Entry Zone" 
+                          value={formatPriceString(analysis.scenarios.bear_case.entry_zone)}
+                          type="entry"
+                        />
+                        <div className="p-3 rounded bg-white border border-gray-200">
+                          <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">Risk Level</div>
+                          <div className={`text-lg font-semibold ${getRiskColor(analysis.scenarios.bear_case.risk)}`}>
                             {analysis.scenarios.bear_case.risk?.toUpperCase()}
                           </div>
                         </div>
-                        <div className="p-3 rounded-lg bg-red-50/50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
-                          <div className="text-base font-mono font-semibold text-gray-900 dark:text-gray-100">
-                            {analysis.scenarios.bear_case.targets?.map(t => formatPriceString(t)).join(' • ')}
-                          </div>
-                        </div>
-                      </div>
+                        <PriceLevel 
+                          label="Targets" 
+                          value={analysis.scenarios.bear_case.targets?.map(t => formatPriceString(t)).join(' • ') || ''}
+                          type="target"
+                        />
+                      </PriceLevelGrid>
                     </div>
                   </div>
                 </div>
@@ -429,14 +424,13 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
 
           {/* Do Not Trade If */}
           {analysis.do_not_trade_if && analysis.do_not_trade_if.length > 0 && (
-            <div className="p-6 rounded-lg border border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-900/20">
-              <h5 className="text-lg font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                <span>⚠️</span>
+            <div className="p-6 rounded-lg border border-yellow-200 dark:border-yellow-800 bg-white dark:bg-slate-900">
+              <h5 className="text-lg font-semibold text-slate-900 dark:text-slate-100 mb-3">
                 Avoid Trading If:
               </h5>
               <ul className="space-y-2">
                 {analysis.do_not_trade_if.map((condition, idx) => (
-                  <li key={idx} className="flex items-start gap-2 text-gray-700 dark:text-gray-300">
+                  <li key={idx} className="flex items-start gap-2 text-slate-700 dark:text-slate-300">
                     <span className="text-yellow-600 dark:text-yellow-400">•</span>
                     <span>{condition}</span>
                   </li>
@@ -447,8 +441,8 @@ export default function SymbolAnalyzer({ isPro }: { isPro: boolean }) {
 
           {/* Disclaimer */}
           {analysis.disclaimer && (
-            <div className="p-4 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-              <p className="text-xs text-gray-600 dark:text-gray-400">
+            <div className="p-4 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+              <p className="text-xs text-slate-600 dark:text-slate-400">
                 <strong>Disclaimer:</strong> {analysis.disclaimer}
               </p>
             </div>

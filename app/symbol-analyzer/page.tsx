@@ -25,7 +25,7 @@ export default async function SymbolAnalyzer() {
     redirect('/login');
   }
 
-  const isPro = user.subscription_tier === 'premium';
+  const isPro = user.subscription_tier === 'pro';
 
   return <SymbolAnalyzerPage isPro={isPro} userEmail={user.email} />;
 }

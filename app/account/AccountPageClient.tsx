@@ -44,7 +44,7 @@ export default function AccountPageClient({ user }: { user: User }) {
 
   useEffect(() => {
     fetchSavedIdeas();
-    if (user.subscription_tier === 'premium') {
+    if (user.subscription_tier === 'pro') {
       fetchSavedAnalyses();
     }
   }, []);
@@ -190,7 +190,7 @@ export default function AccountPageClient({ user }: { user: User }) {
   };
 
   return (
-    <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">
+    <main className="min-h-screen px-6 py-12 bg-slate-50 dark:bg-slate-950">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8 flex items-center justify-between">
           <div>
@@ -214,8 +214,8 @@ export default function AccountPageClient({ user }: { user: User }) {
         </div>
 
         {/* Subscription Info */}
-        <div className="mb-6 p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Subscription Details</h2>
+        <div className="mb-6 p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">Subscription Details</h2>
           
           <div className="space-y-3">
             <div className="flex items-center gap-3">
@@ -303,116 +303,110 @@ export default function AccountPageClient({ user }: { user: User }) {
         </div>
 
         {/* Trading Style Preference */}
-        <div className="mb-6 p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Trading Style</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Choose your risk tolerance level. This helps us tailor recommendations to your preferences.
+        <div className="mb-6 p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">Trading Lens</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+            Choose your trading approach. This helps us tailor recommendations to your preferences.
           </p>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button
               onClick={() => handleTradingStyleChange('conservative')}
               disabled={updatingStyle}
-              className={`p-4 rounded-lg border-2 transition-all ${
+              className={`p-4 rounded-lg text-sm font-medium transition-all ${
                 tradingStyle === 'conservative'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <div className="text-2xl mb-2">🛡️</div>
-              <div className="font-semibold text-gray-900 dark:text-white mb-1">Conservative</div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                Lower risk, smaller position sizes, tight stops
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-semibold">Capital Protection</span>
+                <span className="text-xs opacity-80">Lower risk, steady gains</span>
               </div>
             </button>
 
             <button
               onClick={() => handleTradingStyleChange('balanced')}
               disabled={updatingStyle}
-              className={`p-4 rounded-lg border-2 transition-all ${
+              className={`p-4 rounded-lg text-sm font-medium transition-all ${
                 tradingStyle === 'balanced'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <div className="text-2xl mb-2">⚖️</div>
-              <div className="font-semibold text-gray-900 dark:text-white mb-1">Balanced</div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                Moderate risk, standard position sizing
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-semibold">Trend Following</span>
+                <span className="text-xs opacity-80">Balanced risk/reward</span>
               </div>
             </button>
 
             <button
               onClick={() => handleTradingStyleChange('aggressive')}
               disabled={updatingStyle}
-              className={`p-4 rounded-lg border-2 transition-all ${
+              className={`p-4 rounded-lg text-sm font-medium transition-all ${
                 tradingStyle === 'aggressive'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <div className="text-2xl mb-2">🚀</div>
-              <div className="font-semibold text-gray-900 dark:text-white mb-1">Aggressive</div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                Higher risk, larger positions, wider stops
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-semibold">Momentum Hunt</span>
+                <span className="text-xs opacity-80">High risk, high reward</span>
               </div>
             </button>
           </div>
         </div>
 
         {/* Asset Preference */}
-        <div className="mb-6 p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <h2 className="text-xl font-semibold mb-4 text-gray-900 dark:text-white">Asset Preference</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+        <div className="mb-6 p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+          <h2 className="text-xl font-semibold mb-4 text-slate-900 dark:text-slate-100">Asset Type</h2>
+          <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
             Choose which asset classes you want to see in trading recommendations.
           </p>
           
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button
               onClick={() => handleAssetPreferenceChange('crypto')}
               disabled={updatingAsset}
-              className={`p-4 rounded-lg border-2 transition-all ${
+              className={`p-4 rounded-lg text-sm font-medium transition-all ${
                 assetPreference === 'crypto'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <div className="text-2xl mb-2">₿</div>
-              <div className="font-semibold text-gray-900 dark:text-white mb-1">Crypto Only</div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                Bitcoin, Ethereum, and other cryptocurrencies
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-semibold">Crypto</span>
+                <span className="text-xs opacity-80">Digital currencies</span>
               </div>
             </button>
 
             <button
               onClick={() => handleAssetPreferenceChange('stocks')}
               disabled={updatingAsset}
-              className={`p-4 rounded-lg border-2 transition-all ${
+              className={`p-4 rounded-lg text-sm font-medium transition-all ${
                 assetPreference === 'stocks'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <div className="text-2xl mb-2">📈</div>
-              <div className="font-semibold text-gray-900 dark:text-white mb-1">Stocks Only</div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                Traditional equities and stock markets
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-semibold">Stocks</span>
+                <span className="text-xs opacity-80">Traditional equities</span>
               </div>
             </button>
 
             <button
               onClick={() => handleAssetPreferenceChange('both')}
               disabled={updatingAsset}
-              className={`p-4 rounded-lg border-2 transition-all ${
+              className={`p-4 rounded-lg text-sm font-medium transition-all ${
                 assetPreference === 'both'
-                  ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/20'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
-              <div className="text-2xl mb-2">🔄</div>
-              <div className="font-semibold text-gray-900 dark:text-white mb-1">Both</div>
-              <div className="text-xs text-gray-600 dark:text-gray-400">
-                Show all available trading opportunities
+              <div className="flex flex-col items-center gap-1">
+                <span className="font-semibold">Both</span>
+                <span className="text-xs opacity-80">All opportunities</span>
               </div>
             </button>
           </div>
@@ -435,8 +429,8 @@ export default function AccountPageClient({ user }: { user: User }) {
               <p className="mt-4 text-gray-600 dark:text-gray-400">Loading your saved ideas...</p>
             </div>
           ) : savedIdeas.length === 0 ? (
-            <div className="p-12 text-center rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-              <svg className="w-16 h-16 mx-auto mb-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="p-12 text-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+              <svg className="w-16 h-16 mx-auto mb-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
               <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Saved Ideas Yet</p>
@@ -542,7 +536,7 @@ export default function AccountPageClient({ user }: { user: User }) {
         </div>
 
         {/* Saved Symbol Analyses (PRO) */}
-        {user.subscription_tier === 'premium' && (
+        {user.subscription_tier === 'pro' && (
           <div className="mb-6 p-6 rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">

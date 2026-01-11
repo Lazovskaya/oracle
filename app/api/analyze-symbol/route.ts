@@ -57,7 +57,7 @@ export async function POST(req: Request) {
 
     // Check if user is PRO
     const user = await getUserByEmail(userEmail);
-    if (!user || user.subscription_tier !== 'premium') {
+    if (!user || user.subscription_tier !== 'pro') {
       return NextResponse.json({ 
         error: 'PRO subscription required',
         message: 'Custom symbol analysis is available for PRO members only. Upgrade to unlock this feature.'
