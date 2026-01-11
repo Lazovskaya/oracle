@@ -1,5 +1,5 @@
 // Simple i18n translations for Market Oracle
-export type Language = 'en' | 'ru' | 'es' | 'zh';
+export type Language = 'en' | 'ru' | 'es' | 'zh' | 'fr';
 
 export const translations = {
   en: {
@@ -120,6 +120,36 @@ export const translations = {
       bullish: '看涨',
       bearish: '看跌',
       neutral: '中性',
+    },
+  },
+  fr: {
+    title: 'Oracle du Marché',
+    subtitle: 'Recommandations de swing trading IA pour actions et cryptomonnaies',
+    latestRun: 'Idées de trading de qualité (2-6 semaines) — dernière exécution',
+    noRuns: 'Aucune Exécution Pour Le Moment',
+    noRunsDesc: 'Déclenchez votre première exécution via le bouton ci-dessus ou attendez les exécutions programmées à 08:00 et 20:00 UTC.',
+    noIdeas: 'Aucune idée disponible. Générez de nouvelles prédictions.',
+    runOracle: '🔮 Lancer l\'Oracle',
+    running: 'En cours...',
+    marketSummary: 'Résumé du Marché',
+    waveStructure: 'Structure des Vagues',
+    runDate: 'Exécution',
+    parsed: '✓ Analysé',
+    rawData: 'Données Brutes',
+    entry: 'Entrée',
+    stop: 'Stop',
+    targets: 'Objectifs',
+    timeframe: 'Période',
+    riskNote: 'Note de Risque',
+    confidence: {
+      high: 'HAUTE',
+      medium: 'MOYENNE',
+      low: 'BASSE',
+    },
+    bias: {
+      bullish: 'Haussier',
+      bearish: 'Baissier',
+      neutral: 'Neutre',
     },
   },
 };

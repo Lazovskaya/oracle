@@ -1,9 +1,15 @@
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { getUserByEmail } from "@/lib/auth";
-import AdminPanelClient from "./AdminPanelClient";
+import dynamic from 'next/dynamic';
+import { AdminPanelSkeleton } from "@/components/skeletons/LoadingSkeletons";
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authConfig';
+
+// Dynamic import for heavy admin panel
+const AdminPanelClient = dynamic(() => import('./AdminPanelClient'), {
+  loading: () => <AdminPanelSkeleton />,
+});
 
 export const metadata = {
   title: "Admin Panel | Oracle",

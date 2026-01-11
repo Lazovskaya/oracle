@@ -2,13 +2,20 @@ import { db } from "@/lib/db";
 import { OracleRun } from "@/types/oracle";
 import RunButton from "./RunButton";
 import { formatPrice, formatChange } from "@/lib/priceService";
-import OraclePageClient from "./OraclePageClient";
+import dynamic from 'next/dynamic';
+import { OraclePageSkeleton } from "@/components/skeletons/LoadingSkeletons";
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getUserByEmail, checkAndRevokeExpiredAccess } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authConfig';
 import { Metadata } from "next";
+
+// Dynamic import for heavy client component (912 lines!)
+// This reduces initial bundle size by ~300KB
+const OraclePageClient = dynamic(() => import('./OraclePageClient'), {
+  loading: () => <OraclePageSkeleton />,
+});
 
 export const metadata: Metadata = {
   title: "Latest Market Analysis & Trading Ideas | Market Oracle",
@@ -205,6 +212,9 @@ export default async function OraclePage() {
     }
   }
 
+  // Get user language preference from cookie (no localStorage flash)
+  const userLang = cookieStore.get('user_language')?.value as 'en' | 'ru' | 'es' | 'zh' | 'fr' || 'en';
+
   // Prepare translations object
   const translations = {
     en: last?.result || '',
@@ -252,6 +262,7 @@ export default async function OraclePage() {
       ideas={ideas}
       prices={prices}
       translations={translations}
+      initialLanguage={userLang}
       isLoggedIn={!!user}
       subscriptionTier={(user?.subscription_tier || 'free') as 'free' | 'premium' | 'pro'}
       oracleRunId={last?.id}

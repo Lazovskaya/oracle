@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { getLanguagePreference, setLanguagePreference } from '@/lib/translationLoader';
 
 interface LocaleSelectorProps {
   initialLanguage?: string;
@@ -29,9 +30,9 @@ export default function LocaleSelector({ initialLanguage = 'en', initialCountry 
   const [country, setCountry] = useState(initialCountry);
 
   useEffect(() => {
-    // Load from localStorage on mount
-    const savedLanguage = localStorage.getItem('user_language');
-    const savedCountry = localStorage.getItem('user_country');
+    // Load from cookie (no localStorage flash!)
+    const savedLanguage = getLanguagePreference();
+    const savedCountry = getCookie('user_country');
     
     if (savedLanguage) setLanguage(savedLanguage);
     if (savedCountry) setCountry(savedCountry);
@@ -39,8 +40,7 @@ export default function LocaleSelector({ initialLanguage = 'en', initialCountry 
 
   const handleLanguageChange = (langCode: string) => {
     setLanguage(langCode);
-    localStorage.setItem('user_language', langCode);
-    document.cookie = `user_language=${langCode}; path=/; max-age=31536000`; // 1 year
+    setLanguagePreference(langCode as any); // Save to cookie
     
     // Dispatch custom event to notify other components
     window.dispatchEvent(new CustomEvent('languageChange', { detail: { language: langCode } }));
@@ -48,8 +48,17 @@ export default function LocaleSelector({ initialLanguage = 'en', initialCountry 
 
   const handleCountryChange = (countryCode: string) => {
     setCountry(countryCode);
-    localStorage.setItem('user_country', countryCode);
     document.cookie = `user_country=${countryCode}; path=/; max-age=31536000`; // 1 year
+  };
+
+  const getCookie = (name: string): string | null => {
+    if (typeof document === 'undefined') return null;
+    const cookies = document.cookie.split(';');
+    for (const cookie of cookies) {
+      const [cookieName, cookieValue] = cookie.trim().split('=');
+      if (cookieName === name) return cookieValue;
+    }
+    return null;
   };
 
   const currentLang = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
