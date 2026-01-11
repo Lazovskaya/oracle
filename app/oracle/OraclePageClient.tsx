@@ -752,7 +752,7 @@ export default function OraclePageClient({
                   const showFullContent = isLoggedIn || idx === 0;
 
                   return (
-                    <div key={idx} className="p-5 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors shadow-sm">
+                    <div key={idx} className="p-5 rounded-xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900 hover:border-gray-300 dark:hover:border-gray-700 transition-colors shadow-sm">
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
@@ -859,12 +859,12 @@ export default function OraclePageClient({
                           )}
 
                           {(isPremium || !isLoggedIn) && idea.risk_note ? (
-                            <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                            <div className="mt-4 p-3 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-lg">
                               <div className="flex items-start gap-2">
-                                <span className="text-yellow-600 dark:text-yellow-400">⚠️</span>
+                                <span className="text-amber-600 dark:text-amber-500">⚠️</span>
                                 <div>
-                                  <div className="text-xs font-semibold text-yellow-800 dark:text-yellow-300 mb-1">{t.riskNote}</div>
-                                  <div className="text-sm text-yellow-700 dark:text-yellow-200">{idea.risk_note}</div>
+                                  <div className="text-xs font-semibold text-amber-800 dark:text-amber-400 mb-1">{t.riskNote}</div>
+                                  <div className="text-sm text-amber-700 dark:text-amber-300">{idea.risk_note}</div>
                                 </div>
                               </div>
                             </div>
