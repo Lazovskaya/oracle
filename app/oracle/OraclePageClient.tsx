@@ -762,8 +762,8 @@ export default function OraclePageClient({
                             </span>
                           </div>
                           {priceData?.currentPrice && (
-                            <div className="flex items-center gap-3 mb-2">
-                              <span className="text-2xl font-mono font-bold text-gray-900 tabular-nums tracking-tight">
+                            <div className="flex items-center gap-2 mb-2">
+                              <span className="text-sm font-mono font-medium text-gray-700 tabular-nums">
                                 {formatPrice(priceData.currentPrice, priceData.currency)}
                               </span>
                               {priceData.change24h !== null && (
@@ -823,15 +823,15 @@ export default function OraclePageClient({
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
                               <div className="p-3 rounded bg-white border border-gray-200">
                                 <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">{t.entry}</div>
-                                <div className="text-lg font-mono font-bold text-gray-900 tabular-nums tracking-tight">{entry}</div>
+                                <div className="text-sm font-mono font-medium text-gray-900 tabular-nums">{entry}</div>
                               </div>
                               <div className="p-3 rounded bg-white border border-gray-200">
                                 <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">{t.stop}</div>
-                                <div className="text-lg font-mono font-bold text-gray-700 tabular-nums tracking-tight">{stop}</div>
+                                <div className="text-sm font-mono font-medium text-gray-700 tabular-nums">{stop}</div>
                               </div>
                               <div className="col-span-2 p-3 rounded bg-white border border-gray-200">
                                 <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">{t.targets}</div>
-                                <div className="text-lg font-mono font-bold text-gray-800 tabular-nums tracking-tight">{targets.join(" • ")}</div>
+                                <div className="text-sm font-mono font-medium text-gray-800 tabular-nums">{targets.join(" • ")}</div>
                               </div>
                               <div className="col-span-2 p-3 rounded bg-white border border-gray-200">
                                 <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">{t.timeframe}</div>
