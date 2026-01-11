@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { OracleRun } from "@/types/oracle";
 import RunButton from "./RunButton";
-import { fetchMultiplePrices, formatPrice, formatChange } from "@/lib/priceService";
+import { formatPrice, formatChange } from "@/lib/priceService";
 import OraclePageClient from "./OraclePageClient";
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
@@ -222,8 +222,28 @@ export default async function OraclePage() {
 
   const ideas = Array.isArray(parsed?.ideas) ? parsed!.ideas : [];
   
+  // Fetch prices from market_assets table instead of external API
   const symbols = ideas.map((idea: any) => idea.symbol).filter(Boolean);
-  const prices = symbols.length > 0 ? await fetchMultiplePrices(symbols) : {};
+  let prices: Record<string, any> = {};
+  
+  if (symbols.length > 0) {
+    const placeholders = symbols.map(() => '?').join(',');
+    const priceRes = await db.execute({
+      sql: `SELECT symbol, price, change_24h FROM market_assets WHERE symbol IN (${placeholders})`,
+      args: symbols,
+    });
+    
+    prices = (priceRes.rows || []).reduce((acc: Record<string, any>, row: any) => {
+      acc[row.symbol] = {
+        symbol: row.symbol,
+        currentPrice: row.price,
+        change24h: row.change_24h,
+        currency: 'USD',
+        lastUpdated: new Date().toISOString(),
+      };
+      return acc;
+    }, {});
+  }
 
   return (
     <OraclePageClient

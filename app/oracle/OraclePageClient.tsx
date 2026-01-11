@@ -8,6 +8,7 @@ import { formatPrice, formatChange } from "@/lib/priceService";
 import OracleIcon from "@/components/OracleIcon";
 import LocaleSelector from "@/components/LocaleSelector";
 import Link from "next/link";
+import { useMarketDataRefresh } from "@/lib/hooks/useMarketDataRefresh";
 
 // Helper function to identify if a symbol is crypto or stock
 function isCryptoSymbol(symbol: string): boolean {
@@ -134,6 +135,9 @@ export default function OraclePageClient({
   const isPro = subscriptionTier === 'pro' || isAdmin;
   const isUSMarketOnly = process.env.NEXT_PUBLIC_US_MARKET_ONLY === 'true';
   const t = getTranslation(isUSMarketOnly ? 'en' : lang);
+
+  // Enable background market data refresh when user is active
+  useMarketDataRefresh(true);
 
   // Re-parse when language changes
   const handleLanguageChange = (newLang: Language) => {
