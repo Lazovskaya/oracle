@@ -345,25 +345,25 @@ export default function PerformancePageClient({ userEmail }: { userEmail: string
                 </Link>
               </div>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {filteredTrades.map((trade) => (
                   <div
                     key={trade.id}
-                    className={`p-6 rounded-xl border-2 ${
+                    className={`p-4 rounded-lg border ${
                       trade.status === 'active'
-                        ? 'border-blue-300 dark:border-blue-700 bg-blue-50/50 dark:bg-blue-900/10'
+                        ? 'border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10'
                         : trade.status === 'winner'
-                        ? 'border-emerald-300 dark:border-emerald-700 bg-emerald-50/50 dark:bg-emerald-900/10'
+                        ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/10'
                         : trade.status === 'loser'
-                        ? 'border-red-300 dark:border-red-700 bg-red-50/50 dark:bg-red-900/10'
-                        : 'border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-900/10'
+                        ? 'border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/10'
+                        : 'border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/10'
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="flex items-start justify-between gap-4 mb-3">
                       <div>
-                        <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{trade.symbol}</h3>
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{trade.symbol}</h3>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`px-2.5 py-1 text-xs font-semibold rounded-md ${
+                          <span className={`px-2 py-0.5 text-xs font-semibold rounded ${
                             trade.status === 'active'
                               ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
                               : trade.status === 'winner'
@@ -375,7 +375,7 @@ export default function PerformancePageClient({ userEmail }: { userEmail: string
                             {trade.status.toUpperCase()}
                           </span>
                           {trade.profit_loss_percentage !== undefined && trade.status !== 'active' && (
-                            <span className={`text-xl font-bold ${
+                            <span className={`text-base font-bold ${
                               trade.profit_loss_percentage > 0
                                 ? 'text-emerald-600 dark:text-emerald-400'
                                 : 'text-red-600 dark:text-red-400'
@@ -385,82 +385,82 @@ export default function PerformancePageClient({ userEmail }: { userEmail: string
                             </span>
                           )}
                           {trade.duration_days && (
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {trade.duration_days}d hold
+                            <span className="text-xs text-gray-600 dark:text-gray-400">
+                              {trade.duration_days}d
                             </span>
                           )}
                           {trade.entry_date && (
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              Entered {formatDate(trade.entry_date)}
+                            <span className="text-xs text-gray-600 dark:text-gray-400">
+                              {formatDate(trade.entry_date)}
                             </span>
                           )}
                         </div>
                       </div>
-                      <div className="flex gap-2">
+                      <div className="flex gap-1">
                         {trade.status === 'active' && (
                           <button
                             onClick={() => handleMarkAsExited(trade.id!, trade)}
-                            className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium rounded-lg transition-colors"
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded transition-colors"
                           >
-                            Close Trade
+                            Close
                           </button>
                         )}
                         <button
                           onClick={() => handleDeleteTrade(trade.id!)}
-                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded transition-colors"
                         >
-                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
                           </svg>
                         </button>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-2 mb-2">
                       {trade.entry_price && (
-                        <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Entry Price</div>
-                          <div className="text-xl font-mono font-bold text-gray-900 dark:text-gray-100">
+                        <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Entry</div>
+                          <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
                             ${trade.entry_price.toFixed(trade.entry_price < 1 ? 4 : 2)}
                           </div>
                         </div>
                       )}
                       {trade.exit_price && (
-                        <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Exit Price</div>
-                          <div className="text-xl font-mono font-bold text-gray-900 dark:text-gray-100">
+                        <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Exit</div>
+                          <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
                             ${trade.exit_price.toFixed(trade.exit_price < 1 ? 4 : 2)}
                           </div>
                         </div>
                       )}
                       {trade.original_stop_loss && (
-                        <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Stop Loss</div>
-                          <div className="text-xl font-mono font-bold text-gray-900 dark:text-gray-100">
+                        <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Stop</div>
+                          <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
                             ${trade.original_stop_loss.toFixed(trade.original_stop_loss < 1 ? 4 : 2)}
                           </div>
                         </div>
                       )}
                       {trade.original_target && (
-                        <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Target</div>
-                          <div className="text-xl font-mono font-bold text-gray-900 dark:text-gray-100">
+                        <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Target</div>
+                          <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
                             ${trade.original_target.toFixed(trade.original_target < 1 ? 4 : 2)}
                           </div>
                         </div>
                       )}
                       {trade.position_value && (
-                        <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Position Size</div>
-                          <div className="text-xl font-mono font-bold text-gray-900 dark:text-gray-100">
+                        <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Position</div>
+                          <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
                             ${trade.position_value.toFixed(2)}
                           </div>
                         </div>
                       )}
                       {trade.profit_loss !== undefined && (
-                        <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">P&L</div>
-                          <div className={`text-xl font-mono font-bold ${
+                        <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">P&L</div>
+                          <div className={`text-sm font-mono font-semibold ${
                             trade.profit_loss > 0
                               ? 'text-emerald-600 dark:text-emerald-400'
                               : 'text-red-600 dark:text-red-400'
@@ -470,34 +470,34 @@ export default function PerformancePageClient({ userEmail }: { userEmail: string
                         </div>
                       )}
                       {trade.risk_reward_ratio && (
-                        <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">R:R Ratio</div>
-                          <div className="text-xl font-mono font-bold text-gray-900 dark:text-gray-100">
+                        <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">R:R</div>
+                          <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
                             1:{trade.risk_reward_ratio.toFixed(2)}
                           </div>
                         </div>
                       )}
                       {trade.exit_reason && (
-                        <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
-                          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Exit Reason</div>
-                          <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {trade.exit_reason.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                        <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                          <div className="text-xs text-gray-500 dark:text-gray-400">Exit</div>
+                          <div className="text-xs font-medium text-gray-900 dark:text-gray-100">
+                            {trade.exit_reason.replace(/_/g, ' ')}
                           </div>
                         </div>
                       )}
                     </div>
 
                     {trade.notes && (
-                      <div className="mb-3 p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
-                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Entry Notes:</div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">{trade.notes}</div>
+                      <div className="mb-2 p-2 bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700">
+                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">Notes:</div>
+                        <div className="text-xs text-gray-700 dark:text-gray-300">{trade.notes}</div>
                       </div>
                     )}
 
                     {trade.lessons_learned && (
-                      <div className="p-3 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700">
-                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Lessons Learned:</div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">{trade.lessons_learned}</div>
+                      <div className="p-2 bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700">
+                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400">Lessons:</div>
+                        <div className="text-xs text-gray-700 dark:text-gray-300">{trade.lessons_learned}</div>
                       </div>
                     )}
                   </div>
