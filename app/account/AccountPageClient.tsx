@@ -41,6 +41,7 @@ export default function AccountPageClient({ user }: { user: User }) {
   const [updatingStyle, setUpdatingStyle] = useState(false);
   const [assetPreference, setAssetPreference] = useState(user.asset_preference);
   const [updatingAsset, setUpdatingAsset] = useState(false);
+  const [cancelingSubscription, setCancelingSubscription] = useState(false);
 
   useEffect(() => {
     fetchSavedIdeas();
@@ -160,6 +161,41 @@ export default function AccountPageClient({ user }: { user: User }) {
       month: 'short',
       day: 'numeric',
     });
+  };
+
+  const handleCancelSubscription = async () => {
+    if (!confirm(
+      '⚠️ Cancel your subscription?\n\n' +
+      'Your access will continue until the end of your current billing period.\n\n' +
+      'This action cannot be undone.'
+    )) {
+      return;
+    }
+
+    setCancelingSubscription(true);
+    try {
+      const response = await fetch('/api/stripe/cancel-subscription', {
+        method: 'POST',
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert(
+          '✅ Subscription canceled successfully!\n\n' +
+          'You\'ll keep access until the end of your billing period.'
+        );
+        // Reload to update UI
+        window.location.reload();
+      } else {
+        alert(`❌ Failed to cancel subscription: ${data.error}`);
+      }
+    } catch (error) {
+      console.error('Error canceling subscription:', error);
+      alert('❌ Failed to cancel subscription. Please try again or contact support.');
+    } finally {
+      setCancelingSubscription(false);
+    }
   };
 
   const getSubscriptionBadge = () => {
@@ -312,6 +348,25 @@ export default function AccountPageClient({ user }: { user: User }) {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                     </svg>
                   </Link>
+                )}
+
+                {/* Cancel Subscription Button */}
+                {user.subscription_status !== 'canceled' && (
+                  <div className="pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <button
+                      onClick={handleCancelSubscription}
+                      disabled={cancelingSubscription}
+                      className="w-full px-4 py-3 rounded-lg border-2 border-red-200 dark:border-red-900/30 bg-red-50 dark:bg-red-900/10 text-red-700 dark:text-red-400 font-medium text-sm hover:bg-red-100 dark:hover:bg-red-900/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                      {cancelingSubscription ? 'Canceling...' : 'Cancel Subscription'}
+                    </button>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 text-center mt-2">
+                      Access continues until end of billing period
+                    </p>
+                  </div>
                 )}
               </div>
             )}
@@ -534,12 +589,12 @@ export default function AccountPageClient({ user }: { user: User }) {
                     </div>
 
                     {idea.risk_note && (
-                      <div className="mt-4 p-3 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-lg">
+                      <div className="mt-4 p-3 bg-pink-50/50 dark:bg-pink-900/10 border border-pink-200 dark:border-pink-800/30 rounded-lg">
                         <div className="flex items-start gap-2">
-                          <span className="text-amber-600 dark:text-amber-500">⚠️</span>
+                          <span className="text-pink-600 dark:text-pink-500">⚠️</span>
                           <div>
-                            <div className="text-xs font-semibold text-amber-800 dark:text-amber-400 mb-1">Risk Note</div>
-                            <div className="text-sm text-amber-700 dark:text-amber-300">{idea.risk_note}</div>
+                            <div className="text-xs font-semibold text-pink-800 dark:text-pink-400 mb-1">Risk Note</div>
+                            <div className="text-sm text-pink-700 dark:text-pink-300">{idea.risk_note}</div>
                           </div>
                         </div>
                       </div>
