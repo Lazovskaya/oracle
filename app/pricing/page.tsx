@@ -55,7 +55,7 @@ export default function PricingPage() {
           {/* Free Tier */}
           <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-gray-900">
             <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Free</h2>
-            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">€0<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
+            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">$0<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
             
             <ul className="space-y-3 mb-8">
               <li className="flex items-start gap-2">
@@ -91,8 +91,8 @@ export default function PricingPage() {
               POPULAR
             </div>
             
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Basic</h2>
-            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">€9<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Premium</h2>
+            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">$9<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
             
             <ul className="space-y-3 mb-8">
               <li className="flex items-start gap-2">
@@ -123,7 +123,7 @@ export default function PricingPage() {
           {/* Pro Tier */}
           <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-gray-900">
             <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Pro</h2>
-            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">€29<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
+            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">$19<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
             
             <ul className="space-y-3 mb-8">
               <li className="flex items-start gap-2">
@@ -164,7 +164,7 @@ export default function PricingPage() {
           {/* Free Tier - Spacer */}
           <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-gray-900 opacity-50">
             <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Free</h2>
-            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">€0<span className="text-base font-normal text-gray-500 dark:text-gray-400">/always</span></p>
+            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">$0<span className="text-base font-normal text-gray-500 dark:text-gray-400">/always</span></p>
             <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
               Free tier is always free
             </p>
@@ -173,16 +173,16 @@ export default function PricingPage() {
           {/* Basic Yearly */}
           <div className="rounded-lg border-2 border-green-600 dark:border-green-500 p-6 bg-white dark:bg-gray-900 relative">
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-md">
-              94% OFF
+              SAVE 27%
             </div>
             
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Basic Yearly</h2>
+            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Premium Yearly</h2>
             <div className="mb-6">
               <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">€0.50</p>
-                <span className="text-sm line-through text-gray-400">€108</span>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white">$79</p>
+                <span className="text-sm line-through text-gray-400">$108</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">One-time payment for 1 year</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Auto-renews yearly · Cancel anytime</p>
             </div>
             
             <ul className="space-y-3 mb-8">
@@ -214,16 +214,16 @@ export default function PricingPage() {
           {/* Pro Yearly */}
           <div className="rounded-lg border-2 border-purple-600 dark:border-purple-500 p-6 bg-white dark:bg-gray-900 relative">
             <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-md">
-              97% OFF
+              SAVE 35%
             </div>
             
             <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Pro Yearly</h2>
             <div className="mb-6">
               <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">€1.00</p>
-                <span className="text-sm line-through text-gray-400">€348</span>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white">$149</p>
+                <span className="text-sm line-through text-gray-400">$228</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">One-time payment for 1 year</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Auto-renews yearly · Cancel anytime</p>
             </div>
             
             <ul className="space-y-3 mb-8">
@@ -255,11 +255,29 @@ export default function PricingPage() {
           </div>
         </div>
 
-        {/* Bottom Disclaimer */}
-        <div className="max-w-3xl mx-auto mt-8 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 text-center">
-          <p className="text-xs text-blue-900 dark:text-blue-300">
-            ⚠️ Launch discount pricing is temporary. Prices will return to normal rates after the promotional period. Lock in your discount now!
-          </p>
+        {/* Subscription Terms */}
+        <div className="max-w-3xl mx-auto mt-8 space-y-4">
+          <div className="p-6 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+            <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-300 mb-3">💳 Subscription Terms</h3>
+            <ul className="space-y-2 text-xs text-blue-800 dark:text-blue-400">
+              <li className="flex items-start gap-2">
+                <span>•</span>
+                <span>All subscriptions auto-renew (monthly or yearly)</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span>•</span>
+                <span>Cancel anytime — access remains until end of billing period</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span>•</span>
+                <span>No refunds except for technical issues</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span>•</span>
+                <span>One-click cancellation from your account dashboard</span>
+              </li>
+            </ul>
+          </div>
         </div>
 
         {/* Why Premium Section */}
