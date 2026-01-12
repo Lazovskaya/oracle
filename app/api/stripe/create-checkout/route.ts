@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
 
-    const { priceId, tier } = await req.json();
+    const { priceId, tier, currency = 'USD' } = await req.json();
 
     const session = await stripe.checkout.sessions.create({
       customer_email: userEmail,
@@ -33,6 +33,7 @@ export async function POST(req: Request) {
       metadata: {
         email: userEmail,
         tier: tier, // 'basic' or 'pro'
+        currency: currency, // 'USD' or 'EUR'
       },
     });
 
