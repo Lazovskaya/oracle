@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getLanguagePreference, setLanguagePreference } from '@/lib/translationLoader';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface LocaleSelectorProps {
   initialLanguage?: string;
@@ -32,6 +33,7 @@ export default function LocaleSelector({ initialLanguage = 'en-US', initialCount
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState(initialLanguage);
   const [country, setCountry] = useState(initialCountry);
+  const { currency, switchCurrency } = useCurrency();
 
   useEffect(() => {
     // Load from cookie (no localStorage flash!)
@@ -68,6 +70,8 @@ export default function LocaleSelector({ initialLanguage = 'en-US', initialCount
   const currentLang = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
   const currentCountry = COUNTRIES.find((c) => c.code === country) || COUNTRIES[0];
 
+  const currencySymbol = currency === 'USD' ? '$' : currency === 'GBP' ? '£' : '€';
+
   return (
     <div className="relative">
       <button
@@ -76,6 +80,7 @@ export default function LocaleSelector({ initialLanguage = 'en-US', initialCount
       >
         <span>{currentLang.flag}</span>
         <span className="text-sm">{currentLang.code.toUpperCase()}</span>
+        <span className="text-sm font-semibold">{currencySymbol}</span>
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>
@@ -88,6 +93,51 @@ export default function LocaleSelector({ initialLanguage = 'en-US', initialCount
             onClick={() => setIsOpen(false)}
           />
           <div className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 p-4">
+            {/* Currency Selection */}
+            <div className="mb-4">
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Currency
+              </h3>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    switchCurrency('USD');
+                  }}
+                  className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    currency === 'USD'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  $ USD
+                </button>
+                <button
+                  onClick={() => {
+                    switchCurrency('GBP');
+                  }}
+                  className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    currency === 'GBP'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  £ GBP
+                </button>
+                <button
+                  onClick={() => {
+                    switchCurrency('EUR');
+                  }}
+                  className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                    currency === 'EUR'
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  € EUR
+                </button>
+              </div>
+            </div>
+
             {/* Language Selection */}
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
