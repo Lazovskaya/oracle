@@ -11,13 +11,16 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(req: Request) {
   try {
     const cookieStore = await cookies();
-    const userEmail = cookieStore.get('user_email')?.value;
+    const cookieEmail = cookieStore.get('user_email')?.value;
+
+    const { priceId, tier, currency = 'USD', email } = await req.json();
+
+    // Use email from request body if provided, otherwise use cookie email
+    const userEmail = email || cookieEmail;
 
     if (!userEmail) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
-
-    const { priceId, tier, currency = 'USD' } = await req.json();
 
     console.log('Creating checkout session:', { priceId, tier, currency, userEmail });
 
