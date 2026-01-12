@@ -72,7 +72,7 @@ export default function PricingContent({ priceIds }: PricingContentProps) {
 
   return (
     <>
-      {/* Monthly Plans */
+      {/* Monthly Plans */}
       <div className="text-center mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Subscriptions</h3>
       </div>
