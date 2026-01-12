@@ -206,27 +206,27 @@ export default async function PromoPage() {
                         </div>
                         
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-500 dark:text-gray-500">Entry:</span>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-500 dark:text-gray-500">Entry:</span>
                             <span className="font-semibold text-gray-900 dark:text-white">
                               ${idea.entry_price.toFixed(2)}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-500 dark:text-gray-500">Stop:</span>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-500 dark:text-gray-500">Stop:</span>
                             <span className="font-semibold text-gray-900 dark:text-white">
                               ${idea.stop_loss.toFixed(2)}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-500 dark:text-gray-500">Target:</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-500 dark:text-gray-500">Target:</span>
+                            <span className="font-semibold text-gray-900 dark:text-white break-words">
                               ${idea.target_prices || '—'}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-gray-500 dark:text-gray-500">Closed:</span>
-                            <span className="font-semibold text-gray-900 dark:text-white">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs text-gray-500 dark:text-gray-500">Closed:</span>
+                            <span className="font-semibold text-gray-900 dark:text-white text-xs sm:text-sm">
                               {new Date(idea.closed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                             </span>
                           </div>
