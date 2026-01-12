@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { User } from '@/lib/auth';
 import Link from 'next/link';
-import { InputModal, ConfirmModal, Toast } from '@/components/Modal';
+import { TradeEntryModal, TradeExitModal, ConfirmModal, Toast } from '@/components/Modal';
 
 interface SavedIdea {
   id: number;
@@ -95,10 +95,16 @@ export default function AccountPageClient({ user }: { user: User }) {
   const [showPerformance, setShowPerformance] = useState(false);
 
   // Modal states
-  const [modalState, setModalState] = useState<{
-    type: 'entry-price' | 'position-value' | 'entry-notes' | 'exit-price' | 'exit-reason' | 'lessons-learned' | null;
-    data?: any;
-  }>({ type: null });
+  const [entryModal, setEntryModal] = useState<{ isOpen: boolean; savedIdeaId: number; idea: SavedIdea | null }>({
+    isOpen: false,
+    savedIdeaId: 0,
+    idea: null
+  });
+  const [exitModal, setExitModal] = useState<{ isOpen: boolean; tradeId: number; trade: TrackedTrade | null }>({
+    isOpen: false,
+    tradeId: 0,
+    trade: null
+  });
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
     title: string;
@@ -171,46 +177,12 @@ export default function AccountPageClient({ user }: { user: User }) {
   };
 
   const handleMarkAsEntered = async (savedIdeaId: number, idea: SavedIdea) => {
-    let entryData = {
-      savedIdeaId,
-      idea,
-      entryPrice: '',
-      positionValue: '',
-      notes: ''
-    };
-
-    // Step 1: Entry price
-    setModalState({ 
-      type: 'entry-price', 
-      data: entryData 
-    });
+    setEntryModal({ isOpen: true, savedIdeaId, idea });
   };
 
-  const handleEntryPriceSubmit = (value: string) => {
-    const data = modalState.data;
-    data.entryPrice = value;
-    
-    // Step 2: Position value
-    setModalState({ 
-      type: 'position-value', 
-      data 
-    });
-  };
-
-  const handlePositionValueSubmit = (value: string) => {
-    const data = modalState.data;
-    data.positionValue = value;
-    
-    // Step 3: Notes
-    setModalState({ 
-      type: 'entry-notes', 
-      data 
-    });
-  };
-
-  const handleEntryNotesSubmit = async (notes: string) => {
-    const { savedIdeaId, idea, entryPrice, positionValue } = modalState.data;
-    setModalState({ type: null });
+  const handleEntrySubmit = async (data: { entryPrice: string; positionValue: string; notes: string }) => {
+    const { savedIdeaId, idea } = entryModal;
+    if (!idea) return;
 
     try {
       const response = await fetch('/api/idea-performance', {
@@ -221,14 +193,14 @@ export default function AccountPageClient({ user }: { user: User }) {
           user_email: user.email,
           symbol: idea.symbol,
           idea_type: 'daily_oracle',
-          entry_price: parseFloat(entryPrice),
+          entry_price: parseFloat(data.entryPrice),
           entry_date: new Date().toISOString(),
-          position_value: positionValue ? parseFloat(positionValue) : undefined,
+          position_value: data.positionValue ? parseFloat(data.positionValue) : undefined,
           original_target: idea.targets ? parseFloat(idea.targets.split(',')[0].trim().replace('$', '')) : undefined,
           original_stop_loss: idea.stop ? parseFloat(idea.stop.replace('$', '')) : undefined,
           expected_timeframe: idea.timeframe,
           status: 'active',
-          notes: notes || undefined,
+          notes: data.notes || undefined,
         }),
       });
 
@@ -246,46 +218,12 @@ export default function AccountPageClient({ user }: { user: User }) {
   };
 
   const handleMarkAsExited = async (tradeId: number, trade: TrackedTrade) => {
-    let exitData = {
-      tradeId,
-      trade,
-      exitPrice: '',
-      exitReason: '',
-      lessonsLearned: ''
-    };
-
-    // Step 1: Exit price
-    setModalState({ 
-      type: 'exit-price', 
-      data: exitData 
-    });
+    setExitModal({ isOpen: true, tradeId, trade });
   };
 
-  const handleExitPriceSubmit = (value: string) => {
-    const data = modalState.data;
-    data.exitPrice = value;
-    
-    // Step 2: Exit reason
-    setModalState({ 
-      type: 'exit-reason', 
-      data 
-    });
-  };
-
-  const handleExitReasonSubmit = (value: string) => {
-    const data = modalState.data;
-    data.exitReason = value;
-    
-    // Step 3: Lessons learned
-    setModalState({ 
-      type: 'lessons-learned', 
-      data 
-    });
-  };
-
-  const handleLessonsLearnedSubmit = async (lessonsLearned: string) => {
-    const { tradeId, trade, exitPrice, exitReason } = modalState.data;
-    setModalState({ type: null });
+  const handleExitSubmit = async (data: { exitPrice: string; exitReason: string; lessonsLearned: string }) => {
+    const { tradeId, trade } = exitModal;
+    if (!trade) return;
 
     try {
       const response = await fetch('/api/idea-performance', {
@@ -298,15 +236,15 @@ export default function AccountPageClient({ user }: { user: User }) {
           idea_type: trade.idea_type,
           entry_price: trade.entry_price,
           entry_date: trade.entry_date,
-          exit_price: parseFloat(exitPrice),
+          exit_price: parseFloat(data.exitPrice),
           exit_date: new Date().toISOString(),
-          exit_reason: exitReason,
+          exit_reason: data.exitReason,
           position_size: trade.position_size,
           position_value: trade.position_value,
           original_target: trade.original_target,
           original_stop_loss: trade.original_stop_loss,
           expected_timeframe: trade.expected_timeframe,
-          lessons_learned: lessonsLearned || undefined,
+          lessons_learned: data.lessonsLearned || undefined,
         }),
       });
 
@@ -1462,69 +1400,20 @@ export default function AccountPageClient({ user }: { user: User }) {
       </div>
 
       {/* Modals */}
-      <InputModal
-        isOpen={modalState.type === 'entry-price'}
-        onClose={() => setModalState({ type: null })}
-        onSubmit={handleEntryPriceSubmit}
-        title={`Enter Trade - ${modalState.data?.idea?.symbol || ''}`}
-        label="Entry Price"
-        placeholder="Enter your entry price"
-        defaultValue={modalState.data?.idea?.entry?.replace('$', '') || ''}
-        type="number"
-        required
+      <TradeEntryModal
+        isOpen={entryModal.isOpen}
+        onClose={() => setEntryModal({ isOpen: false, savedIdeaId: 0, idea: null })}
+        onSubmit={handleEntrySubmit}
+        symbol={entryModal.idea?.symbol || ''}
+        defaultEntry={entryModal.idea?.entry?.replace('$', '') || ''}
       />
 
-      <InputModal
-        isOpen={modalState.type === 'position-value'}
-        onClose={() => setModalState({ type: null })}
-        onSubmit={handlePositionValueSubmit}
-        title={`Enter Trade - ${modalState.data?.idea?.symbol || ''}`}
-        label="Position Value (USD)"
-        placeholder="Enter position value (optional)"
-        type="number"
-      />
-
-      <InputModal
-        isOpen={modalState.type === 'entry-notes'}
-        onClose={() => setModalState({ type: null })}
-        onSubmit={handleEntryNotesSubmit}
-        title={`Enter Trade - ${modalState.data?.idea?.symbol || ''}`}
-        label="Notes"
-        placeholder="Any notes about this entry? (optional)"
-        type="textarea"
-      />
-
-      <InputModal
-        isOpen={modalState.type === 'exit-price'}
-        onClose={() => setModalState({ type: null })}
-        onSubmit={handleExitPriceSubmit}
-        title={`Close Trade - ${modalState.data?.trade?.symbol || ''}`}
-        label="Exit Price"
-        placeholder="Enter your exit price"
-        defaultValue={modalState.data?.trade?.entry_price?.toString() || ''}
-        type="number"
-        required
-      />
-
-      <InputModal
-        isOpen={modalState.type === 'exit-reason'}
-        onClose={() => setModalState({ type: null })}
-        onSubmit={handleExitReasonSubmit}
-        title={`Close Trade - ${modalState.data?.trade?.symbol || ''}`}
-        label="Exit Reason"
-        placeholder="target_hit, stop_loss, manual_exit, or time_based"
-        defaultValue="manual_exit"
-        required
-      />
-
-      <InputModal
-        isOpen={modalState.type === 'lessons-learned'}
-        onClose={() => setModalState({ type: null })}
-        onSubmit={handleLessonsLearnedSubmit}
-        title={`Close Trade - ${modalState.data?.trade?.symbol || ''}`}
-        label="Lessons Learned"
-        placeholder="What did you learn from this trade? (optional)"
-        type="textarea"
+      <TradeExitModal
+        isOpen={exitModal.isOpen}
+        onClose={() => setExitModal({ isOpen: false, tradeId: 0, trade: null })}
+        onSubmit={handleExitSubmit}
+        symbol={exitModal.trade?.symbol || ''}
+        defaultExitPrice={exitModal.trade?.entry_price?.toString() || ''}
       />
 
       <ConfirmModal

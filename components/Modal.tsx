@@ -208,6 +208,214 @@ export function ConfirmModal({
   );
 }
 
+interface TradeEntryModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: { entryPrice: string; positionValue: string; notes: string }) => void;
+  symbol: string;
+  defaultEntry?: string;
+}
+
+export function TradeEntryModal({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  symbol,
+  defaultEntry = ''
+}: TradeEntryModalProps) {
+  const entryPriceRef = useRef<HTMLInputElement>(null);
+  const positionValueRef = useRef<HTMLInputElement>(null);
+  const notesRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isOpen && entryPriceRef.current) {
+      entryPriceRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const entryPrice = entryPriceRef.current?.value || '';
+    const positionValue = positionValueRef.current?.value || '';
+    const notes = notesRef.current?.value || '';
+    
+    if (!entryPrice.trim()) return;
+    
+    onSubmit({ entryPrice, positionValue, notes });
+    onClose();
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={`Enter Trade - ${symbol}`} maxWidth="max-w-lg">
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Entry Price <span className="text-red-500">*</span>
+            </label>
+            <input
+              ref={entryPriceRef}
+              type="number"
+              defaultValue={defaultEntry}
+              placeholder="Enter your entry price"
+              required
+              step="any"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Position Value (USD)
+            </label>
+            <input
+              ref={positionValueRef}
+              type="number"
+              placeholder="Enter position value (optional)"
+              step="any"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Notes
+            </label>
+            <textarea
+              ref={notesRef}
+              placeholder="Any notes about this entry? (optional)"
+              rows={3}
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-colors resize-none"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-3 justify-end mt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-colors"
+          >
+            Track Trade
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
+interface TradeExitModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (data: { exitPrice: string; exitReason: string; lessonsLearned: string }) => void;
+  symbol: string;
+  defaultExitPrice?: string;
+}
+
+export function TradeExitModal({ 
+  isOpen, 
+  onClose, 
+  onSubmit, 
+  symbol,
+  defaultExitPrice = ''
+}: TradeExitModalProps) {
+  const exitPriceRef = useRef<HTMLInputElement>(null);
+  const exitReasonRef = useRef<HTMLSelectElement>(null);
+  const lessonsRef = useRef<HTMLTextAreaElement>(null);
+
+  useEffect(() => {
+    if (isOpen && exitPriceRef.current) {
+      exitPriceRef.current.focus();
+    }
+  }, [isOpen]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const exitPrice = exitPriceRef.current?.value || '';
+    const exitReason = exitReasonRef.current?.value || '';
+    const lessonsLearned = lessonsRef.current?.value || '';
+    
+    if (!exitPrice.trim() || !exitReason.trim()) return;
+    
+    onSubmit({ exitPrice, exitReason, lessonsLearned });
+    onClose();
+  };
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={`Close Trade - ${symbol}`} maxWidth="max-w-lg">
+      <form onSubmit={handleSubmit}>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Exit Price <span className="text-red-500">*</span>
+            </label>
+            <input
+              ref={exitPriceRef}
+              type="number"
+              defaultValue={defaultExitPrice}
+              placeholder="Enter your exit price"
+              required
+              step="any"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-colors"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Exit Reason <span className="text-red-500">*</span>
+            </label>
+            <select
+              ref={exitReasonRef}
+              required
+              defaultValue="manual_exit"
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-colors"
+            >
+              <option value="target_hit">Target Hit</option>
+              <option value="stop_loss">Stop Loss</option>
+              <option value="manual_exit">Manual Exit</option>
+              <option value="time_based">Time Based</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              Lessons Learned
+            </label>
+            <textarea
+              ref={lessonsRef}
+              placeholder="What did you learn from this trade? (optional)"
+              rows={4}
+              className="w-full px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 focus:border-transparent transition-colors resize-none"
+            />
+          </div>
+        </div>
+
+        <div className="flex gap-3 justify-end mt-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-4 py-2.5 rounded-lg border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors font-medium"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-medium transition-colors"
+          >
+            Close Trade
+          </button>
+        </div>
+      </form>
+    </Modal>
+  );
+}
+
 interface ToastProps {
   message: string;
   type?: 'success' | 'error' | 'info';
