@@ -1132,25 +1132,25 @@ export default function AccountPageClient({ user }: { user: User }) {
 
                     <p className="text-gray-700 dark:text-gray-200 leading-relaxed mb-4">{idea.rationale}</p>
 
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
-                      <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
-                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
-                        <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{idea.entry || '—'}</div>
+                    <div className="grid grid-cols-3 md:grid-cols-5 gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                      <div className="p-2 rounded bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Entry</div>
+                        <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">{idea.entry || '—'}</div>
                       </div>
-                      <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
-                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop</div>
-                        <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{idea.stop || '—'}</div>
+                      <div className="p-2 rounded bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Stop</div>
+                        <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">{idea.stop || '—'}</div>
                       </div>
-                      <div className="col-span-2 p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
-                        <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
-                        <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
+                      <div className="col-span-2 p-2 rounded bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Targets</div>
+                        <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
                           {targets.length > 0 ? targets.join(' • ') : '—'}
                         </div>
                       </div>
                       {idea.timeframe && (
-                        <div className="col-span-2 p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Timeframe</div>
-                          <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{idea.timeframe}</div>
+                        <div className="p-2 rounded bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Timeframe</div>
+                          <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">{idea.timeframe}</div>
                         </div>
                       )}
                     </div>
