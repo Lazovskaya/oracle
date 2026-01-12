@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { User } from '@/lib/auth';
 import Link from 'next/link';
+import { InputModal, ConfirmModal, Toast } from '@/components/Modal';
 
 interface SavedIdea {
   id: number;
@@ -93,6 +94,28 @@ export default function AccountPageClient({ user }: { user: User }) {
   const [cancelingSubscription, setCancelingSubscription] = useState(false);
   const [showPerformance, setShowPerformance] = useState(false);
 
+  // Modal states
+  const [modalState, setModalState] = useState<{
+    type: 'entry-price' | 'position-value' | 'entry-notes' | 'exit-price' | 'exit-reason' | 'lessons-learned' | null;
+    data?: any;
+  }>({ type: null });
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+    variant?: 'danger' | 'warning' | 'info';
+  }>({ isOpen: false, title: '', message: '', onConfirm: () => {} });
+  const [toast, setToast] = useState<{
+    isVisible: boolean;
+    message: string;
+    type: 'success' | 'error' | 'info';
+  }>({ isVisible: false, message: '', type: 'info' });
+
+  const showToast = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
+    setToast({ isVisible: true, message, type });
+  };
+
   useEffect(() => {
     fetchSavedIdeas();
     if (user.subscription_tier === 'pro') {
@@ -148,11 +171,46 @@ export default function AccountPageClient({ user }: { user: User }) {
   };
 
   const handleMarkAsEntered = async (savedIdeaId: number, idea: SavedIdea) => {
-    const entryPrice = prompt(`Enter your entry price for ${idea.symbol}:`, idea.entry);
-    if (!entryPrice) return;
+    let entryData = {
+      savedIdeaId,
+      idea,
+      entryPrice: '',
+      positionValue: '',
+      notes: ''
+    };
 
-    const positionValue = prompt('Enter position value in USD (optional):');
-    const notes = prompt('Any notes about this entry? (optional):');
+    // Step 1: Entry price
+    setModalState({ 
+      type: 'entry-price', 
+      data: entryData 
+    });
+  };
+
+  const handleEntryPriceSubmit = (value: string) => {
+    const data = modalState.data;
+    data.entryPrice = value;
+    
+    // Step 2: Position value
+    setModalState({ 
+      type: 'position-value', 
+      data 
+    });
+  };
+
+  const handlePositionValueSubmit = (value: string) => {
+    const data = modalState.data;
+    data.positionValue = value;
+    
+    // Step 3: Notes
+    setModalState({ 
+      type: 'entry-notes', 
+      data 
+    });
+  };
+
+  const handleEntryNotesSubmit = async (notes: string) => {
+    const { savedIdeaId, idea, entryPrice, positionValue } = modalState.data;
+    setModalState({ type: null });
 
     try {
       const response = await fetch('/api/idea-performance', {
@@ -175,28 +233,59 @@ export default function AccountPageClient({ user }: { user: User }) {
       });
 
       if (response.ok) {
-        alert(`✅ Trade entered for ${idea.symbol}! Now tracking performance.`);
+        showToast(`Trade entered for ${idea.symbol}! Now tracking performance.`, 'success');
         fetchPerformanceData();
       } else {
         const error = await response.json();
-        alert(`Failed to mark as entered: ${error.error}`);
+        showToast(`Failed to mark as entered: ${error.error}`, 'error');
       }
     } catch (error) {
       console.error('Error marking as entered:', error);
-      alert('Failed to mark trade as entered');
+      showToast('Failed to mark trade as entered', 'error');
     }
   };
 
   const handleMarkAsExited = async (tradeId: number, trade: TrackedTrade) => {
-    const exitPrice = prompt(`Enter exit price for ${trade.symbol}:`, trade.entry_price?.toString());
-    if (!exitPrice) return;
+    let exitData = {
+      tradeId,
+      trade,
+      exitPrice: '',
+      exitReason: '',
+      lessonsLearned: ''
+    };
 
-    const exitReason = prompt(
-      'Exit reason? (target_hit, stop_loss, manual_exit, time_based):',
-      'manual_exit'
-    );
+    // Step 1: Exit price
+    setModalState({ 
+      type: 'exit-price', 
+      data: exitData 
+    });
+  };
 
-    const lessonsLearned = prompt('What did you learn from this trade? (optional):');
+  const handleExitPriceSubmit = (value: string) => {
+    const data = modalState.data;
+    data.exitPrice = value;
+    
+    // Step 2: Exit reason
+    setModalState({ 
+      type: 'exit-reason', 
+      data 
+    });
+  };
+
+  const handleExitReasonSubmit = (value: string) => {
+    const data = modalState.data;
+    data.exitReason = value;
+    
+    // Step 3: Lessons learned
+    setModalState({ 
+      type: 'lessons-learned', 
+      data 
+    });
+  };
+
+  const handleLessonsLearnedSubmit = async (lessonsLearned: string) => {
+    const { tradeId, trade, exitPrice, exitReason } = modalState.data;
+    setModalState({ type: null });
 
     try {
       const response = await fetch('/api/idea-performance', {
@@ -222,60 +311,81 @@ export default function AccountPageClient({ user }: { user: User }) {
       });
 
       if (response.ok) {
-        alert(`✅ Trade closed for ${trade.symbol}!`);
+        showToast(`Trade closed for ${trade.symbol}!`, 'success');
         fetchPerformanceData();
       } else {
         const error = await response.json();
-        alert(`Failed to close trade: ${error.error}`);
+        showToast(`Failed to close trade: ${error.error}`, 'error');
       }
     } catch (error) {
       console.error('Error closing trade:', error);
-      alert('Failed to close trade');
+      showToast('Failed to close trade', 'error');
     }
   };
 
   const handleDeleteTrade = async (tradeId: number) => {
-    if (!confirm('Delete this trade record? This cannot be undone.')) return;
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Trade Record',
+      message: 'Delete this trade record? This cannot be undone.',
+      variant: 'danger',
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/idea-performance?id=${tradeId}`, {
+            method: 'DELETE',
+          });
 
-    try {
-      const response = await fetch(`/api/idea-performance?id=${tradeId}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        setTrackedTrades(trackedTrades.filter(t => t.id !== tradeId));
-        fetchPerformanceData();
-      } else {
-        alert('Failed to delete trade record');
+          if (response.ok) {
+            setTrackedTrades(trackedTrades.filter(t => t.id !== tradeId));
+            fetchPerformanceData();
+            showToast('Trade record deleted', 'success');
+          } else {
+            showToast('Failed to delete trade record', 'error');
+          }
+        } catch (error) {
+          console.error('Error deleting trade:', error);
+          showToast('Failed to delete trade', 'error');
+        }
       }
-    } catch (error) {
-      console.error('Error deleting trade:', error);
-      alert('Failed to delete trade');
-    }
+    });
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm('Remove this idea from your saved list?')) return;
-
-    try {
-      await fetch(`/api/saved-ideas?id=${id}`, { method: 'DELETE' });
-      setSavedIdeas(savedIdeas.filter(idea => idea.id !== id));
-    } catch (error) {
-      console.error('Error deleting idea:', error);
-      alert('Failed to remove idea');
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Saved Idea',
+      message: 'Remove this idea from your saved list?',
+      variant: 'warning',
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/saved-ideas?id=${id}`, { method: 'DELETE' });
+          setSavedIdeas(savedIdeas.filter(idea => idea.id !== id));
+          showToast('Idea removed', 'success');
+        } catch (error) {
+          console.error('Error deleting idea:', error);
+          showToast('Failed to remove idea', 'error');
+        }
+      }
+    });
   };
 
   const handleDeleteAnalysis = async (id: number) => {
-    if (!confirm('Remove this analysis from your saved list?')) return;
-
-    try {
-      await fetch(`/api/saved-symbol-analyses?id=${id}`, { method: 'DELETE' });
-      setSavedAnalyses(savedAnalyses.filter(analysis => analysis.id !== id));
-    } catch (error) {
-      console.error('Error deleting analysis:', error);
-      alert('Failed to remove analysis');
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Remove Saved Analysis',
+      message: 'Remove this analysis from your saved list?',
+      variant: 'warning',
+      onConfirm: async () => {
+        try {
+          await fetch(`/api/saved-symbol-analyses?id=${id}`, { method: 'DELETE' });
+          setSavedAnalyses(savedAnalyses.filter(analysis => analysis.id !== id));
+          showToast('Analysis removed', 'success');
+        } catch (error) {
+          console.error('Error deleting analysis:', error);
+          showToast('Failed to remove analysis', 'error');
+        }
+      }
+    });
   };
 
   const handleTradingStyleChange = async (newStyle: 'conservative' | 'balanced' | 'aggressive') => {
@@ -292,17 +402,17 @@ export default function AccountPageClient({ user }: { user: User }) {
         
         // Show success message
         const messages = {
-          conservative: '🛡️ Trading style updated to Conservative. Your recommendations will prioritize capital preservation.',
-          balanced: '⚖️ Trading style updated to Balanced. You\'ll get standard risk/reward recommendations.',
-          aggressive: '🚀 Trading style updated to Aggressive. Your recommendations will target higher returns with increased risk.',
+          conservative: 'Trading style updated to Capital Protection. Your recommendations will prioritize capital preservation.',
+          balanced: 'Trading style updated to Trend Following. You\'ll get standard risk/reward recommendations.',
+          aggressive: 'Trading style updated to Momentum Hunt. Your recommendations will target higher returns with increased risk.',
         };
-        alert(messages[newStyle]);
+        showToast(messages[newStyle], 'success');
       } else {
-        alert('Failed to update trading style');
+        showToast('Failed to update trading style', 'error');
       }
     } catch (error) {
       console.error('Error updating trading style:', error);
-      alert('Failed to update trading style');
+      showToast('Failed to update trading style', 'error');
     } finally {
       setUpdatingStyle(false);
     }
@@ -321,17 +431,17 @@ export default function AccountPageClient({ user }: { user: User }) {
         setAssetPreference(newPreference);
         
         const messages = {
-          crypto: '₿ Asset preference updated to Crypto. You\'ll see cryptocurrency trading ideas.',
-          stocks: '📈 Asset preference updated to Stocks. You\'ll see stock market trading ideas.',
-          both: '🔄 Asset preference updated to Both. You\'ll see both crypto and stock ideas.',
+          crypto: 'Asset preference updated to Crypto. You\'ll see cryptocurrency trading ideas.',
+          stocks: 'Asset preference updated to Stocks. You\'ll see stock market trading ideas.',
+          both: 'Asset preference updated to Both. You\'ll see both crypto and stock ideas.',
         };
-        alert(messages[newPreference]);
+        showToast(messages[newPreference], 'success');
       } else {
-        alert('Failed to update asset preference');
+        showToast('Failed to update asset preference', 'error');
       }
     } catch (error) {
       console.error('Error updating asset preference:', error);
-      alert('Failed to update asset preference');
+      showToast('Failed to update asset preference', 'error');
     } finally {
       setUpdatingAsset(false);
     }
@@ -346,38 +456,35 @@ export default function AccountPageClient({ user }: { user: User }) {
   };
 
   const handleCancelSubscription = async () => {
-    if (!confirm(
-      '⚠️ Cancel your subscription?\n\n' +
-      'Your access will continue until the end of your current billing period.\n\n' +
-      'This action cannot be undone.'
-    )) {
-      return;
-    }
+    setConfirmModal({
+      isOpen: true,
+      title: 'Cancel Subscription',
+      message: '⚠️ Cancel your subscription?\n\nYour access will continue until the end of your current billing period.\n\nThis action cannot be undone.',
+      variant: 'danger',
+      onConfirm: async () => {
+        setCancelingSubscription(true);
+        try {
+          const response = await fetch('/api/stripe/cancel-subscription', {
+            method: 'POST',
+          });
 
-    setCancelingSubscription(true);
-    try {
-      const response = await fetch('/api/stripe/cancel-subscription', {
-        method: 'POST',
-      });
+          const data = await response.json();
 
-      const data = await response.json();
-
-      if (response.ok) {
-        alert(
-          '✅ Subscription canceled successfully!\n\n' +
-          'You\'ll keep access until the end of your billing period.'
-        );
-        // Reload to update UI
-        window.location.reload();
-      } else {
-        alert(`❌ Failed to cancel subscription: ${data.error}`);
+          if (response.ok) {
+            showToast('Subscription canceled successfully! You\'ll keep access until the end of your billing period.', 'success');
+            // Reload to update UI
+            setTimeout(() => window.location.reload(), 2000);
+          } else {
+            showToast(`Failed to cancel subscription: ${data.error}`, 'error');
+          }
+        } catch (error) {
+          console.error('Error canceling subscription:', error);
+          showToast('Failed to cancel subscription. Please try again or contact support.', 'error');
+        } finally {
+          setCancelingSubscription(false);
+        }
       }
-    } catch (error) {
-      console.error('Error canceling subscription:', error);
-      alert('❌ Failed to cancel subscription. Please try again or contact support.');
-    } finally {
-      setCancelingSubscription(false);
-    }
+    });
   };
 
   const getSubscriptionBadge = () => {
@@ -1353,6 +1460,88 @@ export default function AccountPageClient({ user }: { user: User }) {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <InputModal
+        isOpen={modalState.type === 'entry-price'}
+        onClose={() => setModalState({ type: null })}
+        onSubmit={handleEntryPriceSubmit}
+        title={`Enter Trade - ${modalState.data?.idea?.symbol || ''}`}
+        label="Entry Price"
+        placeholder="Enter your entry price"
+        defaultValue={modalState.data?.idea?.entry?.replace('$', '') || ''}
+        type="number"
+        required
+      />
+
+      <InputModal
+        isOpen={modalState.type === 'position-value'}
+        onClose={() => setModalState({ type: null })}
+        onSubmit={handlePositionValueSubmit}
+        title={`Enter Trade - ${modalState.data?.idea?.symbol || ''}`}
+        label="Position Value (USD)"
+        placeholder="Enter position value (optional)"
+        type="number"
+      />
+
+      <InputModal
+        isOpen={modalState.type === 'entry-notes'}
+        onClose={() => setModalState({ type: null })}
+        onSubmit={handleEntryNotesSubmit}
+        title={`Enter Trade - ${modalState.data?.idea?.symbol || ''}`}
+        label="Notes"
+        placeholder="Any notes about this entry? (optional)"
+        type="textarea"
+      />
+
+      <InputModal
+        isOpen={modalState.type === 'exit-price'}
+        onClose={() => setModalState({ type: null })}
+        onSubmit={handleExitPriceSubmit}
+        title={`Close Trade - ${modalState.data?.trade?.symbol || ''}`}
+        label="Exit Price"
+        placeholder="Enter your exit price"
+        defaultValue={modalState.data?.trade?.entry_price?.toString() || ''}
+        type="number"
+        required
+      />
+
+      <InputModal
+        isOpen={modalState.type === 'exit-reason'}
+        onClose={() => setModalState({ type: null })}
+        onSubmit={handleExitReasonSubmit}
+        title={`Close Trade - ${modalState.data?.trade?.symbol || ''}`}
+        label="Exit Reason"
+        placeholder="target_hit, stop_loss, manual_exit, or time_based"
+        defaultValue="manual_exit"
+        required
+      />
+
+      <InputModal
+        isOpen={modalState.type === 'lessons-learned'}
+        onClose={() => setModalState({ type: null })}
+        onSubmit={handleLessonsLearnedSubmit}
+        title={`Close Trade - ${modalState.data?.trade?.symbol || ''}`}
+        label="Lessons Learned"
+        placeholder="What did you learn from this trade? (optional)"
+        type="textarea"
+      />
+
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={() => setConfirmModal({ ...confirmModal, isOpen: false })}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        variant={confirmModal.variant}
+      />
+
+      <Toast
+        isVisible={toast.isVisible}
+        message={toast.message}
+        type={toast.type}
+        onClose={() => setToast({ ...toast, isVisible: false })}
+      />
     </main>
   );
 }
