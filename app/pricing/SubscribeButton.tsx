@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SubscribeButton({ 
   tier, 
@@ -15,6 +15,23 @@ export default function SubscribeButton({
   const [country, setCountry] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [riskAccepted, setRiskAccepted] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    // Check authentication status
+    fetch('/api/auth/check')
+      .then(res => setIsAuthenticated(res.ok))
+      .catch(() => setIsAuthenticated(false));
+  }, []);
+
+  const handleButtonClick = () => {
+    if (isAuthenticated === false) {
+      // Redirect to login
+      window.location.href = '/login?redirect=/pricing';
+      return;
+    }
+    setShowModal(true);
+  };
 
   const handleSubscribe = async () => {
     if (!country) {
@@ -79,13 +96,13 @@ export default function SubscribeButton({
   return (
     <>
       <button
-        onClick={() => setShowModal(true)}
-        disabled={loading}
+        onClick={handleButtonClick}
+        disabled={loading || isAuthenticated === null}
         className="w-full group relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-2xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
         <div className="relative">
-          {loading ? 'Loading...' : 'Subscribe Now'}
+          {loading ? 'Loading...' : isAuthenticated === false ? 'Log In to Subscribe' : 'Subscribe Now'}
         </div>
       </button>
 
