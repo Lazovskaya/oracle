@@ -1,6 +1,7 @@
 import SubscribeButton from './SubscribeButton';
 import LocaleSelector from '@/components/LocaleSelector';
 import { Metadata } from "next";
+import PricingClient from './PricingClient';
 
 export const metadata: Metadata = {
   title: "Pricing & Plans - Market Oracle Trading Intelligence",
@@ -35,6 +36,9 @@ export default function PricingPage() {
             Professional trading intelligence without the hype. No "signals", no "100% accuracy" — just clear decision support.
           </p>
         </div>
+
+        {/* Payment Status Messages */}
+        <PricingClient />
 
         {/* Special Discount Banner */}
         <div className="max-w-3xl mx-auto mb-8 p-4 rounded-lg bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800 text-center">
