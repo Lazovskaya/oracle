@@ -4,13 +4,14 @@ import { useEffect, useState } from 'react';
 
 export interface GeolocationData {
   country: string | null;
-  currency: 'USD' | 'EUR';
+  currency: 'USD' | 'EUR' | 'GBP';
   locale: 'en-US' | 'en-GB';
   isEU: boolean;
+  isUK?: boolean;
 }
 
 export function useCurrency() {
-  const [currency, setCurrency] = useState<'USD' | 'EUR'>('USD');
+  const [currency, setCurrency] = useState<'USD' | 'EUR' | 'GBP'>('USD');
   const [locale, setLocale] = useState<'en-US' | 'en-GB'>('en-US');
   const [isLoading, setIsLoading] = useState(true);
   const [country, setCountry] = useState<string | null>(null);
@@ -19,7 +20,7 @@ export function useCurrency() {
     async function detectLocation() {
       try {
         // Check if we have a saved preference
-        const savedCurrency = localStorage.getItem('user_currency') as 'USD' | 'EUR' | null;
+        const savedCurrency = localStorage.getItem('user_currency') as 'USD' | 'EUR' | 'GBP' | null;
         const savedLocale = localStorage.getItem('user_locale') as 'en-US' | 'en-GB' | null;
         
         if (savedCurrency && savedLocale) {
@@ -56,11 +57,12 @@ export function useCurrency() {
     detectLocation();
   }, []);
 
-  const switchCurrency = (newCurrency: 'USD' | 'EUR') => {
+  const switchCurrency = (newCurrency: 'USD' | 'EUR' | 'GBP') => {
     setCurrency(newCurrency);
-    setLocale(newCurrency === 'EUR' ? 'en-GB' : 'en-US');
+    const newLocale = newCurrency === 'USD' ? 'en-US' : 'en-GB';
+    setLocale(newLocale);
     localStorage.setItem('user_currency', newCurrency);
-    localStorage.setItem('user_locale', newCurrency === 'EUR' ? 'en-GB' : 'en-US');
+    localStorage.setItem('user_locale', newLocale);
   };
 
   return {

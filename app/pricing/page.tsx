@@ -1,4 +1,5 @@
 import LocaleSelector from '@/components/LocaleSelector';
+import CurrencySelector from '@/components/CurrencySelector';
 import { Metadata } from "next";
 import PricingClient from './PricingClient';
 import PricingContent from './PricingContent';
@@ -22,6 +23,12 @@ export default function PricingPage() {
   const basicYearlyPriceIdEUR = process.env.STRIPE_BASIC_YEARLY_PRICE_ID_EUR || basicYearlyPriceId;
   const proYearlyPriceIdEUR = process.env.STRIPE_PRO_YEARLY_PRICE_ID_EUR || proYearlyPriceId;
 
+  // GBP Price IDs
+  const basicPriceIdGBP = process.env.STRIPE_BASIC_PRICE_ID_GBP || basicPriceId;
+  const proPriceIdGBP = process.env.STRIPE_PRO_PRICE_ID_GBP || proPriceId;
+  const basicYearlyPriceIdGBP = process.env.STRIPE_BASIC_YEARLY_PRICE_ID_GBP || basicYearlyPriceId;
+  const proYearlyPriceIdGBP = process.env.STRIPE_PRO_YEARLY_PRICE_ID_GBP || proYearlyPriceId;
+
   const priceIds = {
     basicUSD: basicPriceId,
     proUSD: proPriceId,
@@ -31,12 +38,17 @@ export default function PricingPage() {
     proEUR: proPriceIdEUR,
     basicYearlyEUR: basicYearlyPriceIdEUR,
     proYearlyEUR: proYearlyPriceIdEUR,
+    basicGBP: basicPriceIdGBP,
+    proGBP: proPriceIdGBP,
+    basicYearlyGBP: basicYearlyPriceIdGBP,
+    proYearlyGBP: proYearlyPriceIdGBP,
   };
 
   return (
     <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-end items-center gap-3 mb-6">
+          <CurrencySelector />
           <LocaleSelector />
           <a href="/account" className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -13,13 +13,17 @@ interface PricingContentProps {
     proEUR: string;
     basicYearlyEUR: string;
     proYearlyEUR: string;
+    basicGBP: string;
+    proGBP: string;
+    basicYearlyGBP: string;
+    proYearlyGBP: string;
   };
 }
 
 export default function PricingContent({ priceIds }: PricingContentProps) {
   const { currency, isLoading, switchCurrency } = useCurrency();
 
-  // Prices in USD and EUR
+  // Prices (same across all currencies, no conversion)
   const prices = {
     USD: {
       basic: 9,
@@ -31,22 +35,31 @@ export default function PricingContent({ priceIds }: PricingContentProps) {
       symbol: '$',
     },
     EUR: {
-      basic: 8,
-      pro: 17,
-      basicYearly: 69,
-      basicYearlyOriginal: 96,
-      proYearly: 129,
-      proYearlyOriginal: 204,
+      basic: 9,
+      pro: 19,
+      basicYearly: 79,
+      basicYearlyOriginal: 108,
+      proYearly: 149,
+      proYearlyOriginal: 228,
       symbol: '€',
+    },
+    GBP: {
+      basic: 9,
+      pro: 19,
+      basicYearly: 79,
+      basicYearlyOriginal: 108,
+      proYearly: 149,
+      proYearlyOriginal: 228,
+      symbol: '£',
     },
   };
 
   const currentPrices = prices[currency];
   const currentPriceIds = {
-    basic: currency === 'EUR' ? priceIds.basicEUR : priceIds.basicUSD,
-    pro: currency === 'EUR' ? priceIds.proEUR : priceIds.proUSD,
-    basicYearly: currency === 'EUR' ? priceIds.basicYearlyEUR : priceIds.basicYearlyUSD,
-    proYearly: currency === 'EUR' ? priceIds.proYearlyEUR : priceIds.proYearlyUSD,
+    basic: currency === 'EUR' ? priceIds.basicEUR : currency === 'GBP' ? priceIds.basicGBP : priceIds.basicUSD,
+    pro: currency === 'EUR' ? priceIds.proEUR : currency === 'GBP' ? priceIds.proGBP : priceIds.proUSD,
+    basicYearly: currency === 'EUR' ? priceIds.basicYearlyEUR : currency === 'GBP' ? priceIds.basicYearlyGBP : priceIds.basicYearlyUSD,
+    proYearly: currency === 'EUR' ? priceIds.proYearlyEUR : currency === 'GBP' ? priceIds.proYearlyGBP : priceIds.proYearlyUSD,
   };
 
   if (isLoading) {
@@ -59,33 +72,7 @@ export default function PricingContent({ priceIds }: PricingContentProps) {
 
   return (
     <>
-      {/* Currency Switcher */}
-      <div className="flex justify-center mb-8">
-        <div className="inline-flex rounded-lg border border-gray-300 dark:border-gray-700 p-1 bg-white dark:bg-gray-900">
-          <button
-            onClick={() => switchCurrency('USD')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              currency === 'USD'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`}
-          >
-            🇺🇸 USD ($)
-          </button>
-          <button
-            onClick={() => switchCurrency('EUR')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
-              currency === 'EUR'
-                ? 'bg-blue-600 text-white'
-                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
-            }`}
-          >
-            🇪🇺 EUR (€)
-          </button>
-        </div>
-      </div>
-
-      {/* Monthly Plans */}
+      {/* Monthly Plans */
       <div className="text-center mb-4">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Subscriptions</h3>
       </div>

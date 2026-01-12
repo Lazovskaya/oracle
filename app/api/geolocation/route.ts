@@ -22,13 +22,12 @@ export async function GET(request: NextRequest) {
     let locale = 'en-US';
 
     // If we have a country code, determine currency
-    if (detectedCountry && EU_COUNTRIES.includes(detectedCountry)) {
+    if (detectedCountry === 'GB') {
+      currency = 'GBP';
+      locale = 'en-GB';
+    } else if (detectedCountry && EU_COUNTRIES.includes(detectedCountry)) {
       currency = 'EUR';
       locale = 'en-GB'; // Use British English for EU
-    } else if (detectedCountry === 'GB') {
-      currency = 'GBP'; // We can support GBP later, for now use EUR
-      locale = 'en-GB';
-      currency = 'EUR'; // Treat UK as EUR for now
     }
 
     return NextResponse.json({
@@ -36,7 +35,8 @@ export async function GET(request: NextRequest) {
       currency,
       locale,
       ip: ip === 'unknown' ? null : ip,
-      isEU: detectedCountry ? EU_COUNTRIES.includes(detectedCountry) : false
+      isEU: detectedCountry ? EU_COUNTRIES.includes(detectedCountry) : false,
+      isUK: detectedCountry === 'GB'
     });
   } catch (error) {
     console.error('Geolocation detection error:', error);

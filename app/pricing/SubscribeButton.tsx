@@ -8,7 +8,7 @@ export default function SubscribeButton({
 }: { 
   tier: 'basic' | 'pro' | 'basic-yearly' | 'pro-yearly';
   priceId: string;
-  currency?: 'USD' | 'EUR';
+  currency?: 'USD' | 'EUR' | 'GBP';
 }) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
