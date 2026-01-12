@@ -86,13 +86,13 @@ export default function PerformancePageClient({ userEmail }: { userEmail: string
     setLoading(true);
     try {
       const [performanceRes, statsRes] = await Promise.all([
-        fetch('/api/idea-performance'),
-        fetch('/api/idea-performance/stats')
+        fetch(`/api/idea-performance?user_email=${encodeURIComponent(userEmail)}`),
+        fetch(`/api/idea-performance/stats?user_email=${encodeURIComponent(userEmail)}`)
       ]);
 
       if (performanceRes.ok) {
         const performanceData = await performanceRes.json();
-        setTrackedTrades(performanceData.trades || []);
+        setTrackedTrades(performanceData.records || []);
       }
 
       if (statsRes.ok) {
