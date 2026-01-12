@@ -189,7 +189,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({ 
         success: true, 
-        id: result.info.lastInsertRowid,
+        id: Number(result.info.lastInsertRowid),
         created: true 
       });
     }
