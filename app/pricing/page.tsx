@@ -1,5 +1,6 @@
 import LocaleSelector from '@/components/LocaleSelector';
 import { Metadata } from "next";
+import { Suspense } from 'react';
 import PricingClient from './PricingClient';
 import PricingContent from './PricingContent';
 
@@ -65,7 +66,9 @@ export default function PricingPage() {
         </div>
 
         {/* Payment Status Messages */}
-        <PricingClient />
+        <Suspense fallback={null}>
+          <PricingClient />
+        </Suspense>
 
         {/* Special Discount Banner */}
         <div className="max-w-3xl mx-auto mb-8 p-4 rounded-lg bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800 text-center">
