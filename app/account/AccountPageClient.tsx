@@ -33,15 +33,65 @@ interface SavedAnalysis {
   saved_at: string;
 }
 
+interface TrackedTrade {
+  id: number;
+  saved_idea_id?: number;
+  saved_analysis_id?: number;
+  symbol: string;
+  idea_type: string;
+  entry_price?: number;
+  entry_date?: string;
+  position_size?: number;
+  position_value?: number;
+  exit_price?: number;
+  exit_date?: string;
+  exit_reason?: string;
+  status: 'active' | 'winner' | 'loser' | 'breakeven' | 'cancelled';
+  profit_loss?: number;
+  profit_loss_percentage?: number;
+  risk_reward_ratio?: number;
+  original_target?: number;
+  original_stop_loss?: number;
+  duration_days?: number;
+  expected_timeframe?: string;
+  notes?: string;
+  lessons_learned?: string;
+  created_at?: string;
+  closed_at?: string;
+}
+
+interface PerformanceStats {
+  totalTrades: number;
+  activeTrades: number;
+  closedTrades: number;
+  winners: number;
+  losers: number;
+  breakeven: number;
+  winRate: number;
+  avgWin: number;
+  avgLoss: number;
+  totalProfitLoss: number;
+  totalProfitLossPercentage: number;
+  bestTrade: { symbol: string; profit: number; percentage: number } | null;
+  worstTrade: { symbol: string; loss: number; percentage: number } | null;
+  avgDuration: number;
+  avgRiskReward: number;
+  profitFactor: number;
+}
+
 export default function AccountPageClient({ user }: { user: User }) {
   const [savedIdeas, setSavedIdeas] = useState<SavedIdea[]>([]);
   const [savedAnalyses, setSavedAnalyses] = useState<SavedAnalysis[]>([]);
+  const [trackedTrades, setTrackedTrades] = useState<TrackedTrade[]>([]);
+  const [performanceStats, setPerformanceStats] = useState<PerformanceStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingPerformance, setLoadingPerformance] = useState(false);
   const [tradingStyle, setTradingStyle] = useState(user.trading_style);
   const [updatingStyle, setUpdatingStyle] = useState(false);
   const [assetPreference, setAssetPreference] = useState(user.asset_preference);
   const [updatingAsset, setUpdatingAsset] = useState(false);
   const [cancelingSubscription, setCancelingSubscription] = useState(false);
+  const [showPerformance, setShowPerformance] = useState(false);
 
   useEffect(() => {
     fetchSavedIdeas();
@@ -49,6 +99,12 @@ export default function AccountPageClient({ user }: { user: User }) {
       fetchSavedAnalyses();
     }
   }, []);
+
+  useEffect(() => {
+    if (showPerformance) {
+      fetchPerformanceData();
+    }
+  }, [showPerformance]);
 
   const fetchSavedAnalyses = async () => {
     try {
@@ -69,6 +125,132 @@ export default function AccountPageClient({ user }: { user: User }) {
       console.error('Error fetching saved ideas:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPerformanceData = async () => {
+    setLoadingPerformance(true);
+    try {
+      // Fetch tracked trades
+      const tradesResponse = await fetch(`/api/idea-performance?user_email=${encodeURIComponent(user.email)}`);
+      const tradesData = await tradesResponse.json();
+      setTrackedTrades(tradesData.records || []);
+
+      // Fetch statistics
+      const statsResponse = await fetch(`/api/idea-performance/stats?user_email=${encodeURIComponent(user.email)}`);
+      const statsData = await statsResponse.json();
+      setPerformanceStats(statsData.stats || null);
+    } catch (error) {
+      console.error('Error fetching performance data:', error);
+    } finally {
+      setLoadingPerformance(false);
+    }
+  };
+
+  const handleMarkAsEntered = async (savedIdeaId: number, idea: SavedIdea) => {
+    const entryPrice = prompt(`Enter your entry price for ${idea.symbol}:`, idea.entry);
+    if (!entryPrice) return;
+
+    const positionValue = prompt('Enter position value in USD (optional):');
+    const notes = prompt('Any notes about this entry? (optional):');
+
+    try {
+      const response = await fetch('/api/idea-performance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          saved_idea_id: savedIdeaId,
+          user_email: user.email,
+          symbol: idea.symbol,
+          idea_type: 'daily_oracle',
+          entry_price: parseFloat(entryPrice),
+          entry_date: new Date().toISOString(),
+          position_value: positionValue ? parseFloat(positionValue) : undefined,
+          original_target: idea.targets ? parseFloat(idea.targets.split(',')[0].trim().replace('$', '')) : undefined,
+          original_stop_loss: idea.stop ? parseFloat(idea.stop.replace('$', '')) : undefined,
+          expected_timeframe: idea.timeframe,
+          status: 'active',
+          notes: notes || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        alert(`✅ Trade entered for ${idea.symbol}! Now tracking performance.`);
+        fetchPerformanceData();
+      } else {
+        const error = await response.json();
+        alert(`Failed to mark as entered: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error marking as entered:', error);
+      alert('Failed to mark trade as entered');
+    }
+  };
+
+  const handleMarkAsExited = async (tradeId: number, trade: TrackedTrade) => {
+    const exitPrice = prompt(`Enter exit price for ${trade.symbol}:`, trade.entry_price?.toString());
+    if (!exitPrice) return;
+
+    const exitReason = prompt(
+      'Exit reason? (target_hit, stop_loss, manual_exit, time_based):',
+      'manual_exit'
+    );
+
+    const lessonsLearned = prompt('What did you learn from this trade? (optional):');
+
+    try {
+      const response = await fetch('/api/idea-performance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: tradeId,
+          user_email: user.email,
+          symbol: trade.symbol,
+          idea_type: trade.idea_type,
+          entry_price: trade.entry_price,
+          entry_date: trade.entry_date,
+          exit_price: parseFloat(exitPrice),
+          exit_date: new Date().toISOString(),
+          exit_reason: exitReason,
+          position_size: trade.position_size,
+          position_value: trade.position_value,
+          original_target: trade.original_target,
+          original_stop_loss: trade.original_stop_loss,
+          expected_timeframe: trade.expected_timeframe,
+          lessons_learned: lessonsLearned || undefined,
+        }),
+      });
+
+      if (response.ok) {
+        alert(`✅ Trade closed for ${trade.symbol}!`);
+        fetchPerformanceData();
+      } else {
+        const error = await response.json();
+        alert(`Failed to close trade: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Error closing trade:', error);
+      alert('Failed to close trade');
+    }
+  };
+
+  const handleDeleteTrade = async (tradeId: number) => {
+    if (!confirm('Delete this trade record? This cannot be undone.')) return;
+
+    try {
+      const response = await fetch(`/api/idea-performance?id=${tradeId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setTrackedTrades(trackedTrades.filter(t => t.id !== tradeId));
+        fetchPerformanceData();
+      } else {
+        alert('Failed to delete trade record');
+      }
+    } catch (error) {
+      console.error('Error deleting trade:', error);
+      alert('Failed to delete trade');
     }
   };
 
@@ -464,6 +646,330 @@ export default function AccountPageClient({ user }: { user: User }) {
           </div>
         </div>
 
+        {/* Performance Tracking */}
+        <div className="mb-8">
+          <button
+            onClick={() => setShowPerformance(!showPerformance)}
+            className="w-full flex items-center justify-between p-6 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:shadow-md transition-all mb-4"
+          >
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-600 to-teal-600 text-white">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+              </div>
+              <div className="text-left">
+                <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+                  Performance Tracking
+                </h2>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Track your trades and measure your success
+                </p>
+              </div>
+            </div>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${showPerformance ? 'rotate-180' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {showPerformance && (
+            <div className="space-y-6">
+              {loadingPerformance ? (
+                <div className="text-center py-12 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
+                  <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-emerald-600 border-t-transparent"></div>
+                  <p className="mt-4 text-gray-600 dark:text-gray-400">Loading performance data...</p>
+                </div>
+              ) : (
+                <>
+                  {/* Statistics Overview */}
+                  {performanceStats && (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div className="p-4 rounded-lg bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border border-blue-200 dark:border-blue-800">
+                        <div className="text-xs font-semibold text-blue-900 dark:text-blue-400 mb-1">Win Rate</div>
+                        <div className="text-2xl font-bold text-blue-900 dark:text-blue-100">
+                          {performanceStats.winRate.toFixed(1)}%
+                        </div>
+                        <div className="text-xs text-blue-700 dark:text-blue-400 mt-1">
+                          {performanceStats.winners}W / {performanceStats.losers}L
+                        </div>
+                      </div>
+
+                      <div className={`p-4 rounded-lg border ${
+                        performanceStats.totalProfitLoss >= 0
+                          ? 'bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-800'
+                          : 'bg-gradient-to-br from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-800/20 border-red-200 dark:border-red-800'
+                      }`}>
+                        <div className={`text-xs font-semibold mb-1 ${
+                          performanceStats.totalProfitLoss >= 0
+                            ? 'text-emerald-900 dark:text-emerald-400'
+                            : 'text-red-900 dark:text-red-400'
+                        }`}>
+                          Total P&L
+                        </div>
+                        <div className={`text-2xl font-bold ${
+                          performanceStats.totalProfitLoss >= 0
+                            ? 'text-emerald-900 dark:text-emerald-100'
+                            : 'text-red-900 dark:text-red-100'
+                        }`}>
+                          {performanceStats.totalProfitLossPercentage >= 0 ? '+' : ''}
+                          {performanceStats.totalProfitLossPercentage.toFixed(2)}%
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-lg bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/20 border border-purple-200 dark:border-purple-800">
+                        <div className="text-xs font-semibold text-purple-900 dark:text-purple-400 mb-1">Active Trades</div>
+                        <div className="text-2xl font-bold text-purple-900 dark:text-purple-100">
+                          {performanceStats.activeTrades}
+                        </div>
+                        <div className="text-xs text-purple-700 dark:text-purple-400 mt-1">
+                          {performanceStats.totalTrades} total
+                        </div>
+                      </div>
+
+                      <div className="p-4 rounded-lg bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border border-amber-200 dark:border-amber-800">
+                        <div className="text-xs font-semibold text-amber-900 dark:text-amber-400 mb-1">Profit Factor</div>
+                        <div className="text-2xl font-bold text-amber-900 dark:text-amber-100">
+                          {performanceStats.profitFactor.toFixed(2)}
+                        </div>
+                        <div className="text-xs text-amber-700 dark:text-amber-400 mt-1">
+                          {performanceStats.profitFactor >= 2 ? 'Excellent' : performanceStats.profitFactor >= 1.5 ? 'Good' : 'Improving'}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tracked Trades */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                        Tracked Trades
+                      </h3>
+                      <span className="px-2.5 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 rounded-md text-sm font-medium border border-emerald-200 dark:border-emerald-800">
+                        {trackedTrades.length} tracked
+                      </span>
+                    </div>
+
+                    {trackedTrades.length === 0 ? (
+                      <div className="p-12 text-center rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+                        <svg className="w-16 h-16 mx-auto mb-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                        </svg>
+                        <p className="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Tracked Trades Yet</p>
+                        <p className="text-gray-600 dark:text-gray-400 mb-6">
+                          Mark your saved ideas as "Entered" to start tracking performance
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        {/* Active Trades */}
+                        {trackedTrades.filter(t => t.status === 'active').length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">Active Positions</h4>
+                            {trackedTrades.filter(t => t.status === 'active').map((trade) => (
+                              <div
+                                key={trade.id}
+                                className="p-5 rounded-lg border-2 border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-blue-900/10 mb-3"
+                              >
+                                <div className="flex items-start justify-between gap-4 mb-3">
+                                  <div>
+                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">{trade.symbol}</h3>
+                                    <div className="flex items-center gap-2">
+                                      <span className="px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-medium rounded">
+                                        ACTIVE
+                                      </span>
+                                      {trade.entry_date && (
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                          Entered {formatDate(trade.entry_date)}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => handleMarkAsExited(trade.id!, trade)}
+                                      className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm rounded-md transition-colors"
+                                    >
+                                      Close Trade
+                                    </button>
+                                    <button
+                                      onClick={() => handleDeleteTrade(trade.id!)}
+                                      className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                    >
+                                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                      </svg>
+                                    </button>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                  {trade.entry_price && (
+                                    <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">Entry</div>
+                                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        ${trade.entry_price.toFixed(trade.entry_price < 1 ? 4 : 2)}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {trade.original_stop_loss && (
+                                    <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">Stop Loss</div>
+                                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        ${trade.original_stop_loss.toFixed(trade.original_stop_loss < 1 ? 4 : 2)}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {trade.original_target && (
+                                    <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">Target</div>
+                                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        ${trade.original_target.toFixed(trade.original_target < 1 ? 4 : 2)}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {trade.position_value && (
+                                    <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">Position</div>
+                                      <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        ${trade.position_value.toFixed(2)}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {trade.notes && (
+                                  <div className="mt-3 p-2 bg-white dark:bg-slate-900 rounded text-sm text-gray-700 dark:text-gray-300">
+                                    <span className="font-semibold">Note:</span> {trade.notes}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Closed Trades */}
+                        {trackedTrades.filter(t => ['winner', 'loser', 'breakeven'].includes(t.status)).length > 0 && (
+                          <div>
+                            <h4 className="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">Closed Positions</h4>
+                            {trackedTrades.filter(t => ['winner', 'loser', 'breakeven'].includes(t.status)).map((trade) => (
+                              <div
+                                key={trade.id}
+                                className={`p-5 rounded-lg border mb-3 ${
+                                  trade.status === 'winner'
+                                    ? 'border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-900/10'
+                                    : trade.status === 'loser'
+                                    ? 'border-red-200 dark:border-red-800 bg-red-50/50 dark:bg-red-900/10'
+                                    : 'border-gray-200 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-900/10'
+                                }`}
+                              >
+                                <div className="flex items-start justify-between gap-4 mb-3">
+                                  <div>
+                                    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-1">{trade.symbol}</h3>
+                                    <div className="flex items-center gap-2 flex-wrap">
+                                      <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                                        trade.status === 'winner'
+                                          ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+                                          : trade.status === 'loser'
+                                          ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                                          : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-400'
+                                      }`}>
+                                        {trade.status.toUpperCase()}
+                                      </span>
+                                      {trade.profit_loss_percentage !== undefined && (
+                                        <span className={`text-lg font-bold ${
+                                          trade.profit_loss_percentage > 0
+                                            ? 'text-emerald-600 dark:text-emerald-400'
+                                            : 'text-red-600 dark:text-red-400'
+                                        }`}>
+                                          {trade.profit_loss_percentage > 0 ? '+' : ''}
+                                          {trade.profit_loss_percentage.toFixed(2)}%
+                                        </span>
+                                      )}
+                                      {trade.duration_days && (
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">
+                                          {trade.duration_days}d hold
+                                        </span>
+                                      )}
+                                      {trade.exit_reason && (
+                                        <span className="text-xs text-gray-500 dark:text-gray-500">
+                                          ({trade.exit_reason.replace('_', ' ')})
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  <button
+                                    onClick={() => handleDeleteTrade(trade.id!)}
+                                    className="p-1.5 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                  >
+                                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                      <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                                    </svg>
+                                  </button>
+                                </div>
+
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                  {trade.entry_price && (
+                                    <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">Entry</div>
+                                      <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        ${trade.entry_price.toFixed(trade.entry_price < 1 ? 4 : 2)}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {trade.exit_price && (
+                                    <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">Exit</div>
+                                      <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        ${trade.exit_price.toFixed(trade.exit_price < 1 ? 4 : 2)}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {trade.profit_loss !== undefined && (
+                                    <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">P&L</div>
+                                      <div className={`text-sm font-mono font-semibold ${
+                                        trade.profit_loss > 0
+                                          ? 'text-emerald-600 dark:text-emerald-400'
+                                          : 'text-red-600 dark:text-red-400'
+                                      }`}>
+                                        ${Math.abs(trade.profit_loss).toFixed(2)}
+                                      </div>
+                                    </div>
+                                  )}
+                                  {trade.risk_reward_ratio && (
+                                    <div className="p-2 rounded bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">R:R</div>
+                                      <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
+                                        1:{trade.risk_reward_ratio.toFixed(2)}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {trade.lessons_learned && (
+                                  <div className="mt-3 p-3 bg-white dark:bg-slate-900 rounded border border-slate-200 dark:border-slate-700">
+                                    <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Lessons Learned:</div>
+                                    <div className="text-sm text-gray-700 dark:text-gray-300">{trade.lessons_learned}</div>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Saved Ideas */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -533,15 +1039,27 @@ export default function AccountPageClient({ user }: { user: User }) {
                           Saved {formatDate(idea.saved_at)}
                         </p>
                       </div>
-                      <button
-                        onClick={() => handleDelete(idea.id)}
-                        className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                        title="Remove from saved"
-                      >
-                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                        </svg>
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => handleMarkAsEntered(idea.id, idea)}
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm rounded-md transition-colors flex items-center gap-1.5"
+                          title="Mark as entered to track performance"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                          </svg>
+                          Track Trade
+                        </button>
+                        <button
+                          onClick={() => handleDelete(idea.id)}
+                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          title="Remove from saved"
+                        >
+                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
 
                     <p className="text-gray-700 dark:text-gray-200 leading-relaxed mb-4">{idea.rationale}</p>
