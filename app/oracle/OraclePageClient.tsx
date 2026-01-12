@@ -756,8 +756,8 @@ export default function OraclePageClient({
                       <div className="flex items-start justify-between gap-4 mb-4">
                         <div className="flex-1">
                           <div className="flex items-center gap-3 mb-2">
-                            <h3 className="text-xl font-bold font-mono text-gray-900 tracking-tight">{symbol}</h3>
-                            <span className="px-2 py-0.5 text-xs font-medium rounded bg-gray-100 text-gray-700 border border-gray-200">
+                            <h3 className="text-xl font-bold font-mono text-gray-900 dark:text-white tracking-tight">{symbol}</h3>
+                            <span className="px-2 py-0.5 text-xs font-medium rounded bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700">
                               {t.bias[bias as keyof typeof t.bias] || idea.bias}
                             </span>
                           </div>
@@ -767,14 +767,14 @@ export default function OraclePageClient({
                                 {formatPrice(priceData.currentPrice, priceData.currency)}
                               </span>
                               {priceData.change24h !== null && (
-                                <span className="text-xs font-mono font-medium text-gray-600">
+                                <span className="text-xs font-mono font-medium text-gray-600 dark:text-gray-400">
                                   {formatChange(priceData.change24h)}
                                 </span>
                               )}
-                              <span className="text-xs text-gray-500">24h</span>
+                              <span className="text-xs text-gray-500 dark:text-gray-400">24h</span>
                             </div>
                           )}
-                          <p className="text-xs text-gray-600">{idea.wave_context ?? ""}</p>
+                          <p className="text-xs text-gray-600 dark:text-gray-400">{idea.wave_context ?? ""}</p>
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <span
@@ -795,8 +795,8 @@ export default function OraclePageClient({
                               disabled={savingIdea === `${oracleRunId}-${symbol}` || savedIdeas.has(`${oracleRunId}-${symbol}`)}
                               className={`p-1.5 rounded transition-all ${
                                 savedIdeas.has(`${oracleRunId}-${symbol}`)
-                                  ? 'bg-blue-100 text-blue-600'
-                                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-blue-600'
+                                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                                  : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-blue-600 dark:hover:text-blue-400'
                               } disabled:opacity-50`}
                               title={savedIdeas.has(`${oracleRunId}-${symbol}`) ? 'Saved' : 'Save to track'}
                             >
@@ -815,27 +815,27 @@ export default function OraclePageClient({
                         </div>
                       </div>
 
-                      <p className="text-sm text-gray-700 leading-relaxed mb-5">{rationale}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mb-5">{rationale}</p>
                       
                       {showFullContent ? (
                         <>
                           {isPremium || !isLoggedIn ? (
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-                              <div className="p-3 rounded bg-white border border-gray-200">
-                                <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">{t.entry}</div>
-                                <div className="text-sm font-mono font-medium text-gray-900 tabular-nums">{entry}</div>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
+                              <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                                <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">{t.entry}</div>
+                                <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{entry}</div>
                               </div>
-                              <div className="p-3 rounded bg-white border border-gray-200">
-                                <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">{t.stop}</div>
-                                <div className="text-sm font-mono font-medium text-gray-700 tabular-nums">{stop}</div>
+                              <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                                <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">{t.stop}</div>
+                                <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{stop}</div>
                               </div>
-                              <div className="col-span-2 p-3 rounded bg-white border border-gray-200">
-                                <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">{t.targets}</div>
-                                <div className="text-sm font-mono font-medium text-gray-800 tabular-nums">{targets.join(" • ")}</div>
+                              <div className="col-span-2 p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
+                                <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">{t.targets}</div>
+                                <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100 tabular-nums">{targets.join(" • ")}</div>
                               </div>
-                              <div className="col-span-2 p-3 rounded bg-white border border-gray-200">
-                                <div className="text-xs font-medium text-gray-500 mb-1.5 uppercase tracking-wide">{t.timeframe}</div>
-                                <div className="text-sm font-mono text-gray-700">{timeframe}</div>
+                              <div className="col-span-2 p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
+                                <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">{t.timeframe}</div>
+                                <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">{timeframe}</div>
                               </div>
                             </div>
                           ) : (
@@ -859,12 +859,12 @@ export default function OraclePageClient({
                           )}
 
                           {(isPremium || !isLoggedIn) && idea.risk_note ? (
-                            <div className="mt-4 p-3 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/30 rounded-lg">
+                            <div className="mt-4 p-3 bg-pink-50/50 dark:bg-pink-900/10 border border-pink-200 dark:border-pink-800/30 rounded-lg">
                               <div className="flex items-start gap-2">
-                                <span className="text-amber-600 dark:text-amber-500">⚠️</span>
+                                <span className="text-pink-600 dark:text-pink-500">⚠️</span>
                                 <div>
-                                  <div className="text-xs font-semibold text-amber-800 dark:text-amber-400 mb-1">{t.riskNote}</div>
-                                  <div className="text-sm text-amber-700 dark:text-amber-300">{idea.risk_note}</div>
+                                  <div className="text-xs font-semibold text-pink-800 dark:text-pink-400 mb-1">{t.riskNote}</div>
+                                  <div className="text-sm text-pink-700 dark:text-pink-300">{idea.risk_note}</div>
                                 </div>
                               </div>
                             </div>

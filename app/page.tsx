@@ -96,6 +96,8 @@ export default async function HomePage() {
             <span>•</span>
             <a href="/privacy" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Privacy</a>
             <span>•</span>
+            <a href="/faq" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">FAQ</a>
+            <span>•</span>
             <a href="mailto:trade.crypto.oracle@proton.me" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Contact</a>
           </div>
         </footer>
