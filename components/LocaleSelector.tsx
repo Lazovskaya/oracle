@@ -8,23 +8,27 @@ interface LocaleSelectorProps {
 }
 
 const LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
+  { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
+  { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
+  // Hidden for now - will be released later
+  // { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+  // { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  // { code: 'es', name: 'Español', flag: '🇪🇸' },
+  // { code: 'zh', name: '中文', flag: '🇨🇳' },
 ];
 
 const COUNTRIES = [
   { code: 'US', name: 'United States', currency: 'USD', flag: '🇺🇸' },
-  { code: 'LT', name: 'Lithuania', currency: 'EUR', flag: '🇱🇹' },
-  { code: 'RU', name: 'Russia', currency: 'RUB', flag: '🇷🇺' },
-  { code: 'FR', name: 'France', currency: 'EUR', flag: '🇫🇷' },
-  { code: 'CN', name: 'China', currency: 'CNY', flag: '🇨🇳' },
-  { code: 'GB', name: 'United Kingdom', currency: 'GBP', flag: '🇬🇧' },
+  { code: 'GB', name: 'United Kingdom', currency: 'EUR', flag: '🇬🇧' },
+  { code: 'EU', name: 'European Union', currency: 'EUR', flag: '🇪🇺' },
+  // Hidden for now
+  // { code: 'LT', name: 'Lithuania', currency: 'EUR', flag: '🇱🇹' },
+  // { code: 'RU', name: 'Russia', currency: 'RUB', flag: '🇷🇺' },
+  // { code: 'FR', name: 'France', currency: 'EUR', flag: '🇫🇷' },
+  // { code: 'CN', name: 'China', currency: 'CNY', flag: '🇨🇳' },
 ];
 
-export default function LocaleSelector({ initialLanguage = 'en', initialCountry = 'US' }: LocaleSelectorProps) {
+export default function LocaleSelector({ initialLanguage = 'en-US', initialCountry = 'US' }: LocaleSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState(initialLanguage);
   const [country, setCountry] = useState(initialCountry);
