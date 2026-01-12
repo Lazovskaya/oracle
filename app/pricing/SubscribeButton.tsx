@@ -12,28 +12,33 @@ export default function SubscribeButton({
 }) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState('');
   const [country, setCountry] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [riskAccepted, setRiskAccepted] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check authentication status
+    // Check authentication status and get email
     fetch('/api/auth/check')
-      .then(res => setIsAuthenticated(res.ok))
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated && data.email) {
+          setUserEmail(data.email);
+          setEmail(data.email);
+          setIsAuthenticated(true);
+        }
+      })
       .catch(() => setIsAuthenticated(false));
   }, []);
 
-  const handleButtonClick = () => {
-    if (isAuthenticated === false) {
-      // Redirect to login
-      window.location.href = '/login?redirect=/pricing';
+  const handleSubscribe = async () => {
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address');
       return;
     }
-    setShowModal(true);
-  };
 
-  const handleSubscribe = async () => {
     if (!country) {
       alert('Please select your country');
       return;
@@ -68,17 +73,10 @@ export default function SubscribeButton({
       const response = await fetch('/api/stripe/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, tier, currency }),
+        body: JSON.stringify({ priceId, tier, currency, email }),
       });
 
       const data = await response.json();
-
-      if (response.status === 401) {
-        // User not authenticated - redirect to login
-        alert('Please log in first to subscribe');
-        window.location.href = '/login?redirect=/pricing';
-        return;
-      }
 
       if (data.url) {
         window.location.href = data.url;
@@ -96,13 +94,13 @@ export default function SubscribeButton({
   return (
     <>
       <button
-        onClick={handleButtonClick}
-        disabled={loading || isAuthenticated === null}
+        onClick={() => setShowModal(true)}
+        disabled={loading}
         className="w-full group relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:shadow-2xl transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
         <div className="relative">
-          {loading ? 'Loading...' : isAuthenticated === false ? 'Log In to Subscribe' : 'Subscribe Now'}
+          {loading ? 'Loading...' : 'Subscribe Now'}
         </div>
       </button>
 
@@ -112,6 +110,26 @@ export default function SubscribeButton({
           <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Before You Subscribe</h2>
             
+            {/* Email Input */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isAuthenticated}
+                placeholder="your@email.com"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed"
+              />
+              {isAuthenticated && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Using your logged-in email
+                </p>
+              )}
+            </div>
+
             {/* Country Selection */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
