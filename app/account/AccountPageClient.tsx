@@ -180,6 +180,28 @@ export default function AccountPageClient({ user }: { user: User }) {
     setEntryModal({ isOpen: true, savedIdeaId, idea });
   };
 
+  const handleMarkAnalysisAsEntered = async (savedAnalysisId: number, analysis: SavedAnalysis) => {
+    setEntryModal({ 
+      isOpen: true, 
+      savedIdeaId: 0, 
+      idea: {
+        id: savedAnalysisId,
+        oracle_run_id: 0,
+        symbol: analysis.symbol,
+        entry: analysis.entry || String(analysis.current_price),
+        stop: analysis.stop_loss || '',
+        targets: analysis.targets ? JSON.parse(analysis.targets).join(', ') : '',
+        rationale: analysis.market_context,
+        confidence: analysis.confidence,
+        bias: '',
+        timeframe: analysis.timeframe,
+        wave_context: '',
+        risk_note: '',
+        saved_at: analysis.saved_at,
+      }
+    });
+  };
+
   const handleEntrySubmit = async (data: { entryPrice: string; positionValue: string; notes: string }) => {
     const { savedIdeaId, idea } = entryModal;
     if (!idea) return;
@@ -189,10 +211,11 @@ export default function AccountPageClient({ user }: { user: User }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          saved_idea_id: savedIdeaId,
+          saved_idea_id: savedIdeaId || undefined,
+          saved_analysis_id: savedIdeaId === 0 ? idea.id : undefined,
           user_email: user.email,
           symbol: idea.symbol,
-          idea_type: 'daily_oracle',
+          idea_type: savedIdeaId === 0 ? 'symbol_analysis' : 'daily_oracle',
           entry_price: parseFloat(data.entryPrice),
           entry_date: new Date().toISOString(),
           position_value: data.positionValue ? parseFloat(data.positionValue) : undefined,
@@ -1159,6 +1182,9 @@ export default function AccountPageClient({ user }: { user: User }) {
                 <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 text-xs font-bold rounded">
                   PRO
                 </span>
+                <span className="px-2.5 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-md text-sm font-medium border border-blue-200 dark:border-blue-800">
+                  {savedAnalyses.length} saved
+                </span>
               </div>
               <Link
                 href="/symbol-analyzer"
@@ -1231,15 +1257,27 @@ export default function AccountPageClient({ user }: { user: User }) {
                             Saved {formatDate(analysis.saved_at)}
                           </p>
                         </div>
-                        <button
-                          onClick={() => handleDeleteAnalysis(analysis.id)}
-                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                          title="Remove from saved"
-                        >
-                          <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
-                          </svg>
-                        </button>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => handleMarkAnalysisAsEntered(analysis.id, analysis)}
+                            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm rounded-md transition-colors flex items-center gap-1.5"
+                            title="Mark as entered to track performance"
+                          >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                            </svg>
+                            Track Trade
+                          </button>
+                          <button
+                            onClick={() => handleDeleteAnalysis(analysis.id)}
+                            className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                            title="Remove from saved"
+                          >
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                            </svg>
+                          </button>
+                        </div>
                       </div>
 
                       <p className="text-gray-700 dark:text-gray-200 leading-relaxed mb-4">{analysis.market_context}</p>

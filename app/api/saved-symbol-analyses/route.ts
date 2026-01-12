@@ -50,6 +50,20 @@ export async function POST(req: Request) {
 
     const { analysis } = await req.json();
 
+    // Check if this symbol is already saved by this user
+    const existingAnalysis = await db.execute({
+      sql: 'SELECT id FROM saved_symbol_analyses WHERE user_email = ? AND symbol = ?',
+      args: [userEmail, analysis.symbol]
+    });
+
+    if (existingAnalysis.rows.length > 0) {
+      return NextResponse.json({ 
+        success: false, 
+        error: 'This symbol is already saved',
+        alreadyExists: true 
+      }, { status: 409 });
+    }
+
     await db.execute({
       sql: `
         INSERT INTO saved_symbol_analyses (
