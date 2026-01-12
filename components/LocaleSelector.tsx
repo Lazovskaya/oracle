@@ -20,7 +20,7 @@ const LANGUAGES = [
 
 const COUNTRIES = [
   { code: 'US', name: 'United States', currency: 'USD', flag: '🇺🇸' },
-  { code: 'GB', name: 'United Kingdom', currency: 'EUR', flag: '🇬🇧' },
+  { code: 'GB', name: 'United Kingdom', currency: 'GBP', flag: '🇬🇧' },
   { code: 'EU', name: 'European Union', currency: 'EUR', flag: '🇪🇺' },
   // Hidden for now
   // { code: 'LT', name: 'Lithuania', currency: 'EUR', flag: '🇱🇹' },
@@ -55,6 +55,12 @@ export default function LocaleSelector({ initialLanguage = 'en-US', initialCount
   const handleCountryChange = (countryCode: string) => {
     setCountry(countryCode);
     document.cookie = `user_country=${countryCode}; path=/; max-age=31536000`; // 1 year
+    
+    // Switch currency based on country
+    const selectedCountry = COUNTRIES.find(c => c.code === countryCode);
+    if (selectedCountry) {
+      switchCurrency(selectedCountry.currency as 'USD' | 'EUR' | 'GBP');
+    }
   };
 
   const getCookie = (name: string): string | null => {
@@ -93,51 +99,6 @@ export default function LocaleSelector({ initialLanguage = 'en-US', initialCount
             onClick={() => setIsOpen(false)}
           />
           <div className="absolute left-0 sm:right-0 sm:left-auto mt-2 w-80 max-w-[calc(100vw-2rem)] bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 z-50 p-4">
-            {/* Currency Selection */}
-            <div className="mb-4">
-              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                Currency
-              </h3>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => {
-                    switchCurrency('USD');
-                  }}
-                  className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    currency === 'USD'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  $ USD
-                </button>
-                <button
-                  onClick={() => {
-                    switchCurrency('GBP');
-                  }}
-                  className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    currency === 'GBP'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  £ GBP
-                </button>
-                <button
-                  onClick={() => {
-                    switchCurrency('EUR');
-                  }}
-                  className={`flex-1 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                    currency === 'EUR'
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
-                  }`}
-                >
-                  € EUR
-                </button>
-              </div>
-            </div>
-
             {/* Language Selection */}
             <div className="mb-4">
               <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">

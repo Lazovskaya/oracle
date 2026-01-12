@@ -58,6 +58,7 @@ export function useCurrency() {
 
     // Listen for currency changes from other components
     const handleCurrencyChange = (event: CustomEvent) => {
+      console.log('currencyChange event received:', event.detail);
       setCurrency(event.detail.currency);
       setLocale(event.detail.locale);
     };
@@ -70,12 +71,14 @@ export function useCurrency() {
   }, []);
 
   const switchCurrency = (newCurrency: 'USD' | 'EUR' | 'GBP') => {
+    console.log('switchCurrency called with:', newCurrency);
     setCurrency(newCurrency);
     const newLocale = newCurrency === 'USD' ? 'en-US' : 'en-GB';
     setLocale(newLocale);
     localStorage.setItem('user_currency', newCurrency);
     localStorage.setItem('user_locale', newLocale);
     
+    console.log('Dispatching currencyChange event:', { currency: newCurrency, locale: newLocale });
     // Dispatch event to notify other components
     window.dispatchEvent(new CustomEvent('currencyChange', {
       detail: { currency: newCurrency, locale: newLocale }
