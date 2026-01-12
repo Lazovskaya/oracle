@@ -55,6 +55,18 @@ export function useCurrency() {
     }
 
     detectLocation();
+
+    // Listen for currency changes from other components
+    const handleCurrencyChange = (event: CustomEvent) => {
+      setCurrency(event.detail.currency);
+      setLocale(event.detail.locale);
+    };
+
+    window.addEventListener('currencyChange' as any, handleCurrencyChange);
+
+    return () => {
+      window.removeEventListener('currencyChange' as any, handleCurrencyChange);
+    };
   }, []);
 
   const switchCurrency = (newCurrency: 'USD' | 'EUR' | 'GBP') => {
@@ -63,6 +75,11 @@ export function useCurrency() {
     setLocale(newLocale);
     localStorage.setItem('user_currency', newCurrency);
     localStorage.setItem('user_locale', newLocale);
+    
+    // Dispatch event to notify other components
+    window.dispatchEvent(new CustomEvent('currencyChange', {
+      detail: { currency: newCurrency, locale: newLocale }
+    }));
   };
 
   return {
