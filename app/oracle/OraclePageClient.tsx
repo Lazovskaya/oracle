@@ -678,11 +678,6 @@ export default function OraclePageClient({
                       {currentParsed?.market_phase ?? last.market_phase ?? "—"}
                     </p>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700 whitespace-nowrap">
-                      {currentParsed ? t.parsed : t.rawData}
-                    </span>
-                  </div>
                 </div>
                 
                 {currentParsed?.wave_structure && (
