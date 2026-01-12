@@ -1282,35 +1282,35 @@ export default function AccountPageClient({ user }: { user: User }) {
 
                       <p className="text-gray-700 dark:text-gray-200 leading-relaxed mb-4">{analysis.market_context}</p>
 
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 bg-gray-50 dark:bg-gray-900 rounded-xl">
+                      <div className="grid grid-cols-3 md:grid-cols-5 gap-2 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
                         {analysis.current_price && (
-                          <div className="p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
-                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Current</div>
-                            <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.current_price).toFixed(2)}</div>
+                          <div className="p-2 rounded bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Current</div>
+                            <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.current_price).toFixed(2)}</div>
                           </div>
                         )}
                         {hasBasicEntry && (
-                          <div className="p-3 rounded-lg bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
-                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Entry</div>
-                            <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.entry).toFixed(2)}</div>
+                          <div className="p-2 rounded bg-blue-50/50 dark:bg-blue-950/20 border border-blue-100 dark:border-blue-900/30">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Entry</div>
+                            <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.entry).toFixed(2)}</div>
                           </div>
                         )}
                         {hasBasicStop && (
-                          <div className="p-3 rounded-lg bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
-                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Stop Loss</div>
-                            <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.stop_loss).toFixed(2)}</div>
+                          <div className="p-2 rounded bg-amber-50/50 dark:bg-amber-950/20 border border-amber-100 dark:border-amber-900/30">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Stop Loss</div>
+                            <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">${Number(analysis.stop_loss).toFixed(2)}</div>
                           </div>
                         )}
-                        <div className="p-3 rounded-lg bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
-                          <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Targets</div>
-                          <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">
+                        <div className="p-2 rounded bg-emerald-50/50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30">
+                          <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Targets</div>
+                          <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">
                             {targets.length > 0 ? targets.map((t: string) => `$${Number(t).toFixed(2)}`).join(' • ') : '—'}
                           </div>
                         </div>
                         {analysis.timeframe && (
-                          <div className="p-3 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
-                            <div className="text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1 uppercase">Timeframe</div>
-                            <div className="text-lg font-mono font-semibold text-gray-900 dark:text-gray-100">{analysis.timeframe}</div>
+                          <div className="p-2 rounded bg-slate-50/50 dark:bg-slate-950/20 border border-slate-100 dark:border-slate-800/30">
+                            <div className="text-xs text-gray-500 dark:text-gray-400 uppercase">Timeframe</div>
+                            <div className="text-sm font-mono font-semibold text-gray-900 dark:text-gray-100">{analysis.timeframe}</div>
                           </div>
                         )}
                       </div>
