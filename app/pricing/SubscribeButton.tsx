@@ -56,10 +56,17 @@ export default function SubscribeButton({
 
       const data = await response.json();
 
+      if (response.status === 401) {
+        // User not authenticated - redirect to login
+        alert('Please log in first to subscribe');
+        window.location.href = '/login?redirect=/pricing';
+        return;
+      }
+
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert('Error creating checkout session. Please try again.');
+        alert(data.error || 'Error creating checkout session. Please try again.');
         setLoading(false);
       }
     } catch (error) {
