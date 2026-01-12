@@ -1,7 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { OracleRun } from "@/types/oracle";
-import RunButton from "./RunButton";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { Language, getTranslation } from "@/lib/i18n";
 import { setLanguagePreference } from "@/lib/translationLoader";
@@ -367,20 +366,21 @@ export default function OraclePageClient({
           </div>
           <div className="flex items-center gap-2 ml-auto">
             <LocaleSelector />
-            <a
-              href="/promo"
-              className="px-3 py-1.5 rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 text-slate-700 dark:text-slate-300 text-sm shadow-sm"
-              title="Performance Track Record"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-              </svg>
-              <span className="hidden sm:inline">Performance</span>
-            </a>
+            {isLoggedIn && (
+              <a
+                href="/performance"
+                className="px-3 py-1.5 rounded-md bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 text-slate-700 dark:text-slate-300 text-sm shadow-sm"
+                title="My Performance"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span className="hidden sm:inline">Performance</span>
+              </a>
+            )}
             {!isUSMarketOnly && (
               <LanguageSwitcher currentLang={lang} onLanguageChange={handleLanguageChange} />
             )}
-            {isAdmin && <RunButton />}
             {isLoggedIn && (
               <a
                 href="/account"
@@ -398,35 +398,9 @@ export default function OraclePageClient({
 
         {/* Trading Lens - Strategy Selection */}
         <section className="mb-6 p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
-            <div>
-              <h3 className="text-sm font-medium text-slate-900 dark:text-slate-200">Trading Lens</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Choose your trading approach and filter setups</p>
-            </div>
-            {isAdmin && (
-              <button
-                onClick={handleRefreshWithPreferences}
-                disabled={isRefreshing}
-                className="px-3 py-1.5 bg-blue-600 text-white rounded text-xs font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-1.5 justify-center"
-              >
-                {isRefreshing ? (
-                  <>
-                    <svg className="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    <span>Updating...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                    <span>New Predictions</span>
-                  </>
-                )}
-              </button>
-            )}
+          <div className="mb-4">
+            <h3 className="text-sm font-medium text-slate-900 dark:text-slate-200">Trading Lens</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Choose your trading approach and filter setups</p>
           </div>
 
           {/* Primary Filters - Trading Strategy */}
@@ -677,11 +651,6 @@ export default function OraclePageClient({
                     <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">
                       {currentParsed?.market_phase ?? last.market_phase ?? "—"}
                     </p>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <span className="inline-block px-3 py-1 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded border border-slate-200 dark:border-slate-700 whitespace-nowrap">
-                      {currentParsed ? t.parsed : t.rawData}
-                    </span>
                   </div>
                 </div>
                 
