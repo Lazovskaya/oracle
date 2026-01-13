@@ -48,8 +48,9 @@ Step 1: **Market Context Analysis**
 - Identify sector rotation and correlation patterns
 - Evaluate macro sentiment and volatility environment
 
-Step 2: **Symbol Selection Reasoning**
-- Review ALL symbols in the market snapshot above
+Step 2: **Symbol Selection Reasoning (Priority Order)**
+- **START with high-liquidity, reliable tickers**: Large-cap stocks (AAPL, MSFT, NVDA, etc.), major cryptos (BTC, ETH), popular ETFs (SPY, QQQ)
+- **THEN consider mid-cap and emerging opportunities** from the remaining symbols
 - Apply multi-factor screening: price action, volume, momentum, mean reversion
 - Consider divergences, support/resistance, and wave structure
 - CRITICAL: You MUST ONLY select symbols from the provided market snapshot
@@ -93,13 +94,14 @@ Produce ONLY valid JSON (no markdown, no extra text):
 }
 
 **EXECUTION RULES:**
-- Maximum 5 highest-conviction ideas
+- **MINIMUM 3 ideas required** (ideally 4-5 for better diversification)
 - ONLY symbols from market snapshot (validation critical)
+- **Prioritize high-liquidity tickers first** (large-caps, major cryptos, popular ETFs)
 - Use EXACT current prices from the market snapshot as reference for current price
 - Calculate entry/stop/targets relative to the provided current price (not from memory or training data)
 - All price levels must be realistic based on the actual current market price shown above
 - Asymmetric setups preferred (R:R ≥ 1:3)
-- If unfavorable conditions persist, return 0-2 ideas with detailed market_phase explanation
+- If unfavorable conditions persist, return minimum 3 ideas with detailed risk warnings
 
 Think step-by-step through your reasoning, then output ONLY the final JSON.
 `.trim();
@@ -147,7 +149,8 @@ Requirements:
 }
 
 Constraints:
-- Max 5 ideas.
+- **MINIMUM 3 ideas required** (ideally 4-5 for diversification).
+- **Prioritize high-liquidity tickers first** (AAPL, MSFT, NVDA, BTC, ETH, SPY, QQQ).
 - ONLY use symbols from the market snapshot provided.
 - Use EXACT current prices from market snapshot - calculate all levels relative to these prices
 - Entry/stop/targets must be realistic based on the actual current price (not from outdated data)
@@ -156,7 +159,7 @@ Constraints:
 - Use USD pairs for crypto.
 - Prefer asymmetric setups (risk/reward ≥ 1:3).
 - Keep text concise and actionable.
-- If market conditions are unfavorable across ALL provided assets, you may return 0-2 ideas with a strong market_phase warning.
+- If market conditions are unfavorable, still provide 3+ ideas with detailed risk warnings.
 
 
 `.trim();

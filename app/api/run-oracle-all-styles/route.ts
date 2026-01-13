@@ -10,7 +10,7 @@ import OpenAI from "openai";
 export const runtime = "nodejs";
 export const maxDuration = 300; // 5 minutes - Note: This runs sequentially for 3 styles, may timeout on Vercel
 
-const FALLBACK_MODELS = ["gpt-5-mini", "gpt-5.1", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"];
+const FALLBACK_MODELS = ["gpt-5-mini", "gpt-5.1", "gpt-5.2", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"];
 
 async function callLLM(prompt: string, preferredModel?: string) {
   const apiKey = process.env.OPENAI_API_KEY;

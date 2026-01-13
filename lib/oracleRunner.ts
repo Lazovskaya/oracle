@@ -9,7 +9,7 @@ import { translateOracleToAllLanguages } from './translateOracle';
 import db from './db';
 import OpenAI from 'openai';
 
-const FALLBACK_MODELS = ["gpt-5-mini", "gpt-5.1", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"];
+const FALLBACK_MODELS = ["gpt-5-mini", "gpt-5.1", "gpt-5.2", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"];
 
 /**
  * Call OpenAI with retry and fallback logic
