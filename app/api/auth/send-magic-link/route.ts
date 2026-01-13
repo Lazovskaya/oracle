@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     // Send magic link via Resend
     try {
       await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'onboarding@resend.dev',
+        from: process.env.RESEND_FROM_EMAIL || 'magic@finforesee.com',
         to: email,
         subject: '🔮 Your Market Oracle Login Link',
         html: `
