@@ -36,12 +36,22 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="text-center mb-12">
+          {/* Company Logo and Tagline */}
+          <div className="mb-8">
+            <h2 className="text-5xl font-bold italic mb-3 text-transparent tracking-[-0.03em]" style={{ fontFamily: '"PT Sans", "Helvetica Neue", Arial, sans-serif', fontWeight: 700, fontStyle: 'italic', backgroundImage: 'linear-gradient(to right, #1e3a8a, #60a5fa, #cbd5e1)', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
+              FinForesee
+            </h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400 tracking-[0.25em] uppercase font-medium italic">
+              Financial Market Forecasting & Insights
+            </p>
+          </div>
+
           <div className="inline-flex items-center justify-center mb-6">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-2xl">
               <OracleIcon className="w-12 h-12 text-white" />
             </div>
           </div>
-          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Market Oracle
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
