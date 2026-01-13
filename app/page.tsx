@@ -38,10 +38,10 @@ export default async function HomePage() {
         <div className="text-center mb-12">
           {/* Company Logo and Tagline */}
           <div className="mb-8">
-            <h2 className="text-5xl font-extrabold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-tight" style={{ fontFamily: 'system-ui, -apple-system, "Segoe UI", sans-serif', letterSpacing: '-0.02em' }}>
+            <h2 className="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent tracking-[-0.03em]" style={{ fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, system-ui, sans-serif', fontWeight: 700 }}>
               FinForesee
             </h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400 tracking-[0.2em] uppercase font-light">
+            <p className="text-xs text-gray-500 dark:text-gray-400 tracking-[0.25em] uppercase font-medium">
               Financial Market Forecasting & Insights
             </p>
           </div>
@@ -51,7 +51,7 @@ export default async function HomePage() {
               <OracleIcon className="w-12 h-12 text-white" />
             </div>
           </div>
-          <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Market Oracle
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
