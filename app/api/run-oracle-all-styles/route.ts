@@ -8,7 +8,7 @@ import { translateOracleToAllLanguages } from "@/lib/translateOracle";
 import OpenAI from "openai";
 
 export const runtime = "nodejs";
-export const maxDuration = 300; // 5 minutes max for generating all styles
+export const maxDuration = 300; // 5 minutes - Note: This runs sequentially for 3 styles, may timeout on Vercel
 
 const FALLBACK_MODELS = ["gpt-5-mini", "gpt-5.1", "gpt-4o-mini", "gpt-4o", "gpt-4-turbo"];
 
@@ -134,24 +134,49 @@ export async function POST(req: Request) {
     // Generate for all three styles
     const styles: ('conservative' | 'balanced' | 'aggressive')[] = ['conservative', 'balanced', 'aggressive'];
     const results = [];
+    const errors = [];
     
     for (const style of styles) {
-      const result = await generateForStyle(style, run_date, englishOnly, preferredModel);
-      results.push(result);
+      try {
+        console.log(`\n=== Starting ${style.toUpperCase()} generation ===`);
+        const result = await generateForStyle(style, run_date, englishOnly, preferredModel);
+        results.push(result);
+        console.log(`✅ ${style.toUpperCase()} completed with ${result.ideasCount} ideas`);
+      } catch (styleError: any) {
+        console.error(`❌ ${style.toUpperCase()} generation failed:`, styleError.message);
+        errors.push({ style, error: styleError.message });
+        // Continue with other styles even if one fails
+      }
     }
 
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    console.log(`\n✨ All styles generated successfully in ${duration}s`);
+    
+    if (results.length === 0) {
+      console.error(`\n❌ All styles failed to generate`);
+      return NextResponse.json({ 
+        ok: false, 
+        message: "All styles failed to generate",
+        errors,
+        duration: `${duration}s`
+      }, { status: 500 });
+    }
+
+    console.log(`\n✨ Generated ${results.length}/3 styles successfully in ${duration}s`);
 
     return NextResponse.json({ 
       ok: true, 
-      message: "Generated predictions for all 3 trading styles",
+      message: `Generated predictions for ${results.length} trading style(s)`,
       results,
+      errors: errors.length > 0 ? errors : undefined,
       duration: `${duration}s`
     });
   } catch (err: any) {
     console.error("run-oracle-all-styles error:", err);
-    return NextResponse.json({ ok: false, error: String(err) }, { status: 500 });
+    return NextResponse.json({ 
+      ok: false, 
+      error: err.message || String(err),
+      stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    }, { status: 500 });
   }
 }
 
