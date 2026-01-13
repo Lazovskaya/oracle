@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Our Methodology - Market Oracle",
     description: "Understanding our swing trading approach and Elliott Wave analysis",
-    url: "https://oracle-trade.vercel.app/methodology",
+    url: "https://finforesee.com/methodology",
   },
 };
 
@@ -302,7 +302,7 @@ export default function MethodologyPage() {
             <span>•</span>
             <Link href="/privacy" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Privacy</Link>
             <span>•</span>
-            <a href="mailto:trade.crypto.oracle@proton.me" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Contact</a>
+            <a href="mailto:info@finforesee.com" className="hover:text-gray-700 dark:hover:text-gray-300 transition-colors">Contact</a>
           </div>
         </footer>
       </div>

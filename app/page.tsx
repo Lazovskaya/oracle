@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Market Oracle - AI-Powered Trading Analysis",
     description: "Professional swing trading ideas using Elliott Wave theory and AI analysis",
-    url: "https://oracle-trade.vercel.app",
+    url: "https://finforesee.com",
     siteName: "Market Oracle",
     type: "website",
   },
@@ -98,7 +98,7 @@ export default async function HomePage() {
             <span>•</span>
             <a href="/faq" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">FAQ</a>
             <span>•</span>
-            <a href="mailto:trade.crypto.oracle@proton.me" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Contact</a>
+            <a href="mailto:info@finforesee.com" className="hover:text-gray-600 dark:hover:text-gray-300 transition-colors">Contact</a>
           </div>
         </footer>
       </div>

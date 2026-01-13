@@ -224,7 +224,7 @@ export default function TermsPage() {
               </div>
               <div className="ml-11">
                 <p className="leading-relaxed">
-                  For questions, contact: <a href="mailto:trade.crypto.oracle@proton.me" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">trade.crypto.oracle@proton.me</a>
+                  For questions, contact: <a href="mailto:info@finforesee.com" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">info@finforesee.com</a>
                 </p>
               </div>
             </section>
