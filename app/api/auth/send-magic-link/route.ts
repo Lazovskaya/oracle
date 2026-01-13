@@ -51,9 +51,10 @@ export async function POST(req: Request) {
     // Send magic link via Resend
     try {
       await resend.emails.send({
-        from: process.env.RESEND_FROM_EMAIL || 'magic@finforesee.com',
+        from: 'FinForesee Market Oracle <no-reply@finforesee.com>',
         to: email,
-        subject: '🔮 Your Market Oracle Login Link',
+        replyTo: 'support@finforesee.com',
+        subject: 'Sign in to FinForesee Market Oracle',
         html: `
           <!DOCTYPE html>
           <html>
@@ -74,16 +75,16 @@ export async function POST(req: Request) {
             <body>
               <div class="container">
                 <div class="header">
-                  <h1 class="title">🔮 Market Oracle</h1>
+                  <h1 class="title">FinForesee Market Oracle</h1>
                 </div>
                 
                 <div class="content">
                   <p style="margin-top: 0;">Hello,</p>
-                  <p>Click the button below to securely log in to your Market Oracle account:</p>
+                  <p>Use the link below to access your account:</p>
                   
                   <div style="text-align: center;">
                     <a href="${magicLink}" class="button">
-                      ✨ Access Market Oracle
+                      Sign in
                     </a>
                   </div>
                   
@@ -94,12 +95,12 @@ export async function POST(req: Request) {
                   </p>
                   
                   <p style="font-size: 14px; color: #6b7280;">
-                    If you didn't request this login link, you can safely ignore this email.
+                    If you did not request this email, you can ignore it.
                   </p>
                 </div>
                 
                 <div class="footer">
-                  <p>© 2026 Market Oracle. AI-powered trading insights.</p>
+                  <p>© 2026 FinForesee Market Oracle. AI-powered trading insights.</p>
                 </div>
               </div>
             </body>
