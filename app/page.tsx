@@ -38,7 +38,7 @@ export default async function HomePage() {
         <div className="text-center mb-12">
           {/* Company Logo and Tagline */}
           <div className="mb-8">
-            <h2 className="text-5xl font-bold italic mb-3 text-transparent tracking-[-0.03em]" style={{ fontFamily: '"PT Sans", "Helvetica Neue", Arial, sans-serif', fontWeight: 700, fontStyle: 'italic', backgroundImage: 'linear-gradient(to right, #1e3a8a, #60a5fa, #cbd5e1)', WebkitBackgroundClip: 'text', backgroundClip: 'text' }}>
+            <h2 className="text-5xl font-bold italic mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent tracking-[-0.03em]">
               FinForesee
             </h2>
             <p className="text-xs text-gray-500 dark:text-gray-400 tracking-[0.25em] uppercase font-medium italic">
@@ -54,7 +54,7 @@ export default async function HomePage() {
           <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Market Oracle
           </h1>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className="text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             AI-powered swing trading insights for stocks & crypto. Get high-quality market analysis and trade recommendations powered by advanced language models.
           </p>
         </div>
