@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getLanguagePreference, setLanguagePreference } from '@/lib/translationLoader';
+import { useCurrency } from '@/lib/hooks/useCurrency';
 
 interface LocaleSelectorProps {
   initialLanguage?: string;
@@ -8,26 +9,31 @@ interface LocaleSelectorProps {
 }
 
 const LANGUAGES = [
-  { code: 'en', name: 'English', flag: '🇬🇧' },
-  { code: 'ru', name: 'Русский', flag: '🇷🇺' },
-  { code: 'fr', name: 'Français', flag: '🇫🇷' },
-  { code: 'es', name: 'Español', flag: '🇪🇸' },
-  { code: 'zh', name: '中文', flag: '🇨🇳' },
+  { code: 'en-US', name: 'English (US)', flag: '🇺🇸' },
+  { code: 'en-GB', name: 'English (UK)', flag: '🇬🇧' },
+  // Hidden for now - will be released later
+  // { code: 'ru', name: 'Русский', flag: '🇷🇺' },
+  // { code: 'fr', name: 'Français', flag: '🇫🇷' },
+  // { code: 'es', name: 'Español', flag: '🇪🇸' },
+  // { code: 'zh', name: '中文', flag: '🇨🇳' },
 ];
 
 const COUNTRIES = [
   { code: 'US', name: 'United States', currency: 'USD', flag: '🇺🇸' },
-  { code: 'LT', name: 'Lithuania', currency: 'EUR', flag: '🇱🇹' },
-  { code: 'RU', name: 'Russia', currency: 'RUB', flag: '🇷🇺' },
-  { code: 'FR', name: 'France', currency: 'EUR', flag: '🇫🇷' },
-  { code: 'CN', name: 'China', currency: 'CNY', flag: '🇨🇳' },
   { code: 'GB', name: 'United Kingdom', currency: 'GBP', flag: '🇬🇧' },
+  { code: 'EU', name: 'European Union', currency: 'EUR', flag: '🇪🇺' },
+  // Hidden for now
+  // { code: 'LT', name: 'Lithuania', currency: 'EUR', flag: '🇱🇹' },
+  // { code: 'RU', name: 'Russia', currency: 'RUB', flag: '🇷🇺' },
+  // { code: 'FR', name: 'France', currency: 'EUR', flag: '🇫🇷' },
+  // { code: 'CN', name: 'China', currency: 'CNY', flag: '🇨🇳' },
 ];
 
-export default function LocaleSelector({ initialLanguage = 'en', initialCountry = 'US' }: LocaleSelectorProps) {
+export default function LocaleSelector({ initialLanguage = 'en-US', initialCountry = 'US' }: LocaleSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState(initialLanguage);
   const [country, setCountry] = useState(initialCountry);
+  const { currency, switchCurrency } = useCurrency();
 
   useEffect(() => {
     // Load from cookie (no localStorage flash!)
@@ -49,6 +55,12 @@ export default function LocaleSelector({ initialLanguage = 'en', initialCountry 
   const handleCountryChange = (countryCode: string) => {
     setCountry(countryCode);
     document.cookie = `user_country=${countryCode}; path=/; max-age=31536000`; // 1 year
+    
+    // Switch currency based on country
+    const selectedCountry = COUNTRIES.find(c => c.code === countryCode);
+    if (selectedCountry) {
+      switchCurrency(selectedCountry.currency as 'USD' | 'EUR' | 'GBP');
+    }
   };
 
   const getCookie = (name: string): string | null => {
@@ -64,6 +76,8 @@ export default function LocaleSelector({ initialLanguage = 'en', initialCountry 
   const currentLang = LANGUAGES.find((l) => l.code === language) || LANGUAGES[0];
   const currentCountry = COUNTRIES.find((c) => c.code === country) || COUNTRIES[0];
 
+  const currencySymbol = currency === 'USD' ? '$' : currency === 'GBP' ? '£' : '€';
+
   return (
     <div className="relative">
       <button
@@ -72,6 +86,7 @@ export default function LocaleSelector({ initialLanguage = 'en', initialCountry 
       >
         <span>{currentLang.flag}</span>
         <span className="text-sm">{currentLang.code.toUpperCase()}</span>
+        <span className="text-sm font-semibold">{currencySymbol}</span>
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
         </svg>

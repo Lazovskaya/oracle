@@ -1,6 +1,8 @@
 import SubscribeButton from './SubscribeButton';
 import LocaleSelector from '@/components/LocaleSelector';
 import { Metadata } from "next";
+import { Suspense } from 'react';
+import PricingClient from './PricingClient';
 
 export const metadata: Metadata = {
   title: "Pricing & Plans - Market Oracle Trading Intelligence",
@@ -9,9 +11,9 @@ export const metadata: Metadata = {
 };
 
 export default function PricingPage() {
+  // USD Price IDs
   const basicPriceId = process.env.STRIPE_BASIC_PRICE_ID || '';
   const proPriceId = process.env.STRIPE_PRO_PRICE_ID || '';
-  // Use existing price IDs as fallback until yearly prices are created in Stripe
   const basicYearlyPriceId = process.env.STRIPE_BASIC_YEARLY_PRICE_ID || basicPriceId;
   const proYearlyPriceId = process.env.STRIPE_PRO_YEARLY_PRICE_ID || proPriceId;
 
@@ -36,6 +38,11 @@ export default function PricingPage() {
           </p>
         </div>
 
+        {/* Payment Status Messages */}
+        <Suspense fallback={null}>
+          <PricingClient />
+        </Suspense>
+
         {/* Special Discount Banner */}
         <div className="max-w-3xl mx-auto mb-8 p-4 rounded-lg bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border border-orange-200 dark:border-orange-800 text-center">
           <p className="text-sm font-semibold text-orange-900 dark:text-orange-300">
@@ -46,6 +53,7 @@ export default function PricingPage() {
           </p>
         </div>
 
+<<<<<<< HEAD
         {/* Monthly Plans */}
         <div className="text-center mb-4">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Subscriptions</h3>

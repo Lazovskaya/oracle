@@ -198,7 +198,7 @@ STRIPE_WEBHOOK_SECRET=whsec_...
 STRIPE_BASIC_PRICE_ID=price_...  # Live price IDs
 STRIPE_PRO_PRICE_ID=price_...
 
-NEXT_PUBLIC_URL=https://yourdomain.com
+NEXT_PUBLIC_URL=https://finforesee.com
 
 RESEND_API_KEY=re_...  # Email service
 ```

@@ -4,7 +4,7 @@ import { db } from '@/lib/db';
 export const revalidate = 3600; // Revalidate every hour
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://oracle-trade.vercel.app';
+  const baseUrl = 'https://finforesee.com';
 
   // Fetch recent oracle runs
   const runs = await db.execute({

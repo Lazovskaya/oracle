@@ -128,7 +128,7 @@ export default function FAQPage() {
         },
         {
           q: 'What if I have technical issues?',
-          a: 'Contact our support team at trade.crypto.oracle@proton.me. We typically respond within 24 hours on business days.',
+          a: 'Contact our support team at support@finforesee.com. We typically respond within 24 hours on business days.',
         },
         {
           q: 'Can I use this on mobile devices?',
@@ -207,7 +207,7 @@ export default function FAQPage() {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <a
-              href="mailto:trade.crypto.oracle@proton.me"
+              href="mailto:info@finforesee.com"
               className="px-8 py-3 bg-white text-blue-600 rounded-xl font-semibold hover:bg-blue-50 transition-colors shadow-lg flex items-center gap-2"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

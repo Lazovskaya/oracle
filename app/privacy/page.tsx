@@ -201,7 +201,7 @@ export default function PrivacyPage() {
                   </li>
                 </ul>
                 <p className="leading-relaxed text-sm">
-                  Requests can be sent to: <a href="mailto:trade.crypto.oracle@proton.me" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">trade.crypto.oracle@proton.me</a>
+                  Requests can be sent to: <a href="mailto:info@finforesee.com" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">info@finforesee.com</a>
                 </p>
               </div>
             </section>
@@ -237,7 +237,7 @@ export default function PrivacyPage() {
               </div>
               <div className="ml-11">
                 <p className="leading-relaxed">
-                  Email: <a href="mailto:trade.crypto.oracle@proton.me" className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">trade.crypto.oracle@proton.me</a>
+                  Email: <a href="mailto:info@finforesee.com" className="text-emerald-600 dark:text-emerald-400 hover:underline font-medium">info@finforesee.com</a>
                 </p>
               </div>
             </section>
