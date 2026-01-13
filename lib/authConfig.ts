@@ -9,7 +9,43 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
   ],
+  session: {
+    strategy: "jwt",
+    // Default session max age - will be overridden by tier-specific logic
+    maxAge: 30 * 24 * 60 * 60, // 30 days (for Pro users)
+  },
   callbacks: {
+    async jwt({ token, user, account }: any) {
+      // On sign in, set tier-based session duration
+      if (account && user?.email) {
+        const dbUser = await getUserByEmail(user.email);
+        if (dbUser) {
+          token.subscription_tier = dbUser.subscription_tier;
+          token.subscription_status = dbUser.subscription_status;
+          token.trading_style = dbUser.trading_style;
+          token.asset_preference = dbUser.asset_preference;
+          token.is_admin = dbUser.is_admin;
+          
+          // Set tier-based expiration
+          const tier = dbUser.subscription_tier || 'free';
+          let maxAge: number;
+          switch (tier) {
+            case 'pro':
+              maxAge = 30 * 24 * 60 * 60; // 30 days
+              break;
+            case 'premium':
+              maxAge = 7 * 24 * 60 * 60; // 7 days
+              break;
+            case 'free':
+            default:
+              maxAge = 60 * 60; // 1 hour
+              break;
+          }
+          token.exp = Math.floor(Date.now() / 1000) + maxAge;
+        }
+      }
+      return token;
+    },
     async signIn({ user, account, profile }: any) {
       if (account.provider === "google") {
         const email = user.email;
@@ -28,15 +64,12 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async session({ session, token }: any) {
-      if (session?.user?.email) {
-        const user = await getUserByEmail(session.user.email);
-        if (user) {
-          session.user.subscription_tier = user.subscription_tier;
-          session.user.subscription_status = user.subscription_status;
-          session.user.trading_style = user.trading_style;
-          session.user.asset_preference = user.asset_preference;
-          session.user.is_admin = user.is_admin;
-        }
+      if (token) {
+        session.user.subscription_tier = token.subscription_tier;
+        session.user.subscription_status = token.subscription_status;
+        session.user.trading_style = token.trading_style;
+        session.user.asset_preference = token.asset_preference;
+        session.user.is_admin = token.is_admin;
       }
       return session;
     },
