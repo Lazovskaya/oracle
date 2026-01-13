@@ -49,20 +49,37 @@ export async function GET(req: Request) {
 
     const user = userResult.rows[0] as any;
 
-    // Set session cookies
+    // Determine session lifetime based on subscription tier
+    const tier = user.subscription_tier || 'free';
+    let sessionMaxAge: number;
+    
+    switch (tier) {
+      case 'pro':
+        sessionMaxAge = 30 * 24 * 60 * 60; // 30 days
+        break;
+      case 'premium':
+        sessionMaxAge = 7 * 24 * 60 * 60; // 7 days
+        break;
+      case 'free':
+      default:
+        sessionMaxAge = 60 * 60; // 1 hour
+        break;
+    }
+
+    // Set session cookies with tier-based lifetime
     const cookieStore = await cookies();
     cookieStore.set('user_email', user.email, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60, // 30 days
+      maxAge: sessionMaxAge,
     });
 
-    cookieStore.set('subscription_tier', user.subscription_tier || 'free', {
+    cookieStore.set('subscription_tier', tier, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60,
+      maxAge: sessionMaxAge,
     });
 
     return NextResponse.redirect(new URL('/oracle', req.url));

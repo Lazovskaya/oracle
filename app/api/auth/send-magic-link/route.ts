@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 
     // Generate magic link token
     const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
     // Store magic link
     await db.execute({
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
                   <div class="divider"></div>
                   
                   <p style="font-size: 14px; color: #6b7280;">
-                    This link will expire in <strong>15 minutes</strong> for security reasons.
+                    This link will expire in <strong>10 minutes</strong> for security reasons.
                   </p>
                   
                   <p style="font-size: 14px; color: #6b7280;">
