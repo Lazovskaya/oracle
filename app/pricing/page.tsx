@@ -78,6 +78,10 @@ export default function PricingPage() {
                 <span className="text-red-500">✗</span>
                 <span className="text-sm text-gray-500">Performance tracking</span>
               </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500">✗</span>
+                <span className="text-sm text-gray-500">Custom ticker analyzer</span>
+              </li>
             </ul>
 
             <a href="/login" className="block w-full text-center px-6 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-700 font-bold hover:scale-105 transition-all">
@@ -112,8 +116,12 @@ export default function PricingPage() {
                 <span className="text-sm font-medium">Crypto & stocks ideas</span>
               </li>
               <li className="flex items-start gap-2">
+                <span className="text-green-500">✓</span>
+                <span className="text-sm font-medium">Performance tracking</span>
+              </li>
+              <li className="flex items-start gap-2">
                 <span className="text-red-500">✗</span>
-                <span className="text-sm text-gray-500">Performance statistics</span>
+                <span className="text-sm text-gray-500">Custom ticker analyzer</span>
               </li>
             </ul>
 
@@ -133,6 +141,10 @@ export default function PricingPage() {
               <li className="flex items-start gap-2">
                 <span className="text-green-500">✓</span>
                 <span className="text-sm font-medium">Performance tracking</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-500">✓</span>
+                <span className="text-sm font-medium">Custom ticker analyzer</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-green-500">✓</span>
@@ -200,11 +212,15 @@ export default function PricingPage() {
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-green-500">✓</span>
+                <span className="text-sm font-medium">Performance tracking</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-500">✓</span>
                 <span className="text-sm font-medium">12 months access</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-red-500">✗</span>
-                <span className="text-sm text-gray-500">Performance statistics</span>
+                <span className="text-sm text-gray-500">Custom ticker analyzer</span>
               </li>
             </ul>
 
@@ -234,6 +250,10 @@ export default function PricingPage() {
               <li className="flex items-start gap-2">
                 <span className="text-green-500">✓</span>
                 <span className="text-sm font-medium">Performance tracking</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-green-500">✓</span>
+                <span className="text-sm font-medium">Custom ticker analyzer</span>
               </li>
               <li className="flex items-start gap-2">
                 <span className="text-green-500">✓</span>
