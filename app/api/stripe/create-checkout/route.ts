@@ -11,13 +11,22 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 export async function POST(req: Request) {
   try {
     const cookieStore = await cookies();
-    const userEmail = cookieStore.get('user_email')?.value;
+    const cookieEmail = cookieStore.get('user_email')?.value;
+
+    const { priceId, tier, currency = 'USD', email } = await req.json();
+
+    // Use email from request body if provided, otherwise use cookie email
+    const userEmail = email || cookieEmail;
 
     if (!userEmail) {
-      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+      return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    const { priceId, tier } = await req.json();
+    console.log('Creating checkout session:', { priceId, tier, currency, userEmail });
+
+    if (!priceId) {
+      return NextResponse.json({ error: 'Price ID is required' }, { status: 400 });
+    }
 
     const session = await stripe.checkout.sessions.create({
       customer_email: userEmail,
@@ -27,18 +36,20 @@ export async function POST(req: Request) {
           quantity: 1,
         },
       ],
-      mode: 'payment',
-      success_url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/oracle?payment=success`,
-      cancel_url: `${process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'}/pricing?payment=canceled`,
+      mode: 'subscription',
+      success_url: `${process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/oracle?payment=success`,
+      cancel_url: `${process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/pricing?payment=canceled`,
       metadata: {
         email: userEmail,
         tier: tier, // 'basic' or 'pro'
+        currency: currency, // 'USD', 'EUR', or 'GBP'
       },
     });
 
     return NextResponse.json({ sessionId: session.id, url: session.url });
   } catch (error: any) {
     console.error('Stripe checkout error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    console.error('Error details:', error.message, error.type, error.code);
+    return NextResponse.json({ error: error.message || 'Failed to create checkout session' }, { status: 500 });
   }
 }

@@ -1,6 +1,5 @@
 import { db } from "@/lib/db";
 import { OracleRun } from "@/types/oracle";
-import RunButton from "./RunButton";
 import { formatPrice, formatChange } from "@/lib/priceService";
 import dynamic from 'next/dynamic';
 import { OraclePageSkeleton } from "@/components/skeletons/LoadingSkeletons";
@@ -24,7 +23,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Market Oracle - Latest Trading Analysis",
     description: "Daily market insights and swing trading ideas using Elliott Wave analysis",
-    url: "https://oracle-trade.vercel.app/oracle",
+    url: "https://finforesee.com/oracle",
     siteName: "Market Oracle",
     type: "website",
   },

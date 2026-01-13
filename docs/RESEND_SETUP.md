@@ -34,7 +34,7 @@ Add to your `.env.local` file:
 ```env
 # Resend API
 RESEND_API_KEY=re_your_actual_api_key_here
-RESEND_FROM_EMAIL=noreply@yourdomain.com
+RESEND_FROM_EMAIL=magic@finforesee.com
 ```
 
 **For Development (before domain verification):**

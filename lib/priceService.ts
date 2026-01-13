@@ -163,12 +163,12 @@ export function formatPrice(price: number, currency: string = 'USD'): string {
       maximumFractionDigits: 2,
     }).format(price);
   } else {
-    // For small crypto prices, show more decimals
+    // For small crypto prices, always show exactly 4 decimals
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: currency,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 6,
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4,
     }).format(price);
   }
 }

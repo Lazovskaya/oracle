@@ -1,20 +1,44 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function SubscribeButton({ 
   tier, 
-  priceId 
+  priceId,
+  currency = 'USD'
 }: { 
   tier: 'basic' | 'pro' | 'basic-yearly' | 'pro-yearly';
   priceId: string;
+  currency?: 'USD' | 'EUR' | 'GBP';
 }) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [email, setEmail] = useState('');
   const [country, setCountry] = useState('');
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [riskAccepted, setRiskAccepted] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    // Check authentication status and get email
+    fetch('/api/auth/check')
+      .then(res => res.json())
+      .then(data => {
+        if (data.authenticated && data.email) {
+          setUserEmail(data.email);
+          setEmail(data.email);
+          setIsAuthenticated(true);
+        }
+      })
+      .catch(() => setIsAuthenticated(false));
+  }, []);
 
   const handleSubscribe = async () => {
+    if (!email || !email.includes('@')) {
+      alert('Please enter a valid email address');
+      return;
+    }
+
     if (!country) {
       alert('Please select your country');
       return;
@@ -49,7 +73,7 @@ export default function SubscribeButton({
       const response = await fetch('/api/stripe/create-checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, tier }),
+        body: JSON.stringify({ priceId, tier, currency, email }),
       });
 
       const data = await response.json();
@@ -57,7 +81,7 @@ export default function SubscribeButton({
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert('Error creating checkout session. Please try again.');
+        alert(data.error || 'Error creating checkout session. Please try again.');
         setLoading(false);
       }
     } catch (error) {
@@ -86,6 +110,26 @@ export default function SubscribeButton({
           <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
             <h2 className="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Before You Subscribe</h2>
             
+            {/* Email Input */}
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Email Address *
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={isAuthenticated}
+                placeholder="your@email.com"
+                className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-60 disabled:cursor-not-allowed"
+              />
+              {isAuthenticated && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  Using your logged-in email
+                </p>
+              )}
+            </div>
+
             {/* Country Selection */}
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
