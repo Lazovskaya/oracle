@@ -36,6 +36,16 @@ export default async function HomePage() {
           </Link>
         </div>
         <div className="text-center mb-12">
+          {/* Company Logo and Tagline */}
+          <div className="mb-8">
+            <h2 className="text-3xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              FinForesee
+            </h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 tracking-wide uppercase">
+              Financial Market Forecasting & Insights
+            </p>
+          </div>
+
           <div className="inline-flex items-center justify-center mb-6">
             <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-2xl">
               <OracleIcon className="w-12 h-12 text-white" />
