@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
-export async function GET() {
+export async function GET(request: Request) {
   const cookieStore = await cookies();
   
   // Delete the auth token cookie
   cookieStore.delete('auth_token');
+  cookieStore.delete('user_email');
+  
+  // Get the origin from the request
+  const headersList = await headers();
+  const host = headersList.get('host') || '';
+  const protocol = headersList.get('x-forwarded-proto') || 'https';
+  const baseUrl = `${protocol}://${host}`;
   
   // Redirect to login page
-  return NextResponse.redirect(new URL('/login', process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'));
+  return NextResponse.redirect(new URL('/login', baseUrl));
 }
