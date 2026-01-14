@@ -1,4 +1,17 @@
 import Link from 'next/link';
+import { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'FAQ - Frequently Asked Questions | Market Oracle',
+  description: 'Find answers to common questions about Market Oracle trading platform, subscriptions, trading methodology, Elliott Wave analysis, and technical support.',
+  keywords: 'trading FAQ, Market Oracle help, subscription questions, trading support, Elliott Wave FAQ',
+  openGraph: {
+    title: 'FAQ - Market Oracle',
+    description: 'Get answers to your questions about our trading analysis platform',
+    url: 'https://finforesee.com/faq',
+    type: 'website',
+  },
+};
 
 export default function FAQPage() {
   const faqs = [
