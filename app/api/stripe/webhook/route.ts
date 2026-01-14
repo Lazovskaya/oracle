@@ -24,31 +24,77 @@ export async function POST(req: Request) {
   }
 
   try {
+    console.log('📥 Webhook received:', event.type, 'ID:', event.id);
+    
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const email = session.customer_email || session.metadata?.email;
         const tier = session.metadata?.tier || 'premium';
         
+        console.log('🔍 Processing checkout:', { 
+          email, 
+          tier, 
+          payment_status: session.payment_status,
+          has_subscription: !!session.subscription,
+          customer: session.customer 
+        });
+        
         if (email && session.payment_status === 'paid' && session.subscription) {
-          // Get subscription details
-          const subscriptionData = await stripe.subscriptions.retrieve(session.subscription as string);
-          const subscription = subscriptionData as any;
-          const endDate = new Date(subscription.current_period_end * 1000);
-          
-          // Update user with subscription info
-          await db.execute({
-            sql: `UPDATE users 
-                  SET subscription_tier = ?, 
-                      subscription_status = 'active',
-                      stripe_customer_id = ?,
-                      stripe_subscription_id = ?,
-                      subscription_end_date = ?
-                  WHERE email = ?`,
-            args: [tier, session.customer, subscription.id, endDate.toISOString(), email],
+          try {
+            // Get subscription details
+            console.log('📡 Retrieving subscription from Stripe...');
+            const subscriptionData = await stripe.subscriptions.retrieve(session.subscription as string);
+            const subscription = subscriptionData as any;
+            const endDate = new Date(subscription.current_period_end * 1000);
+            
+            console.log('✓ Subscription retrieved:', subscription.id);
+            
+            // Check if user exists
+            const userCheck = await db.execute({
+              sql: 'SELECT id FROM users WHERE email = ?',
+              args: [email],
+            });
+            
+            if (userCheck.rows.length === 0) {
+              // Create user if doesn't exist
+              console.log('👤 Creating new user:', email);
+              await db.execute({
+                sql: 'INSERT INTO users (email, subscription_tier, subscription_status, stripe_customer_id, stripe_subscription_id, subscription_end_date) VALUES (?, ?, ?, ?, ?, ?)',
+                args: [email, tier, 'active', session.customer, subscription.id, endDate.toISOString()],
+              });
+              console.log('✅ New user created with subscription');
+            } else {
+              // Update existing user
+              console.log('💾 Updating existing user:', email);
+              await db.execute({
+                sql: `UPDATE users 
+                      SET subscription_tier = ?, 
+                          subscription_status = 'active',
+                          stripe_customer_id = ?,
+                          stripe_subscription_id = ?,
+                          subscription_end_date = ?
+                      WHERE email = ?`,
+                args: [tier, session.customer, subscription.id, endDate.toISOString(), email],
+              });
+              console.log('✅ User subscription updated');
+            }
+            
+            console.log(`✅ Subscription activated for ${email} - Tier: ${tier}, Until: ${endDate.toISOString()}`);
+          } catch (subError: any) {
+            console.error('❌ Error processing subscription:', {
+              message: subError.message,
+              stack: subError.stack,
+              email,
+            });
+            throw subError;
+          }
+        } else {
+          console.log('⚠️ Skipping - conditions not met:', { 
+            hasEmail: !!email, 
+            isPaid: session.payment_status === 'paid',
+            hasSubscription: !!session.subscription 
           });
-          
-          console.log(`✅ Subscription activated for ${email} - Tier: ${tier}, Until: ${endDate.toISOString()}`);
         }
         break;
       }
@@ -112,8 +158,16 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ received: true });
-  } catch (error) {
-    console.error('Webhook handler error:', error);
-    return NextResponse.json({ error: 'Webhook handler failed' }, { status: 500 });
+  } catch (error: any) {
+    console.error('❌ Webhook handler error:', {
+      message: error.message,
+      stack: error.stack,
+      event_type: event?.type,
+      event_id: event?.id,
+    });
+    return NextResponse.json({ 
+      error: 'Webhook handler failed',
+      message: error.message 
+    }, { status: 500 });
   }
 }
