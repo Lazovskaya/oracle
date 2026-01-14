@@ -15,13 +15,23 @@ export const metadata: Metadata = {
     template: "%s | Market Oracle",
   },
   description: "Professional swing trading analysis using Elliott Wave theory and AI. Get high-quality trade ideas for stocks and cryptocurrencies with clear entry points, stop losses, and profit targets.",
-  keywords: ["swing trading", "Elliott Wave", "trading ideas", "stock analysis", "crypto trading", "market analysis", "technical analysis", "AI trading"],
+  keywords: ["swing trading", "Elliott Wave", "trading ideas", "stock analysis", "crypto trading", "market analysis", "technical analysis", "AI trading", "trading signals", "cryptocurrency analysis", "stock market forecast"],
   authors: [{ name: "Market Oracle" }],
   creator: "Market Oracle",
   publisher: "Market Oracle",
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://finforesee.com',
   },
   openGraph: {
     type: 'website',
@@ -35,6 +45,9 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'Market Oracle - AI Trading Analysis',
     description: 'Professional swing trading ideas for stocks & crypto',
+  },
+  verification: {
+    google: 'your-google-verification-code',
   },
 };
 

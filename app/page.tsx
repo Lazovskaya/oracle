@@ -4,17 +4,29 @@ import { cookies } from 'next/headers';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authConfig';
 import Link from 'next/link';
+import { WebsiteStructuredData, OrganizationStructuredData } from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: "Market Oracle - AI-Powered Swing Trading Ideas for Stocks & Crypto",
   description: "Professional swing trading analysis (2-6 weeks) using Elliott Wave theory and AI. Get high-quality trade ideas for stocks and cryptocurrencies with clear entry points, stop losses, and profit targets.",
-  keywords: "swing trading, Elliott Wave, trading ideas, stock analysis, crypto trading, market analysis, technical analysis",
+  keywords: "swing trading, Elliott Wave, trading ideas, stock analysis, crypto trading, market analysis, technical analysis, AI trading signals, cryptocurrency forecasts",
+  alternates: {
+    canonical: 'https://finforesee.com',
+  },
   openGraph: {
     title: "Market Oracle - AI-Powered Trading Analysis",
     description: "Professional swing trading ideas using Elliott Wave theory and AI analysis",
     url: "https://finforesee.com",
     siteName: "Market Oracle",
     type: "website",
+    images: [
+      {
+        url: 'https://finforesee.com/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'Market Oracle - Trading Analysis Platform',
+      },
+    ],
   },
 };
 
@@ -25,7 +37,10 @@ export default async function HomePage() {
   const isLoggedIn = !!(cookieEmail || session?.user?.email);
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
+    <>
+      <WebsiteStructuredData />
+      <OrganizationStructuredData />
+      <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
       <div className="max-w-4xl w-full">
         <div className="flex justify-end mb-6">
           <Link href={isLoggedIn ? "/account" : "/login"} className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
@@ -113,5 +128,6 @@ export default async function HomePage() {
         </footer>
       </div>
     </main>
+    </>
   );
 }

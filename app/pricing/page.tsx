@@ -3,11 +3,21 @@ import LocaleSelector from '@/components/LocaleSelector';
 import { Metadata } from "next";
 import { Suspense } from 'react';
 import PricingClient from './PricingClient';
+import { ServiceStructuredData } from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: "Pricing & Plans - Market Oracle Trading Intelligence",
   description: "Choose your trading intelligence plan. Get access to professional Elliott Wave analysis, swing trading ideas with precise entry/stop/target levels. Monthly and yearly subscriptions available.",
-  keywords: "trading subscription, trading plans, market analysis pricing, trading intelligence",
+  keywords: "trading subscription, trading plans, market analysis pricing, trading intelligence, premium trading signals",
+  alternates: {
+    canonical: 'https://finforesee.com/pricing',
+  },
+  openGraph: {
+    title: "Pricing Plans - Market Oracle",
+    description: "Affordable trading intelligence plans starting at $9/month",
+    url: "https://finforesee.com/pricing",
+    type: "website",
+  },
 };
 
 export default function PricingPage() {
@@ -18,7 +28,9 @@ export default function PricingPage() {
   const proYearlyPriceId = process.env.STRIPE_PRO_YEARLY_PRICE_ID || proPriceId;
 
   return (
-    <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">
+    <>
+      <ServiceStructuredData />
+      <main className="min-h-screen px-6 py-12 bg-gray-50 dark:bg-[#0d1117]">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-end items-center gap-3 mb-6">
           <LocaleSelector />
@@ -349,5 +361,6 @@ export default function PricingPage() {
         </div>
       </div>
     </main>
+    </>
   );
 }
