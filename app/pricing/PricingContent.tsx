@@ -147,7 +147,7 @@ export default function PricingContent({ priceIds }: PricingContentProps) {
             </li>
           </ul>
 
-          <SubscribeButton tier="basic" priceId={currentPriceIds.basic} currency={currency} />
+          <SubscribeButton tier="premium" priceId={currentPriceIds.basic} currency={currency} />
         </div>
 
         {/* Pro Tier */}
@@ -246,7 +246,7 @@ export default function PricingContent({ priceIds }: PricingContentProps) {
             </li>
           </ul>
 
-          <SubscribeButton tier="basic-yearly" priceId={currentPriceIds.basicYearly} currency={currency} />
+          <SubscribeButton tier="premium-yearly" priceId={currentPriceIds.basicYearly} currency={currency} />
         </div>
 
         {/* Pro Yearly */}

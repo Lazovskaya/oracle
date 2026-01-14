@@ -6,7 +6,7 @@ export default function SubscribeButton({
   priceId,
   currency = 'USD'
 }: { 
-  tier: 'basic' | 'pro' | 'basic-yearly' | 'pro-yearly';
+  tier: 'premium' | 'pro' | 'premium-yearly' | 'pro-yearly';
   priceId: string;
   currency?: 'USD' | 'EUR' | 'GBP';
 }) {
