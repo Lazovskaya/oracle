@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { updateUserSubscription } from '@/lib/auth';
+import { db } from '@/lib/db';
 
 export const runtime = 'nodejs';
 
@@ -28,28 +28,83 @@ export async function POST(req: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const email = session.customer_email || session.metadata?.email;
-        const tier = (session.metadata?.tier || 'premium') as 'free' | 'premium';
+        const tier = session.metadata?.tier || 'premium';
         
-        if (email && session.payment_status === 'paid') {
-          // Grant access for 30 days from payment
-          const endDate = new Date();
-          endDate.setDate(endDate.getDate() + 30);
+        if (email && session.payment_status === 'paid' && session.subscription) {
+          // Get subscription details
+          const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+          const endDate = new Date(subscription.current_period_end * 1000);
           
-          await updateUserSubscription(
-            email,
-            tier,
-            'active',
-            session.customer as string,
-            endDate.toISOString()
-          );
+          // Update user with subscription info
+          await db.execute({
+            sql: `UPDATE users 
+                  SET subscription_tier = ?, 
+                      subscription_status = 'active',
+                      stripe_customer_id = ?,
+                      stripe_subscription_id = ?,
+                      subscription_end_date = ?
+                  WHERE email = ?`,
+            args: [tier, session.customer, subscription.id, endDate.toISOString(), email],
+          });
           
-          console.log(`✅ One-time payment completed for ${email} - Access until ${endDate.toISOString()}`);
+          console.log(`✅ Subscription activated for ${email} - Tier: ${tier}, Until: ${endDate.toISOString()}`);
         }
         break;
       }
 
-      // You can add custom logic to revoke access after expiry
-      // For example, run a cron job to check subscription_end_date and update status
+      case 'customer.subscription.updated': {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customer = await stripe.customers.retrieve(subscription.customer as string);
+        const email = (customer as Stripe.Customer).email;
+        
+        if (email) {
+          const endDate = new Date(subscription.current_period_end * 1000);
+          const status = subscription.cancel_at_period_end ? 'canceled' : 'active';
+          
+          await db.execute({
+            sql: `UPDATE users 
+                  SET subscription_status = ?,
+                      subscription_end_date = ?
+                  WHERE email = ?`,
+            args: [status, endDate.toISOString(), email],
+          });
+          
+          console.log(`🔄 Subscription updated for ${email} - Status: ${status}`);
+        }
+        break;
+      }
+
+      case 'customer.subscription.deleted': {
+        const subscription = event.data.object as Stripe.Subscription;
+        const customer = await stripe.customers.retrieve(subscription.customer as string);
+        const email = (customer as Stripe.Customer).email;
+        
+        if (email) {
+          await db.execute({
+            sql: `UPDATE users 
+                  SET subscription_tier = 'free',
+                      subscription_status = 'expired',
+                      stripe_subscription_id = NULL
+                  WHERE email = ?`,
+            args: [email],
+          });
+          
+          console.log(`❌ Subscription canceled for ${email} - Downgraded to free`);
+        }
+        break;
+      }
+
+      case 'invoice.payment_failed': {
+        const invoice = event.data.object as Stripe.Invoice;
+        const customer = await stripe.customers.retrieve(invoice.customer as string);
+        const email = (customer as Stripe.Customer).email;
+        
+        if (email) {
+          console.log(`⚠️ Payment failed for ${email}`);
+          // Optionally send email notification
+        }
+        break;
+      }
     }
 
     return NextResponse.json({ received: true });
