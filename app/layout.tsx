@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 const inter = Inter({
@@ -48,6 +49,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'your-google-verification-code',
+    other: {
+      'msvalidate.01': '26C56064C3E4E44BBF1FF4753BA0DEAD',
+    },
   },
 };
 
@@ -62,6 +66,19 @@ export default function RootLayout({
         className={`${inter.variable} antialiased`}
         suppressHydrationWarning
       >
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-B9E0HFBTZZ"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-B9E0HFBTZZ');
+          `}
+        </Script>
         {children}
       </body>
     </html>
