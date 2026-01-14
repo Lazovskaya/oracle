@@ -46,9 +46,22 @@ export async function POST(req: Request) {
             console.log('📡 Retrieving subscription from Stripe...');
             const subscriptionData = await stripe.subscriptions.retrieve(session.subscription as string);
             const subscription = subscriptionData as any;
-            const endDate = new Date(subscription.current_period_end * 1000);
             
             console.log('✓ Subscription retrieved:', subscription.id);
+            console.log('📅 Subscription period_end:', subscription.current_period_end, typeof subscription.current_period_end);
+            
+            // Validate and convert end date
+            let endDate: Date;
+            if (subscription.current_period_end && typeof subscription.current_period_end === 'number') {
+              endDate = new Date(subscription.current_period_end * 1000);
+            } else {
+              // Fallback: 30 days from now
+              console.log('⚠️ No valid current_period_end, using 30 days default');
+              endDate = new Date();
+              endDate.setDate(endDate.getDate() + 30);
+            }
+            
+            console.log('📆 End date calculated:', endDate.toISOString());
             
             // Check if user exists
             const userCheck = await db.execute({
