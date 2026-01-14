@@ -32,7 +32,8 @@ export async function POST(req: Request) {
         
         if (email && session.payment_status === 'paid' && session.subscription) {
           // Get subscription details
-          const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+          const subscriptionData = await stripe.subscriptions.retrieve(session.subscription as string);
+          const subscription = subscriptionData as any;
           const endDate = new Date(subscription.current_period_end * 1000);
           
           // Update user with subscription info
@@ -53,9 +54,10 @@ export async function POST(req: Request) {
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as Stripe.Subscription;
-        const customer = await stripe.customers.retrieve(subscription.customer as string);
-        const email = (customer as Stripe.Customer).email;
+        const subscription = event.data.object as any;
+        const customerData = await stripe.customers.retrieve(subscription.customer as string);
+        const customer = customerData as any;
+        const email = customer.email;
         
         if (email) {
           const endDate = new Date(subscription.current_period_end * 1000);
@@ -75,9 +77,10 @@ export async function POST(req: Request) {
       }
 
       case 'customer.subscription.deleted': {
-        const subscription = event.data.object as Stripe.Subscription;
-        const customer = await stripe.customers.retrieve(subscription.customer as string);
-        const email = (customer as Stripe.Customer).email;
+        const subscription = event.data.object as any;
+        const customerData = await stripe.customers.retrieve(subscription.customer as string);
+        const customer = customerData as any;
+        const email = customer.email;
         
         if (email) {
           await db.execute({
@@ -95,9 +98,10 @@ export async function POST(req: Request) {
       }
 
       case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice;
-        const customer = await stripe.customers.retrieve(invoice.customer as string);
-        const email = (customer as Stripe.Customer).email;
+        const invoice = event.data.object as any;
+        const customerData = await stripe.customers.retrieve(invoice.customer as string);
+        const customer = customerData as any;
+        const email = customer.email;
         
         if (email) {
           console.log(`⚠️ Payment failed for ${email}`);
