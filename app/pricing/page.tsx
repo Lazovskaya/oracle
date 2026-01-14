@@ -144,7 +144,7 @@ export default function PricingPage() {
               </li>
             </ul>
 
-            <SubscribeButton tier="basic" priceId={basicPriceId} />
+            <SubscribeButton tier="premium" priceId={basicPriceId} />
           </div>
 
           {/* Pro Tier */}
@@ -243,7 +243,7 @@ export default function PricingPage() {
               </li>
             </ul>
 
-            <SubscribeButton tier="basic-yearly" priceId={basicYearlyPriceId} />
+            <SubscribeButton tier="premium-yearly" priceId={basicYearlyPriceId} />
           </div>
 
           {/* Pro Yearly */}

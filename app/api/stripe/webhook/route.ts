@@ -30,11 +30,15 @@ export async function POST(req: Request) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session;
         const email = session.customer_email || session.metadata?.email;
-        const tier = session.metadata?.tier || 'premium';
+        const tierRaw = session.metadata?.tier || 'premium';
+        
+        // Map tier names: premium-yearly -> premium, pro-yearly -> pro
+        const tier = tierRaw.replace('-yearly', '') as 'premium' | 'pro';
         
         console.log('🔍 Processing checkout:', { 
           email, 
-          tier, 
+          tier_raw: tierRaw,
+          tier_final: tier,
           payment_status: session.payment_status,
           has_subscription: !!session.subscription,
           customer: session.customer 
