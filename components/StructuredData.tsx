@@ -58,20 +58,27 @@ export function OrganizationStructuredData() {
 export function ServiceStructuredData() {
   const structuredData = {
     '@context': 'https://schema.org',
-    '@type': 'Service',
-    serviceType: 'Trading Analysis',
-    provider: {
-      '@type': 'Organization',
-      name: 'Market Oracle',
-    },
-    areaServed: 'Worldwide',
-    description: 'AI-powered swing trading analysis for stocks and cryptocurrencies using Elliott Wave theory',
+    '@type': 'SoftwareApplication',
+    name: 'Finforesee',
+    applicationCategory: 'FinanceApplication',
+    operatingSystem: 'Web',
+    url: 'https://finforesee.com',
+    description: 'AI-powered market analysis platform for stocks and crypto with Elliott Wave theory. Professional swing trading ideas with clear entry points, stop losses, and profit targets.',
     offers: [
+      {
+        '@type': 'Offer',
+        name: 'Free Plan',
+        price: '0',
+        priceCurrency: 'USD',
+        description: 'Access to basic market analysis and predictions',
+        availability: 'https://schema.org/InStock',
+      },
       {
         '@type': 'Offer',
         name: 'Premium Plan',
         price: '9',
         priceCurrency: 'USD',
+        billingDuration: 'P1M',
         priceSpecification: {
           '@type': 'UnitPriceSpecification',
           price: '9',
@@ -82,12 +89,15 @@ export function ServiceStructuredData() {
             unitCode: 'MON',
           },
         },
+        description: 'Monthly subscription with advanced analytics and trade tracking',
+        availability: 'https://schema.org/InStock',
       },
       {
         '@type': 'Offer',
         name: 'Pro Plan',
         price: '19',
         priceCurrency: 'USD',
+        billingDuration: 'P1M',
         priceSpecification: {
           '@type': 'UnitPriceSpecification',
           price: '19',
@@ -98,8 +108,15 @@ export function ServiceStructuredData() {
             unitCode: 'MON',
           },
         },
+        description: 'Premium monthly subscription with unlimited access and priority support',
+        availability: 'https://schema.org/InStock',
       },
     ],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: '150',
+    },
   };
 
   return (

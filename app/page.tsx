@@ -4,7 +4,7 @@ import { cookies } from 'next/headers';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/authConfig';
 import Link from 'next/link';
-import { WebsiteStructuredData, OrganizationStructuredData } from '@/components/StructuredData';
+import { WebsiteStructuredData, OrganizationStructuredData, ServiceStructuredData } from '@/components/StructuredData';
 
 export const metadata: Metadata = {
   title: "Market Oracle - AI-Powered Swing Trading Ideas for Stocks & Crypto",
@@ -40,6 +40,7 @@ export default async function HomePage() {
     <>
       <WebsiteStructuredData />
       <OrganizationStructuredData />
+      <ServiceStructuredData />
       <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
       <div className="max-w-4xl w-full">
         <div className="flex justify-end mb-6">
