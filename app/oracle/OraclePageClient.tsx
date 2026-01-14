@@ -127,6 +127,7 @@ export default function OraclePageClient({
   const [mounted, setMounted] = useState(false);
   const [savedIdeas, setSavedIdeas] = useState<Set<string>>(new Set());
   const [savingIdea, setSavingIdea] = useState<string | null>(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [tradingStyle, setTradingStyle] = useState<'conservative' | 'balanced' | 'aggressive'>(userTradingStyle);
   const [assetPreference, setAssetPreference] = useState<'crypto' | 'stocks' | 'both'>('both');
   const [biasFilter, setBiasFilter] = useState<'all' | 'bullish' | 'bearish'>('all');
@@ -218,7 +219,7 @@ export default function OraclePageClient({
       });
 
       setSavedIdeas(prev => new Set(prev).add(ideaKey));
-      alert('Idea saved! View it in your account page.');
+      setShowSuccessModal(true);
     } catch (error) {
       console.error('Error saving idea:', error);
       alert('Failed to save idea. Please try again.');
@@ -874,6 +875,41 @@ export default function OraclePageClient({
           </article>
         )}
       </div>
+
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800 animate-in fade-in zoom-in duration-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white">Idea Saved!</h3>
+            </div>
+            
+            <p className="text-gray-600 dark:text-gray-400 mb-6">
+              Your trading idea has been saved successfully. You can track its performance and manage it from your account page.
+            </p>
+            
+            <div className="flex gap-3">
+              <Link
+                href="/account"
+                className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-500 transition-colors text-center"
+              >
+                View in Account
+              </Link>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="flex-1 px-4 py-2.5 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
   );
 }
