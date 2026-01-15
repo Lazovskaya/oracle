@@ -138,7 +138,21 @@ export async function POST(req: Request) {
         const email = customer.email;
         
         if (email) {
-          const endDate = new Date(subscription.current_period_end * 1000);
+          // Validate and convert end date
+          let endDate: Date;
+          if (subscription.current_period_end && typeof subscription.current_period_end === 'number') {
+            endDate = new Date(subscription.current_period_end * 1000);
+          } else {
+            console.log('⚠️ No valid current_period_end in subscription.updated, keeping existing date');
+            // Get existing date from database
+            const userResult = await db.execute({
+              sql: 'SELECT subscription_end_date FROM users WHERE email = ?',
+              args: [email],
+            });
+            const existingDate = userResult.rows[0]?.subscription_end_date as string;
+            endDate = existingDate ? new Date(existingDate) : new Date();
+          }
+          
           const status = subscription.cancel_at_period_end ? 'canceled' : 'active';
           
           // Get current tier before updating
