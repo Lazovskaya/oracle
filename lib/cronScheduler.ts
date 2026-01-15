@@ -29,7 +29,7 @@ export function startCronScheduler() {
 
   // Get schedule from env or default to 9 AM UTC daily
   const schedule = process.env.CRON_SCHEDULE || '0 9 * * *';
-  const baseUrl = process.env.NEXT_PUBLIC_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const cronSecret = process.env.CRON_SECRET || 'dev-secret-change-in-production';
 
   console.log('🕐 Starting internal cron scheduler...');
