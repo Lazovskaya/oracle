@@ -1,8 +1,8 @@
-import SubscribeButton from './SubscribeButton';
 import LocaleSelector from '@/components/LocaleSelector';
 import { Metadata } from "next";
 import { Suspense } from 'react';
 import PricingClient from './PricingClient';
+import PricingContent from './PricingContent';
 import { ServiceStructuredData } from '@/components/StructuredData';
 
 export const metadata: Metadata = {
@@ -21,11 +21,39 @@ export const metadata: Metadata = {
 };
 
 export default function PricingPage() {
+  // Load all price IDs for all currencies
   // USD Price IDs
-  const basicPriceId = process.env.STRIPE_BASIC_PRICE_ID || '';
-  const proPriceId = process.env.STRIPE_PRO_PRICE_ID || '';
-  const basicYearlyPriceId = process.env.STRIPE_BASIC_YEARLY_PRICE_ID || basicPriceId;
-  const proYearlyPriceId = process.env.STRIPE_PRO_YEARLY_PRICE_ID || proPriceId;
+  const basicUSD = process.env.STRIPE_BASIC_PRICE_ID || '';
+  const proUSD = process.env.STRIPE_PRO_PRICE_ID || '';
+  const basicYearlyUSD = process.env.STRIPE_BASIC_YEARLY_PRICE_ID || basicUSD;
+  const proYearlyUSD = process.env.STRIPE_PRO_YEARLY_PRICE_ID || proUSD;
+
+  // EUR Price IDs
+  const basicEUR = process.env.STRIPE_BASIC_PRICE_ID_EUR || basicUSD;
+  const proEUR = process.env.STRIPE_PRO_PRICE_ID_EUR || proUSD;
+  const basicYearlyEUR = process.env.STRIPE_BASIC_YEARLY_PRICE_ID_EUR || basicYearlyUSD;
+  const proYearlyEUR = process.env.STRIPE_PRO_YEARLY_PRICE_ID_EUR || proYearlyUSD;
+
+  // GBP Price IDs
+  const basicGBP = process.env.STRIPE_BASIC_PRICE_ID_GBP || basicUSD;
+  const proGBP = process.env.STRIPE_PRO_PRICE_ID_GBP || proUSD;
+  const basicYearlyGBP = process.env.STRIPE_BASIC_YEARLY_PRICE_ID_GBP || basicYearlyUSD;
+  const proYearlyGBP = process.env.STRIPE_PRO_YEARLY_PRICE_ID_GBP || proYearlyUSD;
+
+  const priceIds = {
+    basicUSD,
+    proUSD,
+    basicYearlyUSD,
+    proYearlyUSD,
+    basicEUR,
+    proEUR,
+    basicYearlyEUR,
+    proYearlyEUR,
+    basicGBP,
+    proGBP,
+    basicYearlyGBP,
+    proYearlyGBP,
+  };
 
   return (
     <>
@@ -65,234 +93,8 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* Monthly Plans */}
-        <div className="text-center mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Monthly Subscriptions</h3>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-12">
-          {/* Free Tier */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-gray-900">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Free</h2>
-            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">$0<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
-            
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm">Market phase analysis</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm">Wave structure overview</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm">Trade idea summaries</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500">✗</span>
-                <span className="text-sm text-gray-500">Entry/stop/target levels</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500">✗</span>
-                <span className="text-sm text-gray-500">Performance tracking</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500">✗</span>
-                <span className="text-sm text-gray-500">Custom ticker analyzer</span>
-              </li>
-            </ul>
-
-            <a href="/login" className="block w-full text-center px-6 py-3 rounded-xl border-2 border-gray-300 dark:border-gray-700 font-bold hover:scale-105 transition-all">
-              Get Started
-            </a>
-          </div>
-
-          {/* Basic Tier */}
-          <div className="rounded-lg border-2 border-blue-600 dark:border-blue-500 p-6 bg-white dark:bg-gray-900 relative">
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-md">
-              POPULAR
-            </div>
-            
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Premium</h2>
-            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">$9<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
-            
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Everything in Free</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Full entry/stop/target levels</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Risk management guidance</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Crypto & stocks ideas</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Performance tracking</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500">✗</span>
-                <span className="text-sm text-gray-500">Custom ticker analyzer</span>
-              </li>
-            </ul>
-
-            <SubscribeButton tier="premium" priceId={basicPriceId} />
-          </div>
-
-          {/* Pro Tier */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-gray-900">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Pro</h2>
-            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">$19<span className="text-base font-normal text-gray-500 dark:text-gray-400">/month</span></p>
-            
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Everything in Basic</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Performance tracking</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Custom ticker analyzer</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Win rate statistics</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Historical idea archive</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Priority support</span>
-              </li>
-            </ul>
-
-            <div className="w-full">
-              <SubscribeButton tier="pro" priceId={proPriceId} />
-            </div>
-          </div>
-        </div>
-
-        {/* Yearly Plans with Discount */}
-        <div className="text-center mb-4 mt-16">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Yearly Subscriptions</h3>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Pay once, save big 🎯</p>
-        </div>
-
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {/* Free Tier - Spacer */}
-          <div className="rounded-lg border border-gray-200 dark:border-gray-800 p-6 bg-white dark:bg-gray-900 opacity-50">
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Free</h2>
-            <p className="text-3xl font-bold mb-6 text-gray-900 dark:text-white">$0<span className="text-base font-normal text-gray-500 dark:text-gray-400">/always</span></p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 text-center">
-              Free tier is always free
-            </p>
-          </div>
-
-          {/* Basic Yearly */}
-          <div className="rounded-lg border-2 border-green-600 dark:border-green-500 p-6 bg-white dark:bg-gray-900 relative">
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-md">
-              SAVE 27%
-            </div>
-            
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Premium Yearly</h2>
-            <div className="mb-6">
-              <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">$79</p>
-                <span className="text-sm line-through text-gray-400">$108</span>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Auto-renews yearly · Cancel anytime</p>
-            </div>
-            
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Everything in Free</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Full entry/stop/target levels</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Risk management guidance</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Performance tracking</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">12 months access</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-red-500">✗</span>
-                <span className="text-sm text-gray-500">Custom ticker analyzer</span>
-              </li>
-            </ul>
-
-            <SubscribeButton tier="premium-yearly" priceId={basicYearlyPriceId} />
-          </div>
-
-          {/* Pro Yearly */}
-          <div className="rounded-lg border-2 border-purple-600 dark:border-purple-500 p-6 bg-white dark:bg-gray-900 relative">
-            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-md">
-              SAVE 35%
-            </div>
-            
-            <h2 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">Pro Yearly</h2>
-            <div className="mb-6">
-              <div className="flex items-baseline gap-2">
-                <p className="text-3xl font-bold text-gray-900 dark:text-white">$149</p>
-                <span className="text-sm line-through text-gray-400">$228</span>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Auto-renews yearly · Cancel anytime</p>
-            </div>
-            
-            <ul className="space-y-3 mb-8">
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Everything in Basic</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Performance tracking</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Custom ticker analyzer</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Win rate statistics</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">Historical idea archive</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-green-500">✓</span>
-                <span className="text-sm font-medium">12 months access + Priority support</span>
-              </li>
-            </ul>
-
-            <div className="w-full">
-              <SubscribeButton tier="pro-yearly" priceId={proYearlyPriceId} />
-            </div>
-          </div>
-        </div>
+        {/* Multi-Currency Pricing Content */}
+        <PricingContent priceIds={priceIds} />
 
         {/* Subscription Terms */}
         <div className="max-w-3xl mx-auto mt-8 space-y-4">
