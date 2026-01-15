@@ -36,7 +36,7 @@ export async function POST(req: Request) {
       const recentLinks = await db.execute({
         sql: `SELECT created_at FROM magic_links 
               WHERE email = ? 
-              AND created_at > datetime('now', '-2 minutes')
+              AND created_at > datetime('now', '-1 minute')
               ORDER BY created_at DESC 
               LIMIT 1`,
         args: [email],
@@ -44,7 +44,7 @@ export async function POST(req: Request) {
 
       if (recentLinks.rows.length > 0) {
         const lastSent = new Date(recentLinks.rows[0].created_at as string);
-        const waitTime = Math.ceil((120000 - (Date.now() - lastSent.getTime())) / 1000);
+        const waitTime = Math.ceil((60000 - (Date.now() - lastSent.getTime())) / 1000);
         return NextResponse.json({ 
           error: `Please wait ${waitTime} seconds before requesting another magic link`,
           waitTime 
