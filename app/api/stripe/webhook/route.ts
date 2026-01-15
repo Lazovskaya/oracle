@@ -141,6 +141,14 @@ export async function POST(req: Request) {
           const endDate = new Date(subscription.current_period_end * 1000);
           const status = subscription.cancel_at_period_end ? 'canceled' : 'active';
           
+          // Get current tier before updating
+          const userResult = await db.execute({
+            sql: 'SELECT subscription_tier FROM users WHERE email = ?',
+            args: [email],
+          });
+          
+          const currentTier = userResult.rows[0]?.subscription_tier as string;
+          
           await db.execute({
             sql: `UPDATE users 
                   SET subscription_status = ?,
@@ -150,6 +158,15 @@ export async function POST(req: Request) {
           });
           
           console.log(`🔄 Subscription updated for ${email} - Status: ${status}`);
+          
+          // Send cancellation email if subscription was just cancelled
+          if (subscription.cancel_at_period_end && (currentTier === 'premium' || currentTier === 'pro')) {
+            await sendCancellationEmail({
+              email,
+              tier: currentTier as 'premium' | 'pro',
+              subscriptionEndDate: endDate.toISOString(),
+            });
+          }
         }
         break;
       }
@@ -161,15 +178,6 @@ export async function POST(req: Request) {
         const email = customer.email;
         
         if (email) {
-          // Get current tier before downgrading
-          const userResult = await db.execute({
-            sql: 'SELECT subscription_tier, subscription_end_date FROM users WHERE email = ?',
-            args: [email],
-          });
-          
-          const currentTier = userResult.rows[0]?.subscription_tier as string;
-          const endDate = userResult.rows[0]?.subscription_end_date as string;
-          
           await db.execute({
             sql: `UPDATE users 
                   SET subscription_tier = 'free',
@@ -179,16 +187,7 @@ export async function POST(req: Request) {
             args: [email],
           });
           
-          console.log(`❌ Subscription canceled for ${email} - Downgraded to free`);
-          
-          // Send cancellation email if it was a paid tier
-          if (currentTier === 'premium' || currentTier === 'pro') {
-            await sendCancellationEmail({
-              email,
-              tier: currentTier as 'premium' | 'pro',
-              subscriptionEndDate: endDate || new Date().toISOString(),
-            });
-          }
+          console.log(`❌ Subscription expired for ${email} - Downgraded to free`);
         }
         break;
       }

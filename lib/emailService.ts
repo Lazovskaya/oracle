@@ -10,6 +10,14 @@ interface WelcomeEmailParams {
 
 export async function sendWelcomeEmail({ email, tier, subscriptionEndDate }: WelcomeEmailParams) {
   try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.error('❌ RESEND_API_KEY not configured - email will not be sent');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    console.log(`📧 Sending welcome email to ${email} for ${tier} subscription...`);
+    
     const tierName = tier === 'premium' ? 'Premium' : 'Pro';
     const endDate = new Date(subscriptionEndDate).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -133,7 +141,13 @@ export async function sendWelcomeEmail({ email, tier, subscriptionEndDate }: Wel
     console.log(`✅ Welcome email sent to ${email} for ${tierName} subscription`);
     return { success: true };
   } catch (error: any) {
-    console.error('❌ Failed to send welcome email:', error);
+    console.error('❌ Failed to send welcome email:', {
+      email,
+      tier,
+      error: error.message,
+      statusCode: error.statusCode,
+      name: error.name,
+    });
     // Don't throw - email failure shouldn't break the subscription process
     return { success: false, error: error.message };
   }
@@ -147,6 +161,14 @@ interface CancellationEmailParams {
 
 export async function sendCancellationEmail({ email, tier, subscriptionEndDate }: CancellationEmailParams) {
   try {
+    // Check if Resend is configured
+    if (!process.env.RESEND_API_KEY) {
+      console.error('❌ RESEND_API_KEY not configured - email will not be sent');
+      return { success: false, error: 'Email service not configured' };
+    }
+
+    console.log(`📧 Sending cancellation email to ${email}...`);
+    
     const tierName = tier === 'premium' ? 'Premium' : 'Pro';
     const endDate = new Date(subscriptionEndDate).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -258,7 +280,12 @@ export async function sendCancellationEmail({ email, tier, subscriptionEndDate }
     console.log(`✅ Cancellation email sent to ${email}`);
     return { success: true };
   } catch (error: any) {
-    console.error('❌ Failed to send cancellation email:', error);
+    console.error('❌ Failed to send cancellation email:', {
+      email,
+      error: error.message,
+      statusCode: error.statusCode,
+      name: error.name,
+    });
     return { success: false, error: error.message };
   }
 }
