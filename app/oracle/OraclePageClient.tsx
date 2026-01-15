@@ -12,9 +12,16 @@ import { useMarketDataRefresh } from "@/lib/hooks/useMarketDataRefresh";
 
 // Helper function to identify if a symbol is crypto or stock
 function isCryptoSymbol(symbol: string): boolean {
-  const cryptoSymbols = ['BTC', 'ETH', 'SOL', 'ADA', 'XRP', 'DOT', 'DOGE', 'SHIB', 'AVAX', 'MATIC', 'LINK', 'UNI', 'ATOM', 'LTC', 'BCH', 'XLM', 'ALGO', 'VET', 'FIL', 'TRX', 'ETC', 'THETA', 'XMR', 'EOS', 'AAVE', 'MKR', 'SNX', 'COMP'];
-  const upperSymbol = symbol.toUpperCase().replace(/USD[T]?$/, ''); // Remove USDT or USD suffix
-  return cryptoSymbols.includes(upperSymbol) || symbol.includes('USDT') || symbol.includes('USD') && !symbol.match(/^[A-Z]{1,4}$/);
+  const cryptoSymbols = [
+    'BTC', 'ETH', 'SOL', 'ADA', 'XRP', 'DOT', 'DOGE', 'SHIB', 'AVAX', 'MATIC', 
+    'LINK', 'UNI', 'ATOM', 'LTC', 'BCH', 'XLM', 'ALGO', 'VET', 'FIL', 'TRX', 
+    'ETC', 'THETA', 'XMR', 'EOS', 'AAVE', 'MKR', 'SNX', 'COMP', 'DASH', 'ICP',
+    'CHZ', 'LIT', 'BNB', 'USDT', 'USDC', 'STETH', 'TON', 'WBTC', 'DAI', 'LEO',
+    'NEAR', 'APT', 'ARB', 'OP', 'IMX', 'RNDR', 'INJ', 'STX', 'GRT', 'RUNE',
+    'FTM', 'SAND', 'MANA', 'AXS', 'CRV', 'LDO', 'HBAR', 'QNT', 'FLR', 'XTZ'
+  ];
+  const upperSymbol = symbol.toUpperCase().replace(/[-_]?USD[T]?$/i, ''); // Remove -USD, -USDT, _USD, _USDT
+  return cryptoSymbols.includes(upperSymbol) || /USDT?$/i.test(symbol);
 }
 
 function extractValue(raw: any): any {
