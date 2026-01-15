@@ -49,6 +49,7 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'your-google-verification-code',
+    yandex: '66f2dfc7d47b22c0',
     other: {
       'msvalidate.01': '26C56064C3E4E44BBF1FF4753BA0DEAD',
     },
