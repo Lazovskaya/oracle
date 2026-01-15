@@ -20,6 +20,25 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid email' }, { status: 400 });
     }
 
+    // Rate limiting: Check if magic link was sent recently (within last 2 minutes)
+    const recentLinks = await db.execute({
+      sql: `SELECT created_at FROM magic_links 
+            WHERE email = ? 
+            AND created_at > datetime('now', '-2 minutes')
+            ORDER BY created_at DESC 
+            LIMIT 1`,
+      args: [email],
+    });
+
+    if (recentLinks.rows.length > 0) {
+      const lastSent = new Date(recentLinks.rows[0].created_at as string);
+      const waitTime = Math.ceil((120000 - (Date.now() - lastSent.getTime())) / 1000);
+      return NextResponse.json({ 
+        error: `Please wait ${waitTime} seconds before requesting another magic link`,
+        waitTime 
+      }, { status: 429 });
+    }
+
     // Generate magic link token
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
