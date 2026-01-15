@@ -160,7 +160,11 @@ export default function PricingContent({ priceIds }: PricingContentProps) {
           <ul className="space-y-3 mb-8">
             <li className="flex items-start gap-2">
               <span className="text-green-500">✓</span>
-              <span className="text-sm font-medium">Everything in Basic</span>
+              <span className="text-sm font-medium">Everything in Premium</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-green-500">✓</span>
+              <span className="text-sm font-medium">Custom ticker analyzer</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-500">✓</span>
@@ -238,11 +242,15 @@ export default function PricingContent({ priceIds }: PricingContentProps) {
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-500">✓</span>
+              <span className="text-sm font-medium">Performance tracking</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-green-500">✓</span>
               <span className="text-sm font-medium">12 months access</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-red-500">✗</span>
-              <span className="text-sm text-gray-500">Performance statistics</span>
+              <span className="text-sm text-gray-500">Custom ticker analyzer</span>
             </li>
           </ul>
 
@@ -271,7 +279,11 @@ export default function PricingContent({ priceIds }: PricingContentProps) {
           <ul className="space-y-3 mb-8">
             <li className="flex items-start gap-2">
               <span className="text-green-500">✓</span>
-              <span className="text-sm font-medium">Everything in Basic</span>
+              <span className="text-sm font-medium">Everything in Premium</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-green-500">✓</span>
+              <span className="text-sm font-medium">Custom ticker analyzer</span>
             </li>
             <li className="flex items-start gap-2">
               <span className="text-green-500">✓</span>
