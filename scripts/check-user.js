@@ -2,6 +2,8 @@ const { createClient } = require('@libsql/client');
 require('dotenv').config({ path: '.env.local' });
 
 async function checkUser() {
+  const email = process.argv[2] || 'trade.market.oracle@proton.me';
+  
   const db = createClient({
     url: process.env.DATABASE_URL,
     authToken: process.env.DATABASE_AUTH_TOKEN,
@@ -10,7 +12,7 @@ async function checkUser() {
   try {
     const result = await db.execute({
       sql: 'SELECT * FROM users WHERE email = ?',
-      args: ['wlazovskaya1@gmail.com'],
+      args: [email],
     });
 
     console.log('\n📋 User Database Record:');
