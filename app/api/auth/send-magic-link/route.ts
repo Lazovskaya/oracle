@@ -69,6 +69,11 @@ export async function POST(req: Request) {
 
     // Send magic link via Resend
     try {
+      if (!process.env.RESEND_API_KEY) {
+        console.error('❌ RESEND_API_KEY not configured');
+        throw new Error('Email service not configured');
+      }
+
       await resend.emails.send({
         from: 'FinForesee Market Oracle <no-reply@finforesee.com>',
         to: email,
@@ -129,18 +134,33 @@ export async function POST(req: Request) {
 
       console.log('✅ Magic link sent via Resend to:', email);
     } catch (emailError: any) {
-      console.error('❌ Resend email error:', emailError);
-      // Log but don't fail - in development, show link in console
-      console.log('🔗 Magic link (fallback):', magicLink);
+      console.error('❌ Failed to send magic link email:', {
+        email,
+        error: emailError.message,
+        statusCode: emailError.statusCode,
+        name: emailError.name,
+      });
+      
+      // In production, fail the request if email cannot be sent
+      if (process.env.NODE_ENV === 'production') {
+        return NextResponse.json(
+          { error: 'Failed to send magic link. Please check your email address or contact support.' },
+          { status: 500 }
+        );
+      }
+      
+      // In development, log the link as fallback
+      console.log('🔗 Development fallback - magic link:', magicLink);
     }
 
     return NextResponse.json({ 
       success: true, 
       message: 'Magic link sent to your email',
-      // Return link for client-side handling
-      magicLink: magicLink,
-      // Temporarily enabled for production until email is fixed
-      isDevelopment: true // process.env.NODE_ENV === 'development'
+      // Only include link in development
+      ...(process.env.NODE_ENV === 'development' && { 
+        magicLink,
+        isDevelopment: true 
+      }),
     });
   } catch (error: any) {
     console.error('Magic link error:', error);
