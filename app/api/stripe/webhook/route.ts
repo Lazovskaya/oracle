@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { db } from '@/lib/db';
+import { sendWelcomeEmail, sendCancellationEmail } from '@/lib/emailService';
 
 export const runtime = 'nodejs';
 
@@ -81,6 +82,13 @@ export async function POST(req: Request) {
                 args: [email, tier, 'active', session.customer, subscription.id, endDate.toISOString()],
               });
               console.log('✅ New user created with subscription');
+              
+              // Send welcome email
+              await sendWelcomeEmail({
+                email,
+                tier: tier as 'premium' | 'pro',
+                subscriptionEndDate: endDate.toISOString(),
+              });
             } else {
               // Update existing user
               console.log('💾 Updating existing user:', email);
@@ -95,6 +103,13 @@ export async function POST(req: Request) {
                 args: [tier, session.customer, subscription.id, endDate.toISOString(), email],
               });
               console.log('✅ User subscription updated');
+              
+              // Send welcome email
+              await sendWelcomeEmail({
+                email,
+                tier: tier as 'premium' | 'pro',
+                subscriptionEndDate: endDate.toISOString(),
+              });
             }
             
             console.log(`✅ Subscription activated for ${email} - Tier: ${tier}, Until: ${endDate.toISOString()}`);
@@ -146,6 +161,15 @@ export async function POST(req: Request) {
         const email = customer.email;
         
         if (email) {
+          // Get current tier before downgrading
+          const userResult = await db.execute({
+            sql: 'SELECT subscription_tier, subscription_end_date FROM users WHERE email = ?',
+            args: [email],
+          });
+          
+          const currentTier = userResult.rows[0]?.subscription_tier as string;
+          const endDate = userResult.rows[0]?.subscription_end_date as string;
+          
           await db.execute({
             sql: `UPDATE users 
                   SET subscription_tier = 'free',
@@ -156,6 +180,15 @@ export async function POST(req: Request) {
           });
           
           console.log(`❌ Subscription canceled for ${email} - Downgraded to free`);
+          
+          // Send cancellation email if it was a paid tier
+          if (currentTier === 'premium' || currentTier === 'pro') {
+            await sendCancellationEmail({
+              email,
+              tier: currentTier as 'premium' | 'pro',
+              subscriptionEndDate: endDate || new Date().toISOString(),
+            });
+          }
         }
         break;
       }
