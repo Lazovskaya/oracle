@@ -56,16 +56,19 @@ export async function POST(req: Request) {
           try {
             // Get subscription details
             console.log('📡 Retrieving subscription from Stripe...');
-            const subscriptionData = await stripe.subscriptions.retrieve(session.subscription as string);
-            const subscription = subscriptionData as any;
+            const subscription = await stripe.subscriptions.retrieve(session.subscription as string) as Stripe.Subscription;
             
             console.log('✓ Subscription retrieved:', subscription.id);
-            console.log('📅 Subscription period_end:', subscription.current_period_end, typeof subscription.current_period_end);
+            
+            // Get current period end from the first subscription item
+            // In Stripe SDK v20+, current_period_end is on SubscriptionItem, not Subscription
+            const currentPeriodEnd = subscription.items?.data?.[0]?.current_period_end;
+            console.log('📅 Subscription period_end:', currentPeriodEnd, typeof currentPeriodEnd);
             
             // Validate and convert end date
             let endDate: Date;
-            if (subscription.current_period_end && typeof subscription.current_period_end === 'number') {
-              endDate = new Date(subscription.current_period_end * 1000);
+            if (currentPeriodEnd && typeof currentPeriodEnd === 'number') {
+              endDate = new Date(currentPeriodEnd * 1000);
             } else {
               // Fallback: 30 days from now
               console.log('⚠️ No valid current_period_end, using 30 days default');
@@ -139,16 +142,19 @@ export async function POST(req: Request) {
       }
 
       case 'customer.subscription.updated': {
-        const subscription = event.data.object as any;
+        const subscription = event.data.object as Stripe.Subscription;
         const customerData = await stripe.customers.retrieve(subscription.customer as string);
         const customer = customerData as any;
         const email = customer.email;
         
         if (email) {
+          // Get current period end from the first subscription item
+          const currentPeriodEnd = subscription.items?.data?.[0]?.current_period_end;
+          
           // Validate and convert end date
           let endDate: Date;
-          if (subscription.current_period_end && typeof subscription.current_period_end === 'number') {
-            endDate = new Date(subscription.current_period_end * 1000);
+          if (currentPeriodEnd && typeof currentPeriodEnd === 'number') {
+            endDate = new Date(currentPeriodEnd * 1000);
           } else {
             console.log('⚠️ No valid current_period_end in subscription.updated, keeping existing date');
             // Get existing date from database
