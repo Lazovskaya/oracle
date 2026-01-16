@@ -33,13 +33,20 @@ export async function POST(req: Request) {
         const email = session.customer_email || session.metadata?.email;
         const tierRaw = session.metadata?.tier || 'premium';
         
-        // Map tier names: premium-yearly -> premium, pro-yearly -> pro
-        const tier = tierRaw.replace('-yearly', '') as 'premium' | 'pro';
+        // Map tier names: 
+        // - "basic" → "premium" (old naming, Basic plan is actually Premium)
+        // - "premium-yearly" → "premium"
+        // - "pro-yearly" → "pro"
+        let tier = tierRaw.replace('-yearly', '');
+        if (tier === 'basic') {
+          tier = 'premium'; // Basic is actually Premium tier
+        }
+        const finalTier = tier as 'premium' | 'pro';
         
         console.log('🔍 Processing checkout:', { 
           email, 
           tier_raw: tierRaw,
-          tier_final: tier,
+          tier_final: finalTier,
           payment_status: session.payment_status,
           has_subscription: !!session.subscription,
           customer: session.customer 
@@ -79,14 +86,14 @@ export async function POST(req: Request) {
               console.log('👤 Creating new user:', email);
               await db.execute({
                 sql: 'INSERT INTO users (email, subscription_tier, subscription_status, stripe_customer_id, stripe_subscription_id, subscription_end_date) VALUES (?, ?, ?, ?, ?, ?)',
-                args: [email, tier, 'active', session.customer, subscription.id, endDate.toISOString()],
+                args: [email, finalTier, 'active', session.customer, subscription.id, endDate.toISOString()],
               });
               console.log('✅ New user created with subscription');
               
               // Send welcome email
               await sendWelcomeEmail({
                 email,
-                tier: tier as 'premium' | 'pro',
+                tier: finalTier,
                 subscriptionEndDate: endDate.toISOString(),
               });
             } else {
@@ -100,14 +107,14 @@ export async function POST(req: Request) {
                           stripe_subscription_id = ?,
                           subscription_end_date = ?
                       WHERE email = ?`,
-                args: [tier, session.customer, subscription.id, endDate.toISOString(), email],
+                args: [finalTier, session.customer, subscription.id, endDate.toISOString(), email],
               });
               console.log('✅ User subscription updated');
               
               // Send welcome email
               await sendWelcomeEmail({
                 email,
-                tier: tier as 'premium' | 'pro',
+                tier: finalTier,
                 subscriptionEndDate: endDate.toISOString(),
               });
             }

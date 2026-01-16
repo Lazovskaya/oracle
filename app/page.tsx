@@ -43,7 +43,12 @@ export default async function HomePage() {
       <ServiceStructuredData />
       <main className="min-h-screen flex flex-col items-center justify-center px-6 py-20">
       <div className="max-w-4xl w-full">
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-6 gap-3">
+          {!isLoggedIn && (
+            <Link href="/register" className="px-4 py-2 rounded-md bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-medium transition-all text-sm shadow-md hover:shadow-lg">
+              Sign Up
+            </Link>
+          )}
           <Link href={isLoggedIn ? "/account" : "/login"} className="px-3 py-2 rounded-md border border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors flex items-center gap-2 text-gray-700 dark:text-gray-300 text-sm">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />

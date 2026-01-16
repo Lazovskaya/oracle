@@ -42,7 +42,7 @@ export async function sendWelcomeEmail({ email, tier, subscriptionEndDate }: Wel
         ];
 
     await resend.emails.send({
-      from: 'FinForesee Market Oracle <no-reply@finforesee.com>',
+      from: 'FinForesee Market Oracle <info@finforesee.com>',
       to: email,
       replyTo: 'support@finforesee.com',
       subject: `Welcome to ${tierName} - FinForesee Market Oracle`,
@@ -177,7 +177,7 @@ export async function sendCancellationEmail({ email, tier, subscriptionEndDate }
     });
 
     await resend.emails.send({
-      from: 'FinForesee Market Oracle <no-reply@finforesee.com>',
+      from: 'FinForesee Market Oracle <info@finforesee.com>',
       to: email,
       replyTo: 'support@finforesee.com',
       subject: `Subscription Cancelled - FinForesee Market Oracle`,

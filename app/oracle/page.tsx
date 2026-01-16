@@ -188,26 +188,104 @@ export default async function OraclePage() {
              : balancedRun;
 
   // Prepare style-specific predictions for client-side switching
-  const stylePredictions: Record<string, { parsed: any; ideas: any[] }> = {};
+  const stylePredictions: Record<string, { parsed: any; ideas: any[]; created_at?: string }> = {};
+  
+  // Fetch previous runs to merge ideas not repeated in current tickers
+  const previousRuns: Record<string, OracleRun | null> = {};
+  for (const style of ['conservative', 'balanced', 'aggressive']) {
+    const prevResult = await db.execute({
+      sql: `SELECT id, run_date, result, created_at FROM oracle_runs WHERE trading_style = ? ORDER BY created_at DESC LIMIT 1 OFFSET 1`,
+      args: [style],
+    });
+    if (prevResult.rows.length > 0) {
+      const r: any = prevResult.rows[0];
+      previousRuns[style] = {
+        id: typeof r.id === "number" ? r.id : Number(r.id),
+        run_date: String(r.run_date ?? ""),
+        market_phase: null,
+        result: String(r.result ?? ""),
+        result_ru: null,
+        result_fr: null,
+        result_es: null,
+        result_zh: null,
+        created_at: r.created_at ?? undefined,
+      };
+    }
+  }
   
   for (const [style, run] of Object.entries({ conservative: conservativeRun, balanced: balancedRun, aggressive: aggressiveRun })) {
     if (run?.result) {
       try {
         let cleanResult = run.result.trim();
+        
+        // Remove markdown code blocks if present (handle with or without newlines)
         if (cleanResult.startsWith('```json')) {
-          cleanResult = cleanResult.replace(/^```json\s*\n/, '').replace(/\n```\s*$/, '');
+          cleanResult = cleanResult.replace(/^```json\s*/, '').replace(/\s*```\s*$/, '');
         } else if (cleanResult.startsWith('```')) {
-          cleanResult = cleanResult.replace(/^```\s*\n/, '').replace(/\n```\s*$/, '');
+          cleanResult = cleanResult.replace(/^```\s*/, '').replace(/\s*```\s*$/, '');
+        }
+        
+        // Trim again after removing code blocks
+        cleanResult = cleanResult.trim();
+        
+        // Remove JavaScript-style comments that OpenAI sometimes adds
+        cleanResult = cleanResult.replace(/\/\/[^\n]*/g, '');
+        
+        // Validate that cleanResult is not empty and looks like JSON
+        if (!cleanResult || (!cleanResult.startsWith('{') && !cleanResult.startsWith('['))) {
+          console.error(`Invalid JSON format for ${style}:`, cleanResult.substring(0, 100));
+          stylePredictions[style] = { parsed: null, ideas: [], created_at: run?.created_at };
+          continue;
         }
         
         const parsed = JSON.parse(cleanResult);
+        let ideas = Array.isArray(parsed?.ideas) ? parsed.ideas : [];
+        
+        // Add created_at to current ideas
+        ideas = ideas.map((idea: any) => ({ ...idea, created_at: run?.created_at }));
+        
+        // Merge ideas from previous run if symbols not in current
+        const currentSymbols = new Set(ideas.map((i: any) => i.symbol));
+        const prevRun = previousRuns[style];
+        if (prevRun?.result) {
+          try {
+            let prevClean = prevRun.result.trim();
+            if (prevClean.startsWith('```json')) {
+              prevClean = prevClean.replace(/^```json\s*/, '').replace(/\s*```\s*$/, '');
+            } else if (prevClean.startsWith('```')) {
+              prevClean = prevClean.replace(/^```\s*/, '').replace(/\s*```\s*$/, '');
+            }
+            prevClean = prevClean.trim();
+            prevClean = prevClean.replace(/\/\/[^\n]*/g, '');
+            
+            const prevParsed = JSON.parse(prevClean);
+            const prevIdeas = Array.isArray(prevParsed?.ideas) ? prevParsed.ideas : [];
+            
+            // Add previous ideas that aren't in current run
+            prevIdeas.forEach((prevIdea: any) => {
+              if (prevIdea.symbol && !currentSymbols.has(prevIdea.symbol)) {
+                ideas.push({ ...prevIdea, created_at: prevRun.created_at, isPrevious: true });
+              }
+            });
+          } catch (e) {
+            console.error(`Failed to parse previous ${style} run:`, e);
+          }
+        }
+        
         stylePredictions[style] = {
           parsed,
-          ideas: Array.isArray(parsed?.ideas) ? parsed.ideas : []
+          ideas,
+          created_at: run?.created_at
         };
       } catch (e) {
         console.error(`Failed to parse ${style} result:`, e);
+        console.error(`Raw result (first 200 chars):`, run.result?.substring(0, 200));
+        // Set empty predictions on error to prevent page crash
+        stylePredictions[style] = { parsed: null, ideas: [], created_at: run?.created_at };
       }
+    } else {
+      // No result available
+      stylePredictions[style] = { parsed: null, ideas: [] };
     }
   }
 
