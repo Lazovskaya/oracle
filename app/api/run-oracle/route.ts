@@ -32,7 +32,7 @@ async function callLLM(prompt: string, preferredModel?: string) {
       const completion = await client.chat.completions.create({
         model,
         messages: [{ role: "user", content: prompt }],
-        max_completion_tokens: 3500,
+        max_completion_tokens: 5000,  // Increased from 3500 to ensure full responses
       });
 
       // Log entire completion for debugging (do not expose to clients)
@@ -44,8 +44,20 @@ async function callLLM(prompt: string, preferredModel?: string) {
       const finishReason = completion?.choices?.[0]?.finish_reason;
       
       if (text && text.trim().length > 0) {
-        console.info(`✅ OpenAI: model=${model} succeeded, length=${text.length}, finish_reason=${finishReason}`);
-        return { text, modelUsed: model };
+        // Clean markdown code blocks from response if present
+        let cleanedText = text.trim();
+        if (cleanedText.startsWith('```json')) {
+          cleanedText = cleanedText.replace(/^```json\s*/, '').replace(/\s*```\s*$/, '');
+        } else if (cleanedText.startsWith('```')) {
+          cleanedText = cleanedText.replace(/^```\s*/, '').replace(/\s*```\s*$/, '');
+        }
+        cleanedText = cleanedText.trim();
+        
+        // Remove JavaScript-style comments that OpenAI sometimes adds
+        cleanedText = cleanedText.replace(/\/\/[^\n]*/g, '');
+        
+        console.info(`✅ OpenAI: model=${model} succeeded, length=${cleanedText.length}, finish_reason=${finishReason}`);
+        return { text: cleanedText, modelUsed: model };
       }
 
       console.warn(`⚠️  OpenAI: model=${model} returned empty content (finish_reason=${finishReason}), trying next candidate.`);

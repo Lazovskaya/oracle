@@ -3,6 +3,7 @@ import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { signIn } from 'next-auth/react';
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import OracleIcon from '@/components/OracleIcon';
 import { LoginPageSkeleton } from '@/components/skeletons/LoadingSkeletons';
 
@@ -12,15 +13,45 @@ const LoginForm = dynamic(() => Promise.resolve(LoginFormComponent), {
 
 function LoginFormComponent() {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
   const [magicLink, setMagicLink] = useState('');
+  const [useMagicLink, setUseMagicLink] = useState(false);
+  const [error, setError] = useState('');
   const searchParams = useSearchParams();
-  const error = searchParams.get('error');
+  const urlError = searchParams.get('error');
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
+
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        window.location.href = '/oracle';
+      } else {
+        setError(data.error || 'Login failed');
+      }
+    } catch (err) {
+      setError('Error logging in. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMagicLinkSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
 
     try {
       const res = await fetch('/api/auth/send-magic-link', {
@@ -35,16 +66,15 @@ function LoginFormComponent() {
         setSent(true);
         if (data.magicLink) {
           setMagicLink(data.magicLink);
-          // Auto-open in development mode
           if (data.isDevelopment) {
             window.open(data.magicLink, '_blank');
           }
         }
       } else {
-        alert(data.error || 'Failed to send magic link');
+        setError(data.error || 'Failed to send magic link');
       }
     } catch (err) {
-      alert('Error sending magic link');
+      setError('Error sending magic link');
     } finally {
       setLoading(false);
     }
@@ -67,19 +97,23 @@ function LoginFormComponent() {
           </p>
         </div>
 
-        {error && (
+        {(error || urlError) && (
           <div className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 text-center">
             <p className="text-red-600 dark:text-red-400 text-sm font-medium">
-              {error === 'invalid_token' && 'Invalid login link'}
-              {error === 'expired_token' && 'Login link expired. Please request a new one.'}
-              {error === 'user_not_found' && 'User not found'}
-              {error === 'server_error' && 'Server error. Please try again.'}
+              {error || (
+                <>
+                  {urlError === 'invalid_token' && 'Invalid login link'}
+                  {urlError === 'expired_token' && 'Login link expired. Please request a new one.'}
+                  {urlError === 'user_not_found' && 'User not found'}
+                  {urlError === 'server_error' && 'Server error. Please try again.'}
+                </>
+              )}
             </p>
           </div>
         )}
 
         {!sent ? (
-          <form onSubmit={handleSubmit} className="space-y-6 rounded-3xl border border-blue-200/50 dark:border-blue-800/50 p-8 bg-gradient-to-br from-white/90 to-purple-50/90 dark:from-gray-900/90 dark:to-purple-950/90 backdrop-blur-xl shadow-2xl">
+          <form onSubmit={useMagicLink ? handleMagicLinkSubmit : handlePasswordLogin} className="space-y-6 rounded-3xl border border-blue-200/50 dark:border-blue-800/50 p-8 bg-gradient-to-br from-white/90 to-purple-50/90 dark:from-gray-900/90 dark:to-purple-950/90 backdrop-blur-xl shadow-2xl">
             <div>
               <label htmlFor="email" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
                 Email Address
@@ -95,6 +129,52 @@ function LoginFormComponent() {
               />
             </div>
 
+            {!useMagicLink && (
+              <>
+                <div>
+                  <label htmlFor="password" className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    Password
+                  </label>
+                  <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="w-full px-4 py-3 rounded-xl border border-blue-200 dark:border-blue-800 bg-white/50 dark:bg-gray-900/50 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    placeholder="Enter your password"
+                    minLength={8}
+                  />
+                </div>
+
+                <div className="flex justify-between items-center text-sm">
+                  <button
+                    type="button"
+                    onClick={() => setUseMagicLink(true)}
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    Use magic link instead
+                  </button>
+                  <a
+                    href="/auth/forgot-password"
+                    className="text-blue-600 dark:text-blue-400 hover:underline font-medium"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+              </>
+            )}
+
+            {useMagicLink && (
+              <button
+                type="button"
+                onClick={() => setUseMagicLink(false)}
+                className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+              >
+                ← Back to password login
+              </button>
+            )}
+
             <button
               type="submit"
               disabled={loading}
@@ -102,7 +182,7 @@ function LoginFormComponent() {
             >
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
               <div className="relative">
-                {loading ? 'Sending...' : '✉️ Send Magic Link'}
+                {loading ? (useMagicLink ? 'Sending...' : 'Logging in...') : (useMagicLink ? 'Send Magic Link' : 'Log In')}
               </div>
             </button>
 
@@ -132,7 +212,7 @@ function LoginFormComponent() {
             </button>
 
             <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-              We'll send you a secure login link. No password needed.
+              {useMagicLink ? "We'll send you a secure login link. No password needed." : "Don't have a password?"} {!useMagicLink && <Link href="/register" className="text-blue-600 dark:text-blue-400 hover:underline font-medium">Create one</Link>}
             </p>
           </form>
         ) : (
